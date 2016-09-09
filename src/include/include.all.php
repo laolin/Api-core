@@ -1,0 +1,1 @@
+<?phprequire api_g('path-src').'/include/class.laolindb.php';require api_g('path-src').'/include/functions.php';api_g('db', new laolinDb());
