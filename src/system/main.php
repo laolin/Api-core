@@ -53,7 +53,11 @@ function main() {
   $call=isset($_GET['call'])?trim($_GET['call']):'';//TODO: 这里需要验证合法函数名
   //
   //echo " [ api=$api,call=$call ] ";
-
+  
+  if($api==''){
+    API::msg(0,"API is ready.");
+  }
+    
   //优先在web目录下的apis/目录下找文件
   $api_file=api_g('path-web')."/apis/api_$api.php";
   if( ! file_exists($api_file )) {
