@@ -54,9 +54,14 @@ function main() {
   //
   //echo " [ api=$api,call=$call ] ";
 
-  if( ! file_exists(api_g('path-api')."/api_$api.php" )) {
-    API::msg(2001,"Error load api:$api");
-    return;
+  //优先在web目录下的apis/目录下找文件
+  $api_file=api_g('path-web')."/apis/api_$api.php";
+  if( ! file_exists($api_file )) {
+    $api_file=api_g('path-api')."/api_$api.php";//找不到，就到系统的api目录下找
+    if( ! file_exists($api_file )) {
+      API::msg(2001,"Error load api:$api");//再找不到就出错。
+      return;
+    }
   }
   require_once api_g('path-api') . "/api_$api.php";
   $C="class_$api";
@@ -74,4 +79,3 @@ function main() {
   API::json($data);
 }
 
-?>
