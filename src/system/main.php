@@ -69,7 +69,7 @@ function main() {
       return API::msg(1101,"Error load api:$api");//再找不到就出错。
     }
   }
-  require_once api_g('path-api') . "/api_$api.php";
+  require_once $api_file;
   $C="class_$api";
   if(! class_exists($C) ) {
     return API::msg(1102,"class not exists $C");
