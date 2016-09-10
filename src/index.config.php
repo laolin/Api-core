@@ -6,4 +6,4 @@ api_g("DBPORT",3306);
 api_g("DBUSER",'test_user');
 api_g("DBPASS",'test_passwd');
 
-api_g('--mark--','000-index.config.php--db @ src');
+api_g('-cfg file--',__FILE__);
