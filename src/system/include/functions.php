@@ -5,8 +5,8 @@
 class API{
   public static function json($data,$jsonp='') {
     if( !headers_sent() ) {
-      if(strlen($jsonp) == 0 && isset($_REQUEST['jsonp']) && strlen($_REQUEST['jsonp'])>0)
-        $jsonp=$_REQUEST['jsonp'];
+      if(strlen($jsonp) == 0 && isset($_REQUEST['callback']) && strlen($_REQUEST['callback'])>0)
+        $jsonp=$_REQUEST['callback'];
       if(strlen($jsonp)>0)
         header('Content-type: application/javascript; charset=utf-8');
       else header('Content-type: application/json; charset=utf-8');
