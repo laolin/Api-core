@@ -6,6 +6,9 @@ method: get, post, put, delete
 功能：就是测试用的，没有什么别的功能。
 */
 class class_hello{
+    public static function main() {
+      return class_hello::world();
+    }
     public static function world() {
       $method=$_SERVER['REQUEST_METHOD'];;
       $res=['Welcome'=> "Hello, world!",

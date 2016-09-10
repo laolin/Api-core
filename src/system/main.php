@@ -51,12 +51,17 @@ function main() {
   
   $api=isset($_GET['api'])?trim($_GET['api']):'';//TODO: 这里需要验证合法文件名
   $call=isset($_GET['call'])?trim($_GET['call']):'';//TODO: 这里需要验证合法函数名
+  
   //
-  //echo " [ api=$api,call=$call ] ";
+  echo " [ api=$api,call=$call ] <pre>";
+  var_dump($_SERVER);
   
   if($api==''){
     API::msg(0,"API is ready.");
     return;
+  }
+  if($call==''){
+    $call='main';//默认函数名
   }
     
   //优先在web目录下的apis/目录下找文件
