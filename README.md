@@ -25,13 +25,15 @@
 ## api的URI格式
 `API_ROOT_PATH/$api/$call/?xxxxxx`
 
+## api对应的php文件
+在`.htaccess`定义规则：
+
 `RewriteRule ^([a-zA-Z]\w+)/([a-zA-Z]\w+)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]`
 
 $1:$api
 
 $2:$call
 
-## api对应的php文件
 每个api对应一个/apis/目录下的一个文件。
 可以在`src目录/apis`，也可以在`web目录/apis`下。
 `web目录/apis`优先。
