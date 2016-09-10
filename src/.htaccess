@@ -2,8 +2,8 @@ RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-RewriteRule ^([a-zA-Z]\w+)/([a-zA-Z]\w+)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]
-RewriteRule ^([a-zA-Z]\w+)$ index.php?api=$1&%{QUERY_STRING}	[L]
+RewriteRule ^([a-zA-Z]\w*)/([a-zA-Z]\w*)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]
+RewriteRule ^([a-zA-Z]\w*)$ index.php?api=$1&%{QUERY_STRING}	[L]
 
 RewriteCond $1 !^(index\.php)
 RewriteRule ^(.*)$ ./index.php/$1 [L]

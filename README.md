@@ -28,7 +28,7 @@
 ## api对应的php文件
 在`.htaccess`定义规则：
 
-`RewriteRule ^([a-zA-Z]\w+)/([a-zA-Z]\w+)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]`
+`RewriteRule ^([a-zA-Z]\w*)/([a-zA-Z]\w*)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]`
 
 $1:$api
 

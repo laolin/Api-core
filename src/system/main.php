@@ -51,9 +51,8 @@ function main() {
   $api=isset($_GET['api'])?trim($_GET['api']):'';//TODO: 这里需要验证合法文件名
   $call=isset($_GET['call'])?trim($_GET['call']):'';//TODO: 这里需要验证合法函数名
   
-  //
-  echo " [ api=$api,call=$call ] <pre>";
-  var_dump($_SERVER);
+  //echo " [ api=$api,call=$call ] <pre>";
+  //var_dump($_SERVER);
   
   if($api==''){
     return API::msg(0,"API is ready.");
