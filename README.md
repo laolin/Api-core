@@ -47,6 +47,27 @@ php文件名：`"/api_$api.php"`
 
 函数：`public static function $call() {}`
 
+# 辅助函数
+
+## `API::json`
+`API::json($data,$jsonp='')`
+用来返回json，如果jsonp指定了回调函数名，则返回jsonp。
+
+如果URI里包含了一个非0的jsonp参数，也会自动返回jsonp。
+
+比如API是这样的 `/api/apipath/apifunc?jsonp=FUNC_NAME`
+
+会返回 `FUNC_NAME( {原json内容})`;
+
+
+## `API::msg`
+`API::msgmsg( $code, $msg='',$jsonp='')`是json的一个快捷函数。
+
+## `API::db`
+`API::db()`返回一个能用的`medoo`数据库对象。
+
+## `API::input`
+`API::input()`用于非 GET 方式 （POST, PUT, DELETE方式）的数据获取
 
 # API 测试
 `apitest`目录下可用来测试API的页面。
