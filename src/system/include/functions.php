@@ -43,4 +43,11 @@ class API{
     $d=api_g('db');
     return $d || api_g('db', new laolinDb());
   }
+  
+  //非 GET 方式 （POST, PUT, DELETE方式）的数据获取
+  public static function input() {
+    $input=[];
+    parse_str(file_get_contents('php://input'),$input);
+    return $input;
+  }
 }

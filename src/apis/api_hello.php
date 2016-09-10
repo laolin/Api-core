@@ -12,6 +12,7 @@ class class_hello{
         'My time'=>api_g('time')];
       $res['data_GET']=$_GET;
       $res['data_POST']=$_POST; 
+      $res['data_for_PUT_or_DELETE_or_POST']=API::input(); 
       $res['data_method']=$method;      
       $res['info']='GET OK @'.  api_g('time');
       return $res;
