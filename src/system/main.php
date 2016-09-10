@@ -56,6 +56,7 @@ function main() {
   
   if($api==''){
     API::msg(0,"API is ready.");
+    return;
   }
     
   //优先在web目录下的apis/目录下找文件
