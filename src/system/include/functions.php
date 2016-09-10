@@ -14,16 +14,18 @@ class API{
       header("Cache-Control: no-cache, must-revalidate");
       header("Pragma: no-cache");
     }
-    
+    $str='';
     if(strlen($jsonp)>0) {
-      echo $jsonp.' ( ';
+      $str .= $jsonp.' ( ';
     }
     
-    echo json_encode($data,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
+    $str .=  json_encode($data,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
     
     if(strlen($jsonp)>0) {
-      echo ' ); ';
+      $str .=  ' ); ';
     }
+    echo $str;
+    return $str;
   }
   /**
    * 返回错误信息数据的快捷函数
@@ -35,7 +37,7 @@ class API{
    * @author Laolin 
   */
   public static function msg( $code, $msg='',$jsonp='') {
-      API::json( [ 'err_code'=> $code , 'msg'=> $msg ],$jsonp);
+      return API::json( [ 'err_code'=> $code , 'msg'=> $msg ],$jsonp);
   }
   
   //获取数据库对象, 如果没有初始化则会自动初始化。

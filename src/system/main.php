@@ -36,8 +36,7 @@ if( file_exists(api_g('path-web').'/index.config.php' )) {
 } else if( file_exists(api_g('path-sys').'/index.config.php' )) {
   require_once api_g('path-sys').'/index.config.php';
 } else {
-    API::msg(1001,"Error config");
-    return;
+    return API::msg(1001,"Error config");
 }
 
 require_once api_g('path-sys').'/include/include.all.php';
@@ -57,8 +56,7 @@ function main() {
   var_dump($_SERVER);
   
   if($api==''){
-    API::msg(0,"API is ready.");
-    return;
+    return API::msg(0,"API is ready.");
   }
   if($call==''){
     $call='main';//默认函数名
@@ -69,19 +67,16 @@ function main() {
   if( ! file_exists($api_file )) {
     $api_file=api_g('path-api')."/api_$api.php";//找不到，就到系统的api目录下找
     if( ! file_exists($api_file )) {
-      API::msg(2001,"Error load api:$api");//再找不到就出错。
-      return;
+      return API::msg(1101,"Error load api:$api");//再找不到就出错。
     }
   }
   require_once api_g('path-api') . "/api_$api.php";
   $C="class_$api";
   if(! class_exists($C) ) {
-    API::msg(2002,"class not exists $C");
-    return;
+    return API::msg(1102,"class not exists $C");
   }
   if(! method_exists($C,$call) ) {
-    API::msg(2003,"method not exists $C.$call");
-    return;
+    return API::msg(1103,"method not exists $C.$call");
   }
   $data=$C::$call();
   if(SHOW_DEBUG_INFO){
