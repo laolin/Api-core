@@ -3,7 +3,7 @@
 # 代码使用说明
 
 ## `src目录`
-源代码目录下的src目录，称之为`src目录`
+源代码目录下的`src`目录，称之为`src目录`
 `src目录`目录下有3个文件:
 - `index.php`
 - `index.config.php`
@@ -23,9 +23,12 @@
 可实现修改配置而不用修改git原代码目录里的文件。
 
 ## api的URI格式
-API_ROOT_PATH/$api/$call/?xxxxxx
-RewriteRule ^([a-zA-Z]\w+)/([a-zA-Z]\w+)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]
+`API_ROOT_PATH/$api/$call/?xxxxxx`
+
+`RewriteRule ^([a-zA-Z]\w+)/([a-zA-Z]\w+)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]`
+
 $1:$api
+
 $2:$call
 
 ## api对应的php文件
@@ -35,8 +38,11 @@ $2:$call
 
 ## api URI和php文件的对应
 要求：
+
 php文件名：`"/api_$api.php"`
+
 类名：`"class_$api"`
+
 函数：`public static function $call() {}`
 
 
