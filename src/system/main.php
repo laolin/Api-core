@@ -80,6 +80,8 @@ function main() {
   }
   $data=$C::$call();
   if(SHOW_DEBUG_INFO){
+    api_g("DBUSER",'***');
+    api_g("DBPASS",'***');
     $data[API_G_KEY]=$GLOBALS[API_G_KEY];
   }
   API::json($data);
