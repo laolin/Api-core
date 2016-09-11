@@ -55,7 +55,7 @@ function main() {
   //var_dump($_SERVER);
   
   if($api==''){
-    return API::msg(0,"API is ready.");
+    return API::msg(1002,"Please specify a valid API.");
   }
   if($call==''){
     $call='main';//默认函数名
