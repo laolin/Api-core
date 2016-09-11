@@ -69,6 +69,7 @@ function main() {
       return API::msg(1101,"Error load api:$api");//再找不到就出错。
     }
   }
+  api_g('DBG_api-file',$api_file);
   require_once $api_file;
   $C="class_$api";
   if(! class_exists($C) ) {
