@@ -34,10 +34,20 @@ class API{
    *
    * @param string $msg 错误信息。
    *
+   * @param object &$param 默认null，当指定此参数时，是个*引用传递*
+   *   会把错误代码、错误信息直接写到此变量中。
+   *
+   * @return object 如果指定了第三个参数 $param ，则返回 $param 
+   *    否则返回一个新的数组。
    * @author Laolin 
   */
-  public static function msg( $code, $msg='',$jsonp='') {
-      return API::json( [ 'err_code'=> $code , 'msg'=> $msg ],$jsonp);
+  public static function msg( $code, $msg='',&$param = null) {
+    if ( $param == null ) {
+      return [ 'err_code'=> $code , 'msg'=> $msg ];
+    }
+    $param['err_code']= $code;
+    $param['msg']= $msg;
+    return $param;
   }
   
   //获取数据库对象, 如果没有初始化则会自动初始化。

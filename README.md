@@ -61,7 +61,7 @@ php文件名：`"/api_$api.php"`
 
 
 ## `API::msg`
-`API::msgmsg( $code, $msg='',$jsonp='')`是json的一个快捷函数。
+`API::msg( $code, $msg='',&$param = null)`是用于统一输出err_code格式的函数。
 
 ## `API::db`
 `API::db()`返回一个能用的`medoo`数据库对象。
