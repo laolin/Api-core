@@ -23,12 +23,16 @@
 可实现修改配置而不用修改git原代码目录里的文件。
 
 ## api的URI格式
-`API_ROOT_PATH/$api/$call/?xxxxxx`
+`API_ROOT_PATH/`api`/`call`/`para1`/`para2·/?xxxxxx`
+
+`api`是类名，不能缺省
+`call`是函数名， 缺省时，默认为`main`
+`para1`和`para2`是2个可选的参数，格式是`[-,\w]+`
 
 ## api对应的php文件
 在`.htaccess`定义规则：
 
-`RewriteRule ^([a-zA-Z]\w*)/([a-zA-Z]\w*)$ index.php?api=$1&call=$2&%{QUERY_STRING}	[L]`
+`RewriteRule ^(index.php/)?([a-zA-Z]\w*)/([a-zA-Z]\w*)(/([-,\w]+))?(/([-,\w]+))?(/)?$ index.php?api=$2&call=$3&__para1=$5&__para2=$7&%{QUERY_STRING}	[L]`
 
 $1:$api
 

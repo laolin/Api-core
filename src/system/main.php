@@ -3,7 +3,10 @@ define ('API_G_KEY', 'api-wx-wp-cfg');
 define ('API_G_VALUE_NEVER_USED', 'api-ww-cfgru123wq-0913QJ41qrjPOUU^&(*JKQWWAASDIQWU');
 $GLOBALS[API_G_KEY]=[];
 date_default_timezone_set('Asia/Hong_Kong');
-if(!defined('SHOW_DEBUG_INFO'))
+
+if( isset($_GET['debug']) )
+  define('SHOW_DEBUG_INFO',1);
+else
   define('SHOW_DEBUG_INFO',0);
 
 
@@ -50,6 +53,8 @@ function main() {
   
   $api=isset($_GET['api'])?trim($_GET['api']):'';//TODO: 这里需要验证合法文件名
   $call=isset($_GET['call'])?trim($_GET['call']):'';//TODO: 这里需要验证合法函数名
+  $para1=isset($_GET['__para1'])?trim($_GET['__para1']):'';
+  $para2=isset($_GET['__para2'])?trim($_GET['__para2']):'';
   
   //echo " [ api=$api,call=$call ] <pre>";
   //var_dump($_SERVER);
@@ -78,7 +83,7 @@ function main() {
   if(! method_exists($C,$call) ) {
     return API::json(API::msg(1103,"method not exists $C.$call"));
   }
-  $data=$C::$call();
+  $data=$C::$call($para1,$para2);
   if(SHOW_DEBUG_INFO){
     api_g("DBUSER",'***');
     api_g("DBPASS",'***');
