@@ -3,8 +3,8 @@
 
 //111111111111111111111111111
 class API{
-  public static function json($data,$jsonp='') {
-    if( !headers_sent() ) {
+  public static function json($data,$jsonp='',$disp=true) {
+    if( $disp && !headers_sent() ) {
       if(strlen($jsonp) == 0 && isset($_REQUEST['callback']) && strlen($_REQUEST['callback'])>0)
         $jsonp=$_REQUEST['callback'];
       if(strlen($jsonp)>0)
@@ -24,7 +24,7 @@ class API{
     if(strlen($jsonp)>0) {
       $str .=  ' ); ';
     }
-    echo $str;
+    if($disp)echo $str;
     return $str;
   }
   /**
@@ -43,17 +43,39 @@ class API{
   */
   public static function msg( $code, $msg='',&$param = null) {
     if ( $param == null ) {
-      return [ 'err_code'=> $code , 'msg'=> $msg ];
+      return [ 'errcode'=> $code , 'msg'=> $msg ];
     }
-    $param['err_code']= $code;
+    $param['errcode']= $code;
     $param['msg']= $msg;
     return $param;
   }
-  
+  public static function is_error($msg)  {
+    if(!isset($msg['errcode']))return -1;
+    return $msg['errcode'];
+  }
+  public static function dump($v,$info=''){
+    if(! SHOW_DEBUG_INFO ) return;
+    echo "<hr/><h3>$info</h3><pre>";var_dump($v);echo '</pre>';
+  }
+
   //获取数据库对象, 如果没有初始化则会自动初始化。
   public static function db() {
     $d=api_g('db');
     return $d || api_g('db', new laolinDb());
+  }
+  
+  public static function GET($key) {
+    return isset($_GET[$key])?trim($_GET[$key]):false;
+  }
+  public static function POST($key) {
+    return isset($_POST[$key])?trim($_POST[$key]):false;
+  }
+  
+  //比$_REQUEST更通用，当用 PUT 或  DELETE 或 跨域时 数据也能获取
+  public static function INP($key) {
+    if(isset($_GET[$key]) ) return trim($_GET[$key]);
+    $ip=self::input();
+    return isset($ip[$key])?trim($ip[$key]):false;
   }
   
   //非 GET 方式 （POST, PUT, DELETE方式）的数据获取

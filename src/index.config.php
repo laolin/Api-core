@@ -6,4 +6,8 @@ api_g("DBPORT",3306);
 api_g("DBUSER",'test_user');
 api_g("DBPASS",'test_passwd');
 
+api_g("path-wp",$_SERVER['DOCUMENT_ROOT'] . '/wordpress-cn');
+api_g("WX_APPID",'');
+api_g("WX_APPSEC",'');
+
 api_g('-cfg file--',__FILE__);

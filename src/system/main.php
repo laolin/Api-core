@@ -56,6 +56,9 @@ function main() {
   $para1=isset($_GET['__para1'])?trim($_GET['__para1']):'';
   $para2=isset($_GET['__para2'])?trim($_GET['__para2']):'';
   
+  
+  api_g('api',"/$api/$call/$para1/$para2");
+  
   //echo " [ api=$api,call=$call ] <pre>";
   //var_dump($_SERVER);
   

@@ -47,7 +47,7 @@ php文件名：`"/api_$api.php"`
 
 类名：`"class_$api"`
 
-函数：`public static function $call() {}`
+函数：`public static function $call($para1,$para2)`
 
 # 辅助函数
 
