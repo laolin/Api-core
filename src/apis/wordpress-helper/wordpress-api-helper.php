@@ -37,7 +37,7 @@ class WAPI{
     $re=wp_authenticate($user,$pass);
     //$msg['login']=$re;
     if(is_wp_error($re))
-      return $msg(1101,'Error login.',$msg);
+      return API::msg(1101,'Error login.',$msg);
     $uid=$re->ID;
     
     $tok=self::__token_gen($uid);
