@@ -61,7 +61,7 @@ class API{
   //获取数据库对象, 如果没有初始化则会自动初始化。
   public static function db() {
     $d=api_g('db');
-    return $d || api_g('db', new laolinDb());
+    return $d ? $d : api_g('db', new laolinDb());
   }
   
   public static function GET($key) {
