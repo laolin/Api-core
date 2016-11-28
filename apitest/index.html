@@ -33,6 +33,7 @@
   <script src='http://lib.sinaapp.com/js/bootstrap/3.0.0/js/bootstrap.min.js'></script -->
   <script src='/static/js/jquery-1.8.0.min.js'></script>  
   <script src='/static/js/bootstrap.min.js'></script>  
+  <script src='md5-min.js'></script>  
 
   
   </head>
@@ -56,13 +57,17 @@
 </div>
 <div class="container">
   <div class="row">
-    <div class="col-lg-4">
+    <div class="col-lg-4 col-sm-4">
       <div class="panel panel-primary">
         <div class="panel-heading">Api</div>
         <div class="panel-body">
           <ul class="list-group">
-            <li class="list-group-item">Path:<input name='path' value='../src'></li>
-            <li class="list-group-item">API :<input name='api' value='/hello/world'></li>
+            <li class="list-group-item">Svr:<input name='path' value='http://127.0.0.1'>
+                API:<input name='api' value=''></li>
+            
+            <li class="list-group-item">uid:<input name='uid' value='1'> 
+             token :<input name='token' value=''> 
+            <li class="list-group-item">sign:<input name='wp_signature' value=''></li>
             <li class="list-group-item"><textarea name='data' rows='6'>{
 "page":0,
 "perpage":20,
@@ -78,12 +83,13 @@
               <a class="btn btn-success" onclick='apiGet()'>GET</a> 
               <a class="btn btn-primary" onclick='apiPost()'>POST</a>
               <a class="btn btn-info" onclick='apiPut()'>PUT</a>
-              <a class="btn btn-danger" onclick='apiDelete()'>DELETE</a></li>
+              <a class="btn btn-danger" onclick='apiDelete()'>DELETE</a>
+              <a class="btn btn-danger" onclick='apiJsonp()'>跨域（固定GET方式）</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <div class="col-lg-8">
+    <div class="col-lg-8 col-sm-8">
       <div class="panel panel-info">
     
         <div class="panel-heading">Api Result: <a class='label label-info' id='api-status'>NO Result</a></div>
@@ -99,10 +105,23 @@
      
      
 <script>
+
+$(function(){
+
+  var uri = window.location.pathname.split("/");
+  uri.pop(); // remove the filename
+  uri.pop(); // remove the containing directory
+  uri.push("src");
+  $('[name=api]')[0].value=uri.join("/")+"/hello/world";
+})
+
+
+
 function apiGet() { ajax('GET'); }
 function apiPut() { ajax('PUT'); }
 function apiPost() { ajax('POST'); }
 function apiDelete() { ajax('DELETE'); }
+function apiJsonp() { ajax('JSONP'); }
 
 function ajax(type) {
 
@@ -111,21 +130,40 @@ function ajax(type) {
   $("#api-method").html('Method: ' + type);
   $("#api-url").html('url: '+ url);
   $("#api-result-content").html(' ');
-  data=JSON.parse($('[name=data]')[0].value);//
+  data=autodata();//
+  if(type=='JSONP')dataType='jsonp';
+  else dataType='json';
   $.ajax({
     type: type,
     url: url,
     data: data,
+	dataType : dataType ,
+	jsonp : 'callback',
     success: function(data,status,xhr){
       console.log(data);
       $("#api-status").html(status);
-      $("#api-result-content").html('result objecct: [see console]<pre>'+xhr.responseText+'</pre>');
+      $("#api-result-content").html('result objecct: [see console]<pre>'+JSON.stringify(data, null, ' ')+'</pre>');
     }
   });
 }
+function autodata(){
+
+  dt=new Date()
+  tim=Math.round( (dt.getTime()/1000)) - 8*3600 - dt.getTimezoneOffset()*60;//修正为东8区
+            
+  dat=JSON.parse($('[name=data]')[0].value);
+  
+  api= $('[name=api]')[0].value;//这里要求 api的写法 是标准的
+  dat.uid=uid=$('[name=uid]')[0].value;
+  dat.timestamp= tim;
+  tok=$('[name=token]')[0].value;
+  $('[name=wp_signature]')[0].value=dat.wp_signature=hex_md5(tok + tim + api);
+  
+  return dat;
+}
 </script>
      
-     
+   
       <!-- FOOTER -->
       <footer id="footer">
         <p>LaoLin  &middot;  &copy; 2014 <a href="http://laolin.com/" target="_blank">LaoLin.com</a> </p>
