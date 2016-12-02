@@ -9,6 +9,11 @@ class class_hello{
     public static function main($para1,$para2) {
       return self::world($para1,$para2);
     }
+    public static function ip() {
+      $res=API::msg(0,'Ok.');
+      $res['ip']=$_SERVER['REMOTE_ADDR'];
+      return $res;
+    }
     public static function world($para1,$para2) {
       $method=$_SERVER['REQUEST_METHOD'];;
       $res=['Welcome'=> "Hello, world!",
