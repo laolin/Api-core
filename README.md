@@ -1,4 +1,36 @@
-﻿
+﻿# API使用说明
+
+## /hello 用于测试
+
+### /hello/ip 可利用来在客户端中实现javascript获取用户IP的功能
+
+## /wxjsapi 用于微信的jsapi的服务端签名
+注意，这个API需要：1，数据库；2，WXAPP资料。
+故需要在index.config.php中正确定义数据库，定义APPID和APPSEC。
+然后按下表创建数据库
+```
+CREATE TABLE IF NOT EXISTS `wx_cache_01` (
+  `id` int(11) NOT NULL,
+  `appid` varchar(26) NOT NULL,
+  `appsecrect` varchar(42) DEFAULT NULL,
+  `appdisc` varchar(64) NOT NULL,
+  `apptype` varchar(32) DEFAULT NULL,
+  `access_token` varchar(255) DEFAULT NULL,
+  `jsapi_ticket` varchar(255) DEFAULT NULL,
+  `expire_time` int(11) DEFAULT NULL,
+  `ext` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `wx_cache_01`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `appid` (`appid`);
+
+INSERT INTO `wx_cache_01` (`id`, `appid`, `appsecrect`, `appdisc`, `apptype`, `access_token`, `jsapi_ticket`, `expire_time`, `ext`) VALUES
+(1, 'wx3dd28920a07c53de', '', '老林', '个人', '', '', 1481214466, 0);
+
+```
+
+
 
 # 代码使用说明
 
@@ -63,7 +95,7 @@ php文件名：`"/api_$api.php"`
 
 
 ## `API::msg`
-`API::msg( $code, $msg='',&$param = null)`是用于统一输出err_code格式的函数。
+`API::msg( $code=0, $msg='Ok.',&$param = null)`是用于统一输出err_code格式的函数。
 
 ## `API::db`
 `API::db()`返回一个能用的`medoo`数据库对象。
