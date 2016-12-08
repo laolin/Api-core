@@ -41,7 +41,7 @@ class API{
    *    否则返回一个新的数组。
    * @author Laolin 
   */
-  public static function msg( $code, $msg='',&$param = null) {
+  public static function msg( $code=0, $msg='Ok.',&$param = null) {
     if ( $param == null ) {
       return [ 'errcode'=> $code , 'msg'=> $msg ];
     }
