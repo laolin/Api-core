@@ -90,6 +90,7 @@ function main() {
   if(SHOW_DEBUG_INFO){
     api_g("DBUSER",'***');
     api_g("DBPASS",'***');
+    api_g("WX_APPSEC",'***');
     $data[API_G_KEY]=$GLOBALS[API_G_KEY];
   }
   API::json($data);
