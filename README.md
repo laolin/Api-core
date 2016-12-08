@@ -31,6 +31,32 @@ INSERT INTO `wx_cache_01` (`id`, `appid`, `appsecrect`, `appdisc`, `apptype`, `a
 ```
 
 
+客户端使用API的方法（利用jQuery） 
+```
+  url=location.href.split('#')[0];
+  api='http://linjp.cn/api/wxjsapi?callback=?';//API的实际地址
+  $.getJSON( api, {
+    url:url
+  }).done(function( data ) {
+    console.log(data)
+    wx.config({
+      debug: true,
+      appId: data.sign.appId,
+      timestamp: data.sign.timestamp,
+      nonceStr: data.sign.nonceStr,
+      signature: data.sign.signature,
+      jsApiList: [
+        // 所有要调用的 API 都要加到这个列表中
+        'uploadImage'
+      ]
+    });
+  });
+  
+  wx.ready(function () {
+    // 在这里调用 API
+  });
+  
+```
 
 # 代码使用说明
 
