@@ -71,12 +71,20 @@ function main() {
     $call='main';//默认函数名
   }
     
-  //优先在web目录下的apis/目录下找文件
-  $api_file=api_g('path-web')."/apis/api_$api.php";
-  if( ! file_exists($api_file )) {
-    $api_file=api_g('path-api')."/api_$api.php";//找不到，就到系统的api目录下找
+  //s1，如果有指定，就最先在指定的目录下找文件
+  $path_apis=api_g("path-apis");
+  if(isset($path_apis[$api])) {
+    $api_file=api_g('path-web').$path_apis[$api]."/api_$api.php";
     if( ! file_exists($api_file )) {
-      return API::json(API::msg(1101,"Error load api:$api"));//再找不到就出错。
+        return API::json(API::msg(1104,"Error api filepath api=$api"));//再找不到就出错。
+    }
+  } else { //s2, 没指定，优先在web目录下的apis/目录下找文件
+    $api_file=api_g('path-web')."/apis/api_$api.php";
+    if( ! file_exists($api_file )) {
+      $api_file=api_g('path-api')."/api_$api.php";//s3, 找不到，就到系统的api目录下找
+      if( ! file_exists($api_file )) {
+        return API::json(API::msg(1101,"Error load api:$api"));//再找不到就出错。
+      }
     }
   }
   api_g('DBG_api-file',$api_file);

@@ -10,4 +10,7 @@ api_g("path-wp",$_SERVER['DOCUMENT_ROOT'] . '/wordpress-cn');
 api_g("WX_APPID",'');
 api_g("WX_APPSEC",'');
 
+//开头要有'/'，结束不能有'/'，从 index.php 所在路径相对计算
+api_g("path-apis",['happy'=>'/../../api-qgs-shops/src']);
+
 api_g('-cfg file--',__FILE__);
