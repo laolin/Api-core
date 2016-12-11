@@ -39,7 +39,9 @@ if( file_exists(api_g('path-web').'/index.config.php' )) {
 } else if( file_exists(api_g('path-sys').'/index.config.php' )) {
   require_once api_g('path-sys').'/index.config.php';
 } else {
-    return API::json(API::msg(1001,"Error config"));
+  //这里由于在 include/include.all.php 之前，所以其实API是不能用的
+  //return API::json(API::msg(1001,"Error config"));
+  return json_encode(['errcode'=> 1001,'msg'=>'Error config'],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
 }
 
 require_once api_g('path-sys').'/include/include.all.php';
