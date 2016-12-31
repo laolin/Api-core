@@ -73,10 +73,15 @@ function main() {
     
   //s1，如果有指定，就最先在指定的目录下找文件
   $path_apis=api_g("path-apis");
-  if(isset($path_apis[$api])) {
-    $api_file=api_g('path-web').$path_apis[$api]."/api_$api.php";
-    if( ! file_exists($api_file )) {
-        return API::json(API::msg(1104,"Error api filepath api=$api"));//再找不到就出错。
+  if(count($path_apis)>0) {
+    for($i=count($path_apis);$i--; ) {
+      if(in_array($api,$path_apis[$i]['apis'])) {
+        $api_file=api_g('path-web').$path_apis[$i]['path']."/api_$api.php";
+        if( ! file_exists($api_file )) {
+          return API::json(API::msg(1105,"Error api filepath api=$api"));//找不到就出错。
+        }
+        break;
+      }
     }
   } else { //s2, 没指定，优先在web目录下的apis/目录下找文件
     $api_file=api_g('path-web')."/apis/api_$api.php";

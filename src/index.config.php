@@ -11,6 +11,9 @@ api_g("WX_APPID",'');
 api_g("WX_APPSEC",'');
 
 //开头要有'/'，结束不能有'/'，从 index.php 所在路径相对计算
-api_g("path-apis",['happy'=>'/../../api-qgs-shops/src']);
+api_g("path-apis",[
+    ['apis'=>['foot','mzapi'],'path'=>'/../../api-qgs-shops/src'],
+    ['apis'=>['happy'],'path'=>'/../../api-bak']
+  ]);
 
 api_g('-cfg file--',__FILE__);
