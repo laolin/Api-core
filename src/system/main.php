@@ -83,7 +83,8 @@ function main() {
         break;
       }
     }
-  } else { //s2, 没指定，优先在web目录下的apis/目录下找文件
+  }
+  if(! $api_file) { //s2, 没指定，优先在web目录下的apis/目录下找文件
     $api_file=api_g('path-web')."/apis/api_$api.php";
     if( ! file_exists($api_file )) {
       $api_file=api_g('path-api')."/api_$api.php";//s3, 找不到，就到系统的api目录下找
