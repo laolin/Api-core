@@ -73,6 +73,7 @@ function main() {
     
   //s1，如果有指定，就最先在指定的目录下找文件
   $path_apis=api_g("path-apis");
+  $api_file=false;
   if(count($path_apis)>0) {
     for($i=count($path_apis);$i--; ) {
       if(in_array($api,$path_apis[$i]['apis'])) {
