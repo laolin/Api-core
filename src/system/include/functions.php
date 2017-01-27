@@ -49,6 +49,9 @@ class API{
     $param['msg']= $msg;
     return $param;
   }
+  public static function data($data, $code=0, $msg='Ok.') {
+    return ['data'=>$data, 'errcode'=> $code , 'msg'=> $msg ];
+  }
   public static function is_error($msg)  {
     if(!isset($msg['errcode']))return -1;
     return $msg['errcode'];
