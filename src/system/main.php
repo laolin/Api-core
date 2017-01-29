@@ -61,6 +61,23 @@ function main() {
   
   api_g('api',"/$api/$call/$para1/$para2");
   
+  if(strtolower($_SERVER['REQUEST_METHOD']) == 'post')$query = &$_POST;
+  else $query = &$_GET;
+  $uid = isset($query['uid'])?$query['uid']:0;
+  
+  //add api log
+  $db=API::db();
+  $tbl_prefix=api_g("api-table-prefix");
+  //由于旧版没有这个设置，故要做个默认值
+  if(!$tbl_prefix)$tbl_prefix='api_tbl_';
+  $tbl_log=$tbl_prefix.'log';
+	$require_id = $db->insert($tbl_log, 
+    ["uid"=>$uid,
+    "api"=>"/$api/$call/$para1/$para2",
+    "host"=>$_SERVER['REMOTE_ADDR'], 
+    "get"=>json_encode($_GET, JSON_UNESCAPED_UNICODE), 
+    "post"=>json_encode(API::input(), JSON_UNESCAPED_UNICODE)]);
+  
   //echo " [ api=$api,call=$call ] <pre>";
   //var_dump($_SERVER);
   
