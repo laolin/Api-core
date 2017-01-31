@@ -59,8 +59,8 @@ function main() {
   
   $data=[];
   
-  $api=isset($_GET['api'])?trim($_GET['api']):'';//TODO: 这里需要验证合法文件名
-  $call=isset($_GET['call'])?trim($_GET['call']):'';//TODO: 这里需要验证合法函数名
+  $api=isset($_GET['api'])?trim($_GET['api']):'';
+  $call=isset($_GET['call'])?trim($_GET['call']):'';
   $para1=isset($_GET['__para1'])?trim($_GET['__para1']):'';
   $para2=isset($_GET['__para2'])?trim($_GET['__para2']):'';
   
@@ -68,11 +68,14 @@ function main() {
   api_g('api',"/$api/$call/$para1/$para2");
   
   
-  if($api==''){
+  if($api==''  || ! preg_match('/^[a-zA-Z_][a-zA-Z\d_]{0,127}$/i', $api) ){
     return API::json(API::msg(1002,"Please specify a valid API."));
   }
   if($call==''){
     $call='main';//默认函数名
+  }
+  if(! preg_match('/^[a-zA-Z_][a-zA-Z\d_]{0,127}$/i', $call)){
+    return API::json(API::msg(1003,"Please specify a valid method."));
   }
     
   //s1，如果有指定，就最先在指定的目录下找文件
