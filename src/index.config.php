@@ -11,6 +11,8 @@ api_g("WX_APPID",'');
 api_g("WX_APPSEC",'');
 
 api_g("api-table-prefix",'api_tbl_');
+api_g("usr-salt",['version'=>'ab','salt'=>'api_salt-laolin@&*']);
+
 
 //开头要有'/'，结束不能有'/'，从 index.php 所在路径相对计算
 api_g("path-apis",[
