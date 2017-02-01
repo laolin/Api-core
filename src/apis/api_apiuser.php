@@ -3,20 +3,15 @@
 /*
 */
 
-class class_user{
+class class_apiuser{
   public static function main( $para1,$para2) {
     $res=API::data(['time'=>time()]);
     return $res;
   }
   
-  //test
   public static function test( ) {
-    $uid=API::INP('uid');
-    $tokenid=API::INP('tokenid');
-    $timestamp=API::INP('timestamp');
-    $sign=API::INP('api_signature');
     
-    $r=USER::signVerify($uid,$tokenid,$timestamp,$sign);
+    $r=USER::userVerify();
     return API::data($r);
   }
   

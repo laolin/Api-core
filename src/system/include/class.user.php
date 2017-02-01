@@ -4,7 +4,7 @@
  *  USER::exist( $uname )
  *  USER::reg( $uname,$upass,$ver='ab' )
  *  USER::login( $uid,$uname,$upass )
- *  USER::signVerify( $uid,$tokenid,$timestamp,$sign )
+ *  USER::userVerify( )
  */
 
 class USER{
@@ -97,7 +97,7 @@ class USER{
   
     //先 根据 id 登录
     //没有 id 时，再使用 uname
-    if(strlen($upass) != 32) {
+    if(strlen($upass) != 35) {
       return API::msg(702,'Error passwd format. ');
     }
     if ($uid) {
@@ -111,7 +111,7 @@ class USER{
       return API::msg(704,'User Not Exist.');
     }
      
-    if($upass != substr($p_right['upass'],3)) { //数据库密码前3个字符用于表示版本号
+    if($upass !=  $p_right['upass']) { //数据库密码前3个字符用于表示版本号
       return API::msg(705,'Passwd mismatch.');
     }
     if (! $uid) {
@@ -124,7 +124,14 @@ class USER{
     return API::data(['uid'=>$uid,'uname'=>$p_right['uname'],'token'=>$tok, 'tokenid'=>$tokenid]);
   }
 
- 
+  public static  function userVerify( ) {
+    $uid=API::INP('uid');
+    $tokenid=API::INP('tokenid');
+    $timestamp=API::INP('timestamp');
+    $sign=API::INP('api_signature');
+    if( ! $uid || ! $tokenid || ! $timestamp || ! $sign )return false;
+    return self::_signVerify( $uid,$tokenid,$timestamp,$sign );
+  } 
 
 
   /**
@@ -134,7 +141,7 @@ class USER{
    *  服务器
    */
   
-  public static  function signVerify( $uid,$tokenid,$timestamp,$sign ) {
+  static  function _signVerify( $uid,$tokenid,$timestamp,$sign ) {
     //api_g('dbg-_signVerify',"$uid,$tokenid,$timestamp,$sign");
     if( ! $uid || ! $tokenid || ! $timestamp || ! $sign )return false;
     if( abs($timestamp-time()>300))return false;//仅允许5分钟以内的时间差
