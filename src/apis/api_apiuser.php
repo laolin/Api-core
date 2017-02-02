@@ -70,7 +70,15 @@ class class_apiuser{
     
     return USER::login( $uid,$uname,$upass );
   }
-
+  public static function changeupass( ) {
+    if( !USER::userVerify( )) {
+      return API::msg(2001,'Error verify token.');
+    }
+    $uv=api_g('userVerify');
+    $uid=$uv['uid'];
+    $newupass=API::INP('newupass');
     
-
+    return USER::changeUpass( $uid,$newupass );
+  }
+    
 }

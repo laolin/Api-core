@@ -2,9 +2,13 @@
 // ================================
 /**
  *  USER::exist( $uname )
- *  USER::reg( $uname,$upass,$ver='ab' )
+ *  USER::reg( $uname,$upass )
  *  USER::login( $uid,$uname,$upass )
+ *  USER::changUpass( $uid,$newupass );
  *  USER::userVerify( )
+ *  
+ *  USER::__ADMIN_addUser($uname,$upass);
+ *  USER::__ADMIN_changUpass( $uid,$newupass );
  */
 
 class USER{
@@ -40,7 +44,6 @@ class USER{
     注册成功后，返回用户的 uid
   */
   public static function reg( $uname,$upass ) {
-    $db=API::db();
     
     $salt_srv=api_g("usr-salt");
     
@@ -71,6 +74,10 @@ class USER{
     if(strlen($err)) {
       return API::msg(600,$err);
     }
+    return self::__ADMIN_addUser($uname,$upass);
+  }
+  public static function __ADMIN_addUser( $uname,$upass='ab:xx' ) {
+    $db=API::db();
     $prefix=api_g("api-table-prefix");
     
     $r=$db->insert($prefix.'user',
@@ -123,6 +130,26 @@ class USER{
     self::_tokSave($uid,$tokenid,$tok);
     return API::data(['uid'=>$uid,'uname'=>$p_right['uname'],'token'=>$tok, 'tokenid'=>$tokenid]);
   }
+  
+  public static function changeUpass( $uid,$newupass ) {
+    if( !self::userVerify( )) {
+      return API::msg(2001,'Error verify token.');
+    }
+    if(strlen($newupass) != 35) {
+      return API::msg(702,'Error passwd format. ');
+    }
+    return self::__ADMIN_changeUpass( $uid,$newupass );
+  }
+  public static function __ADMIN_changeUpass( $uid,$newupass ) {
+
+    $db=API::db();
+    $prefix=api_g("api-table-prefix");
+    $r=$db->update($prefix.'user',
+      ['upass'=>$newupass],
+      ['and'=>['uid'=>$uid],'limit'=>1]);
+    return API::data($r);
+
+  }
 
   public static  function userVerify( ) {
     $uid=API::INP('uid');
@@ -154,7 +181,7 @@ class USER{
     $sign_srv=md5($api.$call.$uid.$token.$timestamp);
     $ok= $sign_srv == $sign;
     if($ok) {
-      api_g('_signVerify',['api'=>$api,'call'=>$call,'uid'=>$uid,//'token'=>$token,
+      api_g('userVerify',['api'=>$api,'call'=>$call,'uid'=>$uid,//'token'=>$token,
         'timestamp'=>$timestamp,'sign'=>$sign]);
     }
     return $ok;
