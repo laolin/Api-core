@@ -130,7 +130,7 @@ class USER{
 
     $tokenid=1;//目前都是1，即每用户只有一个token，以后允许多tok
     $newToken = self::__ADMIN_addToken($uid,$tokenid);
-    $newToken['uname']=>$p_right['uname'];
+    $newToken['uname']=$p_right['uname'];
     return API::data($newToken);
   }
   public static function __ADMIN_addToken($uid,$tokenid) {
