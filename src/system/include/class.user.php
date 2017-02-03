@@ -1,13 +1,16 @@
 <?php
 // ================================
 /**
- *  USER::exist( $uname )
- *  USER::reg( $uname,$upass )
+ *  USER::exist( $uname ); 判断用户是否存在
+ *  
+ *  USER::userVerify( ); 用在API运行前验证确认用户身份
+ *  
+ *  USER::reg( $uname,$upass );
  *  USER::login( $uid,$uname,$upass )
  *  USER::changUpass( $uid,$newupass );
- *  USER::userVerify( )
  *  
  *  USER::__ADMIN_addUser($uname,$upass);
+ *  USER::__ADMIN_addToken($uid,$tokenid);
  *  USER::__ADMIN_changUpass( $uid,$newupass );
  */
 
@@ -126,6 +129,9 @@ class USER{
     }
 
     $tokenid=1;//目前都是1，即每用户只有一个token，以后允许多tok
+    return self::::__ADMIN_addToken($uid,$tokenid);
+  }
+  public static function __ADMIN_addToken($uid,$tokenid) {
     $tok=self::_tokGen($uid,$tokenid);
     self::_tokSave($uid,$tokenid,$tok);
     return API::data(['uid'=>$uid,'uname'=>$p_right['uname'],'token'=>$tok, 'tokenid'=>$tokenid]);
@@ -151,6 +157,12 @@ class USER{
 
   }
 
+  /**
+   *  验证签名
+   *  sign = hex_md5(api+call+uid+token+timestamp)
+   *  其中 token 客户端不用传给服务器，只需要传tokenid
+   *  服务器
+   */
   public static  function userVerify( ) {
     $uid=API::INP('uid');
     $tokenid=API::INP('tokenid');
@@ -159,15 +171,6 @@ class USER{
     if( ! $uid || ! $tokenid || ! $timestamp || ! $sign )return false;
     return self::_signVerify( $uid,$tokenid,$timestamp,$sign );
   } 
-
-
-  /**
-   *  验证签名
-   *  sign = hex_md5(api+call+uid+token+timestamp)
-   *  其中 token 客户端不用传给服务器，只需要传tokenid
-   *  服务器
-   */
-  
   static  function _signVerify( $uid,$tokenid,$timestamp,$sign ) {
     //api_g('dbg-_signVerify',"$uid,$tokenid,$timestamp,$sign");
     if( ! $uid || ! $tokenid || ! $timestamp || ! $sign )return false;
@@ -265,7 +268,7 @@ class USER{
     
     $day=0+date('ymd',time() );
     
-    return "$tokenid-$salt_ver-$uid-$day-$str";
+    return "$tokenid~$uid~$day~$salt_ver~$str";
   }
   static  function _tokGet($uid,$tokenid) {
     $db=API::db();
