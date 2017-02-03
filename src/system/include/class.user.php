@@ -129,12 +129,14 @@ class USER{
     }
 
     $tokenid=1;//目前都是1，即每用户只有一个token，以后允许多tok
-    return self::__ADMIN_addToken($uid,$tokenid);
+    $newToken = self::__ADMIN_addToken($uid,$tokenid);
+    $newToken['uname']=>$p_right['uname'];
+    return API::data($newToken);
   }
   public static function __ADMIN_addToken($uid,$tokenid) {
     $tok=self::_tokGen($uid,$tokenid);
     self::_tokSave($uid,$tokenid,$tok);
-    return API::data(['uid'=>$uid,'uname'=>$p_right['uname'],'token'=>$tok, 'tokenid'=>$tokenid]);
+    return ['uid'=>$uid,'token'=>$tok, 'tokenid'=>$tokenid];
   }
   
   public static function changeUpass( $uid,$newupass ) {
