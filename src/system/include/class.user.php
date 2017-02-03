@@ -129,7 +129,7 @@ class USER{
     }
 
     $tokenid=1;//目前都是1，即每用户只有一个token，以后允许多tok
-    return self::::__ADMIN_addToken($uid,$tokenid);
+    return self::__ADMIN_addToken($uid,$tokenid);
   }
   public static function __ADMIN_addToken($uid,$tokenid) {
     $tok=self::_tokGen($uid,$tokenid);
