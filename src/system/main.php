@@ -171,6 +171,7 @@ function main() {
     api_g("DBUSER",'***');
     api_g("DBPASS",'***');
     api_g("WX_APPSEC",'***');
+    api_g("WX_APPS",'***');
     $data[API_G_KEY]=$GLOBALS[API_G_KEY];
   }
   return API::json($data);
