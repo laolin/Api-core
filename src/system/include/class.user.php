@@ -270,7 +270,7 @@ class USER{
     
     $day=0+date('ymd',time() );
     
-    return "$tokenid~$uid~$day~$salt_ver~$str";
+    return "$uid~$day~$salt_ver~$str";
   }
   static  function _tokGet($uid,$tokenid) {
     $db=API::db();
