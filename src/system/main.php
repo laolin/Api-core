@@ -3,10 +3,6 @@ define ('API_G_KEY', 'api-wx-wp-cfg');
 define ('API_G_VALUE_NEVER_USED', 'api-ww-cfgru123wq-0913QJ41qrjPOUU^&(*JKQWWAASDIQWU');
 
 
-define ('API_G_TOKEN_BUCKET_CAPACITY', 10);//桶内最多10次
-define ('API_G_TOKEN_BUCKET_FILLRATE', 1);//平均每秒加1次 ， 即限制 1 秒 1 次。
-
-
 $GLOBALS[API_G_KEY]=[];
 date_default_timezone_set('Asia/Hong_Kong');
 
@@ -104,8 +100,6 @@ function main() {
   api_g('DBG_api-file',$api_file);
 
   //prepare db 
-  if(strtolower($_SERVER['REQUEST_METHOD']) == 'post')$query = &$_POST;
-  else $query = &$_GET;
   $db=API::db();
   $tbl_prefix=api_g("api-table-prefix");
   //由于旧版没有这个设置，故要做个默认值
@@ -113,9 +107,14 @@ function main() {
 
   
   //uid for api-log, bucketUser for TokenBucket
-  $uid = isset($query['uid'])?$query['uid']:0;
-  $bucketUser=$uid?$uid:$_SERVER['REMOTE_ADDR'];
-
+  $bucketUser=$uid = API::INP('uid');
+  $bucketSetting=api_g('api_bucket');
+  $api_cost=1;
+  if($uid && ! USER::userVerify() ) {
+    $uid=0;
+    $bucketUser=$_SERVER['REMOTE_ADDR'];
+    $api_cost=$bucketSetting['anony_cost'];
+  }
   
   //TokenBucket
 	$tbData = $db->get($tbl_prefix.'tokenbucket',
@@ -123,16 +122,16 @@ function main() {
     ['and'=>['user'=>$bucketUser]]
     );
   if(!$tbData) {
-    $tbData=['capacity'=>API_G_TOKEN_BUCKET_CAPACITY,
-      'tokens'=>API_G_TOKEN_BUCKET_CAPACITY,
-      'fillRate'=>API_G_TOKEN_BUCKET_FILLRATE,
+    $tbData=['capacity'=>$bucketSetting['capacity'],
+      'tokens'=>$bucketSetting['capacity'],
+      'fillRate'=>$bucketSetting['fillrate'],
       'lastRun'=>0];
   }
     
-  $bucket = new TokenBucket($tbData);//80, 0, 0.99, 1234567890);
+  $bucket = new TokenBucket($tbData);
   
-  // 以后考虑：有uid,每次消费1个令牌. 没有uid,每次消费 多 个令牌 $uid?1:5
-	if(!$bucket->consume(1)) {
+  // 有uid,每次消费1个令牌. 没有uid,每次消费多个令牌
+	if(!$bucket->consume($api_cost)) {
     return API::json(API::msg(1002,"Too many calls, please wait some seconds."));
   }
   $tbData_new=$bucket->data();
@@ -149,14 +148,15 @@ function main() {
   
 
 
-  //add api log  
+  //log api 
   $tbl_log=$tbl_prefix.'log';
-	$require_id = $db->insert($tbl_log, 
+  $require_id = $db->insert($tbl_log, 
     ["uid"=>$uid,
     "api"=>"/$api/$call/$para1/$para2",
     "host"=>$_SERVER['REMOTE_ADDR'], 
     "get"=>json_encode($_GET, JSON_UNESCAPED_UNICODE), 
     "post"=>json_encode(API::input(), JSON_UNESCAPED_UNICODE)]);
+
 
   require_once $api_file;
   $C="class_$api";
@@ -174,6 +174,8 @@ function main() {
     api_g("WX_APPS",'***');
     $data[API_G_KEY]=$GLOBALS[API_G_KEY];
   }
+
+  if($data === false ) return false;
   return API::json($data);
 }
 
