@@ -112,6 +112,8 @@ function main() {
   $api_cost=1;
   if($uid && ! USER::userVerify() ) {
     $uid=0;
+  }
+  if(!$uid) {
     $bucketUser=$_SERVER['REMOTE_ADDR'];
     $api_cost=$bucketSetting['anony_cost'];
   }
