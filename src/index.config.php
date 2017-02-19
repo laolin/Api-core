@@ -63,7 +63,10 @@ api_g("WX_APPS", [
  *  定义 uploads API 接收到的上传文件存放处
  */
 //开头要有'/'，结束不能有'/'，从 index.php 所在路径相对计算
-api_g("path-upload",'/upload');
+api_g("upload-settings",[
+  'path'=>'/uploads-for-api',
+  'ext'=>'pdf,jpg,png,gif,tif,tiff,bmp,dwg,zip,rar,txt'
+]);
 
 
 // END, cfg mark 
