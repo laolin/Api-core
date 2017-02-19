@@ -98,7 +98,7 @@ class class_file {
     
     $r=$db->get($prefix.'uploads',['uid','fdesc','fname','fsize','count'],
       ['fid'=>$fid]);
-    if(!count($r)) {
+    if(! isset($r['fname'])) {
       return API::msg(1002,"File id $fid not exist.");
     }
 
