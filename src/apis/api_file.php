@@ -8,8 +8,11 @@ class class_file {
     return API::data('files ready.');
   }
   //需要 处理 userVerify 结果 没通过的情况
-  //$para1 代表文件表单控件名（$_FILES的下标），省略 按默认值 "name" 
-  public static function upload( $para1,$para2 ) {
+  /**
+   *  $para1 代表文件表单控件名（$_FILES的下标），省略 按默认值 "name" 
+   *  
+   */
+  public static function upload( $para1 ) {
     if( ! USER::userVerify() ) {
       //return API::msg(2001,'Error verify token.');
     }
@@ -79,10 +82,25 @@ class class_file {
     
     $r=$db->insert($prefix.'uploads',$fdata );
 
-    return API::data([$r]);
+    return API::data(['name'=>$newname]);
+  }
+  public static function g( $para1 ) {
+    if(!$para1){
+      return API::msg(1001,'Error file name. @file.g');
+    }
+    $upstn=api_g("upload-settings");
+    $filename=api_g('path-web') . $upstn['path'] . '/' . $para1;
+
+    if( __class_uploads_helper::
+      respone_download($filename,$para1)) {
+        return false;
+    }
+    return API::msg(1099,'Unkown error. @file.g');
   }
   
-  public static function download( $para1,$para2 ) {
+  //不提供按 id 下载附件的功能
+  //public
+  static function get( $para1 ) {
     $fid=intval($para1);
     if($fid<=0) {
         return API::msg(1001,'Error file id.');
