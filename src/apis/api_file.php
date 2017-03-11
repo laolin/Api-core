@@ -134,7 +134,8 @@ class class_file {
 class __class_uploads_helper{
   public static function respone_download($file,$file_display_name){
     //$file = './Penguins.jpg';
-    //$file_display_name = basename($file_display_name);
+    $pinfo = pathinfo($file_display_name);
+    $file_display_name = basename($file_display_name,'.'.$pinfo['extension']);
     $file_extension = pathinfo($file, PATHINFO_EXTENSION);
     $fsize = @filesize($file);
     if (!empty($fsize)) {			
