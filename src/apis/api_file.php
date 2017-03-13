@@ -14,7 +14,7 @@ class class_file {
    */
   public static function upload( $para1 ) {
     if( ! USER::userVerify() ) {
-      //return API::msg(2001,'Error verify token.');
+      return API::msg(2001,'Error verify token.');
     }
     if( ! $para1 ) {
       $para1='name';
@@ -99,7 +99,8 @@ class class_file {
   }
   
   //不提供按 id 下载附件的功能
-  //public
+  /*
+  public
   static function get( $para1 ) {
     $fid=intval($para1);
     if($fid<=0) {
@@ -129,6 +130,7 @@ class class_file {
 
     return API::data([$r,$pup],1099,'Unkown error');
   }
+  */
 }
 
 class __class_uploads_helper{
