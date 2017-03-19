@@ -53,7 +53,7 @@ class class_file {
 
     $extension_allowed=  explode(',', $allowed);
     $file_extension=  pathinfo($filename, PATHINFO_EXTENSION);
-    if( ! in_array($file_extension, $extension_allowed) ) {
+    if($file_extension && ! in_array($file_extension, $extension_allowed) ) {
       return API::msg(1007,"$file_extension is not allowed");
     }
     $uid=api_g('userVerify')['uid'];
