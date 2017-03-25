@@ -65,6 +65,10 @@ api_g("WX_APPS", [
 //开头要有'/'，结束不能有'/'，从 index.php 所在路径相对计算
 api_g("upload-settings",[
   'path'=>'/uploads-for-api',
+  //访问WEB服务器'path-pub'路径，这个应该指向'path'同一地方，
+  //'path-pub'可以是path的软链接
+  //'path-pub'也可以通过rewrite重定向到'path'
+  'path-pub'=>'/uploads-for-api',
   'ext'=>'pdf,jpg,png,gif,tif,tiff,bmp,dwg,zip,rar,txt'
 ]);
 

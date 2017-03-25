@@ -1,11 +1,31 @@
 <?php
 // ================================
-/*
-*/
+/**
+ *  上传文件：
+ *  API: /file/upload/$name
+ *  $name: 代表文件表单控件名（$_FILES的下标），省略 按默认值 "name"
+ *  
+ *  下载文件（通过API）：
+ *  API: /file/g/$fileId
+ *  $fileId: 上传文件后，根据文件内容生成的Id
+ *  
+ *  下载文件（不每次通过API）：
+ *  API: /file/path
+ *  先通过API获取目录路径 `path`，然后以后可直接 `path/fileId` 访问
+ *  返回的path可以是真正的目录，为安全起见，可以采用rewrite的路径
+ *  
+ */
+
 
 class class_file {
   public static function main( $para1,$para2 ) {
     return API::data('files ready.');
+  }
+  
+
+  //先通过API获取目录路径 `path`，然后以后可直接 `path/fileId` 访问
+  public static function path( ) {
+    return API::data(api_g("upload-settings")['path-pub']);
   }
   //需要 处理 userVerify 结果 没通过的情况
   /**
