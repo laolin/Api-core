@@ -166,6 +166,7 @@ class USER{
    *  服务器
    */
   public static  function userVerify( ) {
+    if(api_g('userVerify'))return api_g('userVerify');
     $uid=API::INP('uid');
     $tokenid=API::INP('tokenid');
     $timestamp=API::INP('timestamp');
