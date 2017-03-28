@@ -2,6 +2,7 @@
 // ================================
 /**
  *  USER::exist( $uname ); 判断用户是否存在
+ *  USER::get_users( $arrIds ); 获取多个用户的信息
  *  
  *  USER::userVerify( ); 用在API运行前验证确认用户身份
  *  
@@ -34,6 +35,30 @@ class USER{
     return API::data(['code'=>$code,'info'=>$info]);
   }
   
+  /**
+   *  get_users
+   *  获取多个用户的信息
+   *  参数 $arrIds  为 id
+   */
+  public static function get_users( $arrIds ) {
+    if(!userVerify()) {
+      return API::msg(2001,'Error verify token.');
+    }
+    if(!count($arrIds) || ! is_array($arrIds)) {
+      return API::msg(2002,'No id error.');
+    }
+    $db=API::db();
+    
+    $prefix=api_g("api-table-prefix");
+    $rr=$db->get($prefix.'user',['uid','uname'],
+      ['uid'=>$arrIds ]  );
+
+    if(!count($rr)) {
+      return API::msg(2003,'No id exist');
+    }
+    return API::data($rr);
+
+  }
   //需要 防机器人注册
   /*
   reg(注册)api说明
