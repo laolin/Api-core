@@ -41,7 +41,7 @@ class USER{
    *  参数 $arrIds  为 id
    */
   public static function get_users( $arrIds ) {
-    if(!userVerify()) {
+    if(!self::userVerify()) {
       return API::msg(2001,'Error verify token.');
     }
     if(!count($arrIds) || ! is_array($arrIds)) {
