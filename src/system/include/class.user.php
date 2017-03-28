@@ -50,7 +50,7 @@ class USER{
     $db=API::db();
     
     $prefix=api_g("api-table-prefix");
-    $rr=$db->get($prefix.'user',['uid','uname'],
+    $rr=$db->select($prefix.'user',['uid','uname'],
       ['uid'=>$arrIds ]  );
 
     if(!count($rr)) {
