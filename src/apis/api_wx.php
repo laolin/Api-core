@@ -187,14 +187,14 @@ class class_wx{
       return API::msg(2001,'Error verify token.');
     }
     $tok=WX::GetToken();
-    if(API::is_error($tok)) {
-      return $tok;
+    if(!$tok) {
+      return API::msg(2002,'Sorry, system_token error.');
     }
     $media_id=API::INP('media_id');
     if(!$media_id)
       return API::msg(621,'Error media_id');
     $url='https://api.weixin.qq.com/cgi-bin/media/get?access_token=' .
-       $tok['data']. '&media_id=' . $media_id;
+       $tok. '&media_id=' . $media_id;
     $res = self::__httpGet_withInfo($url);
     if(!$res['file'])
       return API::msg(622,'Error get media file');
