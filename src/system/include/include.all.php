@@ -9,3 +9,4 @@ require_once api_g('path-sys').'/include/class.laolindb.php';
 
 require_once api_g('path-sys').'/include/class.token.bucket.php';
 require_once api_g('path-sys').'/include/class.user.php';
+require_once api_g('path-sys').'/include/class.WX.php';
