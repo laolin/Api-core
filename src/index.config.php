@@ -32,7 +32,6 @@ api_g("usr-salt",['version'=>'ab','salt'=>'api_salt-laolin@&*']); //目前 versi
 //开头要有'/'，结束不能有'/'，从 index.php 所在路径相对计算
 api_g("path-apis",[
     ['apis'=>['foot','mzapi'],'path'=>'/../../api-qgs-shops/src/apis'],
-    ['apis'=>['bindwx','wxtest'],'path'=>'/../../api-usr/src/apis']
   ]);
 
 
