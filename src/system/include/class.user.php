@@ -15,7 +15,8 @@
  *  USER::__ADMIN_changUpass( $uid,$newupass );
  */
 
-class USER{
+class USER {
+  const RIGHTS_SUPER_ADMIN = 0x7FFFFFFF; //31 bit = 21 4748 3648
   
   //-1: 非法
   //字符串: 已存在用户的密码
@@ -184,6 +185,29 @@ class USER{
 
   }
 
+  public static  function checkUserRights( $uid, $rights ) {
+    $rnow=self::getUserRights( $uid );
+    if($rnow<0)return 0;
+    $rights=intval($rights);
+    return $rights == ($rights & $rnow) ? 1 : 0;
+  }
+  public static  function getUserRights( $uid ) {
+    if(!self::_isIdValid($uid)) {
+      return -1;
+    }
+    $db=API::db();
+    
+    $prefix=api_g("api-table-prefix");
+    $rr=$db->get($prefix.'user',['rights'],
+      ['uid'=>$uid ]  );
+
+    if(count($rr)== 0) {
+      return -2;
+    }
+    $rnow=intval($rr['rights']);
+    return  $rnow;
+    
+  }
   /**
    *  验证签名
    *  sign = hex_md5(api+call+uid+token+timestamp)
