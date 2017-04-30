@@ -108,9 +108,11 @@ class USER {
   public static function __ADMIN_addUser( $uname,$upass='ab:xx' ) {
     $db=API::db();
     $prefix=api_g("api-table-prefix");
-    
+    $def_rights=intval(api_g("user_default_rights"));
+    if($def_rights<0)$def_rights=0;
+
     $r=$db->insert($prefix.'user',
-      ['uname'=>$uname, 'upass'=>$upass] );
+      ['uname'=>$uname, 'upass'=>$upass, 'rights'=>$def_rights] );
     return API::data($r);
   }
 

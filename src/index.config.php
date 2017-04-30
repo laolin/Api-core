@@ -26,6 +26,9 @@ api_g("DBPASS",'test_password');
 api_g("api-table-prefix",'api_tbl_');
 api_g("usr-salt",['version'=>'ab','salt'=>'api_salt-laolin@&*']); //目前 version 长度 要求==2
 
+//默认用户权限
+api_g("user_default_rights",1);
+
 /*******************************************************************
  *  重定义 apis 路径用的
  */
