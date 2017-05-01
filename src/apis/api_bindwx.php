@@ -148,6 +148,8 @@ class BINDWX{
     $newToken=USER::__ADMIN_addToken($newUserId,$tokenid);
     $newToken['uname']=$uname;
     $newToken['wxinfo']=$user_info;
+    //TODO 下面又多了一次 SQL 查询，待优化
+    $newToken['rights']=USER::getUserRights($newUserId);
     return API::data($newToken);
 
   }
