@@ -156,6 +156,7 @@ function main() {
     ["uid"=>$uid,
     "api"=>"/$api/$call/$para1/$para2",
     "host"=>$_SERVER['REMOTE_ADDR'], 
+    "cur_time"=>time(),
     "get"=>json_encode($_GET, JSON_UNESCAPED_UNICODE), 
     "post"=>json_encode(API::input(), JSON_UNESCAPED_UNICODE)]);
 
