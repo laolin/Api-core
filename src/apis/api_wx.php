@@ -169,7 +169,7 @@ class class_wx{
 
     //根据 $idx 的索引，把wxinfo加到 $d[data] 中
     if(count($r2)) {
-      for($i=count($r2);$i--; ) {
+      for($i=0;$i<count($r2);$i++) {
         $d['data'][ $idx[$r2[$i]['uidBinded']] ]['wxinfo']=$r2[$i];
       }
     }
