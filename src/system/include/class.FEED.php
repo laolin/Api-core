@@ -37,15 +37,15 @@ class FEED {
   //-----------------------------------------------
   
   // C--- 新建  【草稿】
-  static function draft_create( $uid ) {
+  static function draft_create( $uid,$app,$cat ) {
     $db=api_g('db');
     $tblname=self::table_name();
     $data=[
       'uid'=>$uid,
       'flag'=>'draft',
       'del'=>0,
-      'app'=>'',
-      'cat'=>'',
+      'app'=>$app,
+      'cat'=>$cat,
       'k1'=>'',
       'k2'=>'',
       'k3'=>'',
@@ -66,23 +66,23 @@ class FEED {
   }
 
   // -R-- 获取 uid 的最新【草稿】
-  static function draft_get_by_uid( $uid ) {
+  static function draft_get_by_uid( $uid,$app,$cat ) {
     $db=api_g('db');
     $tblname=self::table_name();
     $r=$db->get($tblname,
       self::feed_columns(),
-      ['and'=>['uid'=>$uid,'flag'=>'draft','del'=>0]]);
+      ['and'=>['uid'=>$uid,'app'=>$app,'cat'=>$cat,'flag'=>'draft','del'=>0]]);
     
     return $r;
   }
   
   // -R-- 获取 uid 的最新【已删除草稿】
-  static function draft_get_deleted_by_uid( $uid ) {
+  static function draft_get_deleted_by_uid( $uid,$app,$cat ) {
     $db=api_g('db');
     $tblname=self::table_name();
     $r=$db->get($tblname,
       self::feed_columns(),
-      ['and'=>['uid'=>$uid,'flag'=>'draft','del'=>1]]);
+      ['and'=>['uid'=>$uid,'app'=>$app,'cat'=>$cat,'flag'=>'draft','del'=>1]]);
     
     return $r;
   }
@@ -160,14 +160,16 @@ class FEED {
   }
   
   // -R-- 获取
-  static function feed_list( $uid, $type='publish',$include_del=false ) {
+  static function feed_list( $uid,$app,$cat, $type='publish',$include_del=false ) {
     $db=api_g('db');
     $tblname=self::table_name();
     
     $andArray=[];
+    $andArray["and#app"]=['app'=>$app];
+    $andArray["and#cat"]=['cat'=>$cat];
     $tik=0;
-    
-    $oldmore=API::INP('oldmore');
+
+      $oldmore=API::INP('oldmore');
     if($oldmore) {
       $tik++;
       $andArray["and#t$tik"]=['fid[<]'=>intval($oldmore)];

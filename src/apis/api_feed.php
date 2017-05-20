@@ -31,9 +31,6 @@ class class_feed {
       return API::msg(202001,'error userVerify');
     return API::data('Test passed.');
   }
-  public static function config( ) {
-    return API::data(EBCONFIG::config());
-  }  
   
 
   /**
@@ -53,9 +50,14 @@ class class_feed {
     if(!$r)
       return API::msg(202001,'error userVerify');
     $uid=API::INP('uid');    
-    $r=FEED::draft_get_by_uid($uid);
+    $app=API::INP('app');    
+    $cat=API::INP('cat');
+    if(!$app || !$cat ) {
+      return API::msg('Error init draft data');
+    }
+    $r=FEED::draft_get_by_uid($uid,$app,$cat);
     if(!$r) {
-      $r=FEED::draft_create($uid);
+      $r=FEED::draft_create($uid,$app,$cat);
     }
     return API::data($r);
   }
@@ -160,7 +162,12 @@ class class_feed {
       return API::msg(202001,'error userVerify');
     
     $uid=API::INP('uid');    
-    $r=FEED::feed_list($uid,'publish');
+    $app=API::INP('app');    
+    $cat=API::INP('cat');
+    if(!$app || !$cat ) {
+      return API::msg('require data: app.cat');
+    }
+    $r=FEED::feed_list($uid,$app,$cat,'publish');
     return $r;
   }
   /**
