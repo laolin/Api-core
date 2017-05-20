@@ -201,6 +201,95 @@ ALTER TABLE `api_tbl_user`
 --
 ALTER TABLE `api_tbl_user_wx`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+<<<<<<< HEAD
+=======
+  
+
+  
+  
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `api_tbl_comment`
+--
+
+CREATE TABLE `api_tbl_comment` (
+  `cid` int(11) NOT NULL,
+  `ctype` varchar(16) NOT NULL,
+  `fid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
+  `re_cid` int(11) NOT NULL,
+  `re_uid` int(11) NOT NULL,
+  `content` varchar(255) NOT NULL,
+  `create_at` int(11) NOT NULL,
+  `mark` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `api_tbl_feed`
+--
+
+CREATE TABLE `api_tbl_feed` (
+  `fid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
+  `flag` varchar(16) NOT NULL,
+  `del` int(11) NOT NULL,
+  `app` varchar(32) NOT NULL,
+  `cat` varchar(32) NOT NULL,
+  `k1` varchar(32) DEFAULT NULL,
+  `k2` varchar(32) DEFAULT NULL,
+  `k3` varchar(32) DEFAULT NULL,
+  `k4` varchar(32) DEFAULT NULL,
+  `content` varchar(999) NOT NULL,
+  `pics` varchar(1023) DEFAULT NULL,
+  `d1` varchar(255) DEFAULT NULL,
+  `d2` varchar(255) DEFAULT NULL,
+  `d3` varchar(255) DEFAULT NULL,
+  `d4` varchar(255) DEFAULT NULL,
+  `attr` varchar(1023) DEFAULT NULL,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `publish_at` int(11) NOT NULL,
+  `update_at` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `api_tbl_comment`
+--
+ALTER TABLE `api_tbl_comment`
+  ADD PRIMARY KEY (`cid`);
+
+--
+-- Indexes for table `api_tbl_feed`
+--
+ALTER TABLE `api_tbl_feed`
+  ADD PRIMARY KEY (`fid`);
+
+--
+-- 在导出的表使用AUTO_INCREMENT
+--
+
+--
+-- 使用表AUTO_INCREMENT `api_tbl_comment`
+--
+ALTER TABLE `api_tbl_comment`
+  MODIFY `cid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- 使用表AUTO_INCREMENT `api_tbl_feed`
+--
+ALTER TABLE `api_tbl_feed`
+  MODIFY `fid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+  
+  
+  
+  
+>>>>>>> feature/feed-comm
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
