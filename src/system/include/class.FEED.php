@@ -127,7 +127,7 @@ class FEED {
       'app','cat','k1','k2','k3','k4',
       'content','pics',
       'd1','d2','d3','d4','attr',
-      'create_at','update_at'];
+      'create_at','update_at','publish_at'];
   }
   // C--- 不提供创建 feed 的接口，使用草稿的发布功能创建 feed
   
