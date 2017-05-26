@@ -201,7 +201,7 @@ class FEED {
     
     $count=intval(API::INP('count'));
     if($count==0)$count=20;
-    else if($count<2)$count=20;
+    else if($count<1)$count=1;
     else if($count>200)$count=200;
     
     $where=["LIMIT" => $count , "ORDER" => ["publish_at DESC", "update_at DESC"]] ;
