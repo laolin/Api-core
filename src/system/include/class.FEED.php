@@ -231,13 +231,13 @@ class FEED {
   // --U- 更新
   static function feed_update_attr( $fid, $attr ) {
     $a1=json_decode($attr,true);
-    if(!$a1)return;
+    if(!$a1)return -1;
     
     $db=api_g('db');
     $tblname=self::table_name();
     $r=$db->get($tblname, 'attr', ['and'=>['fid'=>$fid]] );
-    if(!$r['attr']) {
-      return false;
+    if(!$r) {
+      return -2;
     }
     $a0=json_decode($r,true);
     if(!$a0) $a0=[];
