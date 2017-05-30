@@ -231,7 +231,7 @@ class FEED {
   // --U- 更新
   static function feed_update_attr( $fid, $attr ) {
     $a1=json_decode($attr,true);
-    if(!a1)return;
+    if(!$a1)return;
     
     $db=api_g('db');
     $tblname=self::table_name();
