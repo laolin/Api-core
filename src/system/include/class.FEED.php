@@ -235,9 +235,9 @@ class FEED {
     
     $db=api_g('db');
     $tblname=self::table_name();
-    $r=$db->get($tblname, 'attr', ['and'=>['fid'=>$fid]] );
+    $r=$db->get($tblname, ['fid','attr'], ['and'=>['fid'=>$fid]] );
     if(!$r) {
-      return -2;
+      return ['error get attr',$r];
     }
     $a0=json_decode($r,true);
     if(!$a0) $a0=[];
