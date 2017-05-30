@@ -243,8 +243,8 @@ class FEED {
     if(!$a0) $a0=[];
     
     $data=[];
-    $data['attr']= array_merge($a0,$a1);
-
+    $a2= array_merge($a0,$a1);
+    $data['attr']=json_encode($a2,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
       
     $r=$db->update($tblname, $data,
       ['and'=>['fid'=>$fid],'LIMIT'=>1]);
