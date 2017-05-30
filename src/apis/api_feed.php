@@ -91,6 +91,11 @@ class class_feed {
 
     $data=FEED::data_all();
     $r=FEED::feed_update($fid,$data);
+    
+    $attr=API::INP('attr');
+    if($attr)
+      $r=FEED::feed_update_attr($fid,$attr);
+    
     return API::data($r);
   }
 

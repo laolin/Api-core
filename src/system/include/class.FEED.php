@@ -28,7 +28,7 @@ class FEED {
     self::data_val('d2',$data);
     self::data_val('d3',$data);
     self::data_val('d4',$data);
-    self::data_val('attr',$data);
+    //self::data_val('attr',$data);
     
     $data['update_at']=time();
     return $data;
@@ -224,6 +224,24 @@ class FEED {
   static function feed_update( $fid, $data ) {
     $db=api_g('db');
     $tblname=self::table_name();
+    $r=$db->update($tblname, $data,
+      ['and'=>['fid'=>$fid],'LIMIT'=>1]);
+    return $r;
+  }
+  // --U- 更新
+  static function feed_update_attr( $fid, $attr ) {
+    $db=api_g('db');
+    $tblname=self::table_name();
+    $r=$db->get($tblname, 'attr', ['and'=>['fid'=>$fid]] );
+    if(!$r['attr']) {
+      return false;
+    }
+    $a0=json_decode($r,true);
+    $a1=json_decode($attr,true);
+    $data=[];
+    $data['attr']= array_merge($a0,$a1)
+
+      
     $r=$db->update($tblname, $data,
       ['and'=>['fid'=>$fid],'LIMIT'=>1]);
     return $r;
