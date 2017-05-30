@@ -239,7 +239,7 @@ class FEED {
     if(!$r) {
       return ['error get attr',$r];
     }
-    $a0=json_decode($r,true);
+    $a0=json_decode($r['attr'],true);
     if(!$a0) $a0=[];
     
     $data=[];
