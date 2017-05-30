@@ -230,6 +230,9 @@ class FEED {
   }
   // --U- 更新
   static function feed_update_attr( $fid, $attr ) {
+    $a1=json_decode($attr,true);
+    if(!a1)return;
+    
     $db=api_g('db');
     $tblname=self::table_name();
     $r=$db->get($tblname, 'attr', ['and'=>['fid'=>$fid]] );
@@ -237,9 +240,10 @@ class FEED {
       return false;
     }
     $a0=json_decode($r,true);
-    $a1=json_decode($attr,true);
+    if(!$a0) $a0=[];
+    
     $data=[];
-    $data['attr']= array_merge($a0,$a1)
+    $data['attr']= array_merge($a0,$a1);
 
       
     $r=$db->update($tblname, $data,
