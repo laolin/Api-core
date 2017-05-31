@@ -132,7 +132,7 @@ class FEED {
   // C--- 不提供创建 feed 的接口，使用草稿的发布功能创建 feed
   
   // -R-- 获取
-  static function feed_get( $uid, $fid, $type='publish',$include_del=false ) {
+  static function feed_get( $uid, $fid, $type='publish',$include_del=false,$isAdmin=false ) {
     if(!$fid) {
       return API::msg(202101,"fid required");
     }
@@ -147,13 +147,13 @@ class FEED {
     }
     
     //草稿只允许自己看
-    if($type=='draft' && $r['uid']!=$uid) {
+    if(!$isAdmin && $type=='draft' && $r['uid']!=$uid) {
       return API::msg(202103,"draft $fid is not belongs to uid $uid");
     }
-    if($r['flag']!=$type) {
+    if($type!='*' && $r['flag']!=$type) {
       return API::msg(202104,"fid $fid is not $type");
     }
-    if( !$include_del && $r['del']) {
+    if( !$isAdmin && !$include_del && $r['del']) {
       return API::msg(202105,"fid $fid was deleted yet");
     }
     return API::data($r);

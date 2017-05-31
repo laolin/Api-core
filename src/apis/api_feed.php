@@ -76,6 +76,13 @@ class class_feed {
    *  
    */
   public static function draft_update( ) {
+    self::_update('draft',false);
+  }
+  //feed_update只允许管理员使用
+  public static function feed_update( ) {
+    self::_update('*',false);
+  }
+  public static function sssdraft_update( ) {
     $r=self::userVerify();
     if(!$r)
       return API::msg(202001,'error userVerify');
@@ -85,6 +92,33 @@ class class_feed {
     
     //要确保fid是对应一个存在的数据
     $r=FEED::feed_get($uid,$fid,'draft');
+    if(API::is_error($r)){
+      return $r;
+    }
+
+    $data=FEED::data_all();
+    $r=FEED::feed_update($fid,$data);
+    
+    $attr=API::INP('attr');
+    if($attr)
+      $r=FEED::feed_update_attr($fid,$attr);
+    
+    return API::data($r);
+  }
+  
+  static function _update($type, $needadmin ) {
+    $r=self::userVerify();
+    if(!$r)
+      return API::msg(202001,'error userVerify');
+    $uid=API::INP('uid');
+    $fid=API::INP('fid');
+    if($needadmin &&
+       ! USER::checkUserRights($uid,0x10000) ) {//TODO 暂写死管理员权限数值
+      return API::msg(202001,'error adminVerify');
+    }
+    
+    //要确保fid是对应一个存在的数据
+    $r=FEED::feed_get($uid,$fid,$type);
     if(API::is_error($r)){
       return $r;
     }
