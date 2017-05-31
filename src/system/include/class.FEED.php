@@ -189,6 +189,17 @@ class FEED {
     $and=['flag'=>$type];
     $andArray["and#t$tik"]=$and;
 
+    $searchCols=['content','k1','k2','k3','k4','d1','d2','d3','d4'];
+    $sVal;
+    for($i=count($searchCols); $i--; ) {
+      $sVal=API::INP($searchCols[$i]);
+      if(!$sVal)continue;
+      $tik++;
+      $and=[$searchCols[$i].'[~]'=>$sVal];//用 like 查询
+      $andArray["and#t$tik"]=$and;
+    }
+    
+    
     $and_DEL=false;
     if($include_del=='only') {
       $and_DEL=['del'=>1];
