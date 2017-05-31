@@ -172,7 +172,7 @@ class class_feed {
     if(!$app || !$cat ) {
       return API::msg('require data: app.cat');
     }
-    $r=FEED::feed_list($uid,$app,$cat,'publish');
+    $r=FEED::feed_list($uid,$app,$cat);
     return $r;
   }
   /**

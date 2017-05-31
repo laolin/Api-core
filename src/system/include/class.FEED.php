@@ -160,7 +160,7 @@ class FEED {
   }
   
   // -R-- 获取
-  static function feed_list( $uid,$app,$cat, $type='publish',$include_del=false ) {
+  static function feed_list( $uid,$app,$cat,$include_del=false ) {
     $db=api_g('db');
     $tblname=self::table_name();
     
@@ -169,7 +169,7 @@ class FEED {
     $andArray["and#cat"]=['cat'=>$cat];
     $tik=0;
 
-      $oldmore=API::INP('oldmore');
+    $oldmore=API::INP('oldmore');
     if($oldmore) {
       $tik++;
       $andArray["and#t$tik"]=['fid[<]'=>intval($oldmore)];
@@ -181,11 +181,13 @@ class FEED {
     }
     
     
-    
+    $type=API::INP('type');
+    if(!$type) {//publish, draft, etc.
+      $type='publish';
+    }
     $tik++;
     $and=['flag'=>$type];
     $andArray["and#t$tik"]=$and;
-    
 
     $and_DEL=false;
     if($include_del=='only') {
