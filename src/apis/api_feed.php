@@ -223,7 +223,7 @@ class class_feed {
     if(API::is_error($r)){
       return $r;
     }
-    $r=FEED::feed_update($fid,['del'=>$del])
+    $r=FEED::feed_update($fid,['del'=>$del]);
     return API::data($r);
   }  
   
