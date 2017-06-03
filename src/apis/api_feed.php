@@ -182,7 +182,13 @@ class class_feed {
     if(!$app || !$cat ) {
       return API::msg('require data: app.cat');
     }
-    $r=FEED::feed_list($uid,$app,$cat);
+    $getdel=API::INP('getdel');
+    if($getdel &&
+       ! USER::checkUserRights($uid,0x10000) ) {//TODO 暂写死管理员权限数值
+      return API::msg(202001,'getdel if for admin only');
+    }
+
+    $r=FEED::feed_list($uid,$app,$cat ,$getdel);
     return $r;
   }
   /**
