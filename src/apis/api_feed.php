@@ -202,7 +202,17 @@ class class_feed {
    *    1 or 0 表示有无更新
    */
   public static function del( ) {
-    $r=self::userVerify();
+    return self::del_or_undel('del');
+  }
+  public static function undel( ) {
+    return self::del_or_undel('undel');
+  }
+  static function del_or_undel($what ) {
+    if($what=='del')$del=1;
+    else if($what=='undel')$del=0;
+    else return API::msg(202001,'error param');
+    
+    $r=USER::checkUserRights($uid,0x10000);
     if(!$r)
       return API::msg(202001,'error userVerify');
     
@@ -213,7 +223,7 @@ class class_feed {
     if(API::is_error($r)){
       return $r;
     }
-    $r=FEED::feed_delete( $fid );
+    $r=FEED::feed_update($fid,['del'=>$del])
     return API::data($r);
   }  
   
