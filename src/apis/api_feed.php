@@ -202,15 +202,21 @@ class class_feed {
    *    1 or 0 表示有无更新
    */
   public static function del( ) {
-    return self::del_or_undel('del');
+    return self::update_special('del',1);
   }
   public static function undel( ) {
-    return self::del_or_undel('undel');
+    return self::update_special('del',0);
   }
-  static function del_or_undel($what ) {
-    if($what=='del')$del=1;
-    else if($what=='undel')$del=0;
-    else return API::msg(202001,'error param');
+  static function change_access( ) {
+    $access=API::INP('access');
+    return self::update_special('access',$access);
+  }
+  static function update_special( $key,$val ) {
+    $keyList=['del','access'];
+    if (!in_array($key, $keyList)) {
+      return API::msg(202001,'error key '.$key);
+    }
+
     $uid=API::INP('uid');    
    
     $r=USER::checkUserRights($uid,0x10000);
@@ -219,11 +225,11 @@ class class_feed {
     
     $fid=API::INP('fid');
     //要确保fid是对应一个存在的数据
-    $r=FEED::feed_get($uid,$fid,'publish');
+    $r=FEED::feed_get($uid,$fid,'*');
     if(API::is_error($r)){
       return $r;
     }
-    $r=FEED::feed_update($fid,['del'=>$del]);
+    $r=FEED::feed_update($fid,[$key=>$val]);
     return API::data($r);
   }  
   

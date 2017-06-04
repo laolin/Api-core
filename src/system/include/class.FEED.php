@@ -14,6 +14,8 @@ class FEED {
   }
   
   //TODO: 有效性检查
+  //这些是用于 update API 中 能直接通过参数能修改的字段
+  //其他字段不可用参数修改，比如 del flag access 等字段
   static function data_all( ) {
     $data=[];
     self::data_val('app',$data);
