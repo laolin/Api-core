@@ -232,7 +232,7 @@ class FEED {
     
     //无权限的删掉，不能返回给客户端
     $rtt=USER::getUserRights( $uid );
-    for($i=$r.count();$i--; ) {
+    for($i=count($r);$i--; ) {
       if($r[$i]['access'] && !(intval($r[$i]['access']) & $rtt) ) {
         unset($r[$i]);
       }
