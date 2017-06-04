@@ -234,12 +234,13 @@ class FEED {
     $rtt=USER::getUserRights( $uid );
     for($i=$r.count();$i--; ) {
       if($r[$i]['access'] && !(intval($r[$i]['access']) & $rtt) ) 
-        delete $r[$i];
+        unset($r[$i]);
       }
     }
+    $r2=array_values($r);
 
     
-    return API::data($r);
+    return API::data($r2);
   }
 
   // --U- 更新
