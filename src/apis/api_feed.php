@@ -211,12 +211,12 @@ class class_feed {
     if($what=='del')$del=1;
     else if($what=='undel')$del=0;
     else return API::msg(202001,'error param');
-    
+    $uid=API::INP('uid');    
+   
     $r=USER::checkUserRights($uid,0x10000);
     if(!$r)
-      return API::msg(202001,'error userVerify');
+      return API::msg(202001,'error access');
     
-    $uid=API::INP('uid');    
     $fid=API::INP('fid');
     //要确保fid是对应一个存在的数据
     $r=FEED::feed_get($uid,$fid,'publish');
