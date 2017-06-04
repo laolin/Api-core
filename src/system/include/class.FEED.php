@@ -102,10 +102,10 @@ class FEED {
     //1,复制一份草稿为 正式 publish
     //2,然后把草稿文字内容清空（科目等保留）
     $sth = $db->pdo->prepare("INSERT INTO $tblname 
-      (`app`,`cat`,`k1`,`k2`,`k3`,`k4`,`content`,`pics`,
+      (`access`,`app`,`cat`,`k1`,`k2`,`k3`,`k4`,`content`,`pics`,
         `d1`,`d2`,`d3`,`d4`,`attr`,
         `uid`,`flag`,`del`,`publish_at`)
-      SELECT `app`,`cat`,`k1`,`k2`,`k3`,`k4`,`content`,`pics`,
+      SELECT `access`,`app`,`cat`,`k1`,`k2`,`k3`,`k4`,`content`,`pics`,
         `d1`,`d2`,`d3`,`d4`,`attr`,
         :uid ,'publish','0', :now
       FROM $tblname 
