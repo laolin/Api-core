@@ -123,7 +123,7 @@ class FEED {
   //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
   static function feed_columns() {
     return
-      ['fid','uid','flag','del',
+      ['fid','uid','flag','access','del',
       'app','cat','k1','k2','k3','k4',
       'content','pics',
       'd1','d2','d3','d4','attr',
@@ -230,6 +230,15 @@ class FEED {
       return API::msg(202003,"nothing");
     }
     
+    //无权限的删掉，不能返回给客户端
+    $rtt=USER::getUserRights( $uid );
+    for($i=$r.count();$i--; ) {
+      if($r[$i]['access'] && !(intval($r[$i]['access']) & $rtt) ) 
+        delete $r[$i];
+      }
+    }
+
+    
     return API::data($r);
   }
 
@@ -257,7 +266,7 @@ class FEED {
     
     $data=[];
     $a2= array_merge($a0,$a1);
-    $data['attr']=json_encode($a2,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
+    $data['attr']=json_encode($a2,JSON_UNESCAPED_UNICODE);
       
     $r=$db->update($tblname, $data,
       ['and'=>['fid'=>$fid],'LIMIT'=>1]);
