@@ -50,6 +50,12 @@ require_once api_g('path-sys').'/include/include.all.php';
 
 
 function main() {
+  $r=api_core__runapi();
+  if($r)return API::json($r);
+}
+
+//此函数不 调用 API::json，不会显示内容给客户端。
+function api_core__runapi() {
   api_g('time',Date('Y-m-d H:i:s'));
   api_g('YmdHis',Date('YmdHis'));
   
@@ -65,13 +71,13 @@ function main() {
   
   
   if($api==''  || ! preg_match('/^[a-zA-Z_][a-zA-Z\d_]{0,127}$/i', $api) ){
-    return API::json(API::msg(1002,"Please specify a valid API."));
+    return API::msg(1002,"Please specify a valid API.");
   }
   if($call==''){
     $call='main';//默认函数名
   }
   if(! preg_match('/^[a-zA-Z_][a-zA-Z\d_]{0,127}$/i', $call)){
-    return API::json(API::msg(1003,"Please specify a valid method."));
+    return API::msg(1003,"Please specify a valid method.");
   }
     
   //s1，如果有指定，就最先在指定的目录下找文件
@@ -82,7 +88,7 @@ function main() {
       if(in_array($api,$path_apis[$i]['apis'])) {
         $api_file=api_g('path-web').$path_apis[$i]['path']."/api_$api.php";
         if( ! file_exists($api_file )) {
-          return API::json(API::msg(1105,"Error api filepath api=$api"));//找不到就出错。
+          return API::msg(1105,"Error api filepath api=$api");//找不到就出错。
         }
         break;
       }
@@ -93,7 +99,7 @@ function main() {
     if( ! file_exists($api_file )) {
       $api_file=api_g('path-api')."/api_$api.php";//s3, 找不到，就到系统的api目录下找
       if( ! file_exists($api_file )) {
-        return API::json(API::msg(1101,"Error load api:$api"));//再找不到就出错。
+        return API::msg(1101,"Error load api:$api");//再找不到就出错。
       }
     }
   }
@@ -134,7 +140,7 @@ function main() {
   
   // 有uid,每次消费1个令牌. 没有uid,每次消费多个令牌
 	if(!$bucket->consume($api_cost)) {
-    return API::json(API::msg(1002,"Too many calls, please wait some seconds."));
+    return API::msg(1002,"Too many calls, please wait some seconds.");
   }
   $tbData_new=$bucket->data();
 
@@ -164,10 +170,10 @@ function main() {
   require_once $api_file;
   $C="class_$api";
   if(! class_exists($C) ) {
-    return API::json(API::msg(1102,"class not exists $C"));
+    return API::msg(1102,"class not exists $C");
   }
   if(! method_exists($C,$call) ) {
-    return API::json(API::msg(1103,"method not exists $C.$call"));
+    return API::msg(1103,"method not exists $C.$call");
   }
   $data=$C::$call($para1,$para2);
   if(SHOW_DEBUG_INFO){
@@ -179,6 +185,6 @@ function main() {
   }
 
   if($data === false ) return false;
-  return API::json($data);
+  return $data;
 }
 
