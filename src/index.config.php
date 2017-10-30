@@ -52,6 +52,9 @@ api_g("api_bucket",[
  *  WX-APPS 定义
  */
 api_g("WX_APPS", [
+  //main 表示主 公众号的appid,用来识别是否关注公众号等
+  'main'=>
+    ['公众号 主号的appid','app-secret'],
   'qgs-web'=>
     ['wx-app-id 1','wx-app-secret xx1'],
   'qgs-mp'=>

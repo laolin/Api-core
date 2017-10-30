@@ -135,13 +135,35 @@ class BINDWX{
 
     
     //3, 获取用户信息
-    $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $json_token['access_token'] . '&openid=' . $json_token['openid'];
-    $user_info = json_decode(file_get_contents($info_url),true);
+    
+    
+    if($appid==$apps['main'][0]) {
+      $sys_mp_tk=WX::GetToken();
+      $info_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $sys_mp_tk . '&openid=' . $json_token['openid'];
+    } else {
+      $info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $json_token['access_token'] . '&openid=' . $json_token['openid'];
+    }
+    $uif = json_decode(file_get_contents($info_url),true);
+    $user_info=[];
+
+    //取12个字段，名字要和数据库要对应
+    $user_info['openid']=$uif['openid'];
+    $user_info['unionid']=$uif['unionid'];
+    $user_info['nickname']=$uif['nickname'];
+    $user_info['subscribe']=$uif['subscribe'];
+    $user_info['subscribe_time']=$uif['subscribe_time'];
+    $user_info['groupid']=$uif['groupid'];
+    $user_info['headimgurl']=$uif['headimgurl'];
+    $user_info['sex']=$uif['sex'];
+    $user_info['language']=$uif['language'];
+    $user_info['city']=$uif['city'];
+    $user_info['province']=$uif['province'];
+    $user_info['country']=$uif['country'];
+    
     if(!$user_info['openid'])
       return API::msg(1001,'Error get user_info');
     
     //$ret[]=$user_info;
-    unset($user_info['privilege']);//这个一般是空数组格式，不保存
     $uname='wx-'.substr($user_info['openid'],-8);
     $newUserId = self::user_save($appid,$user_info,$uname);
     $tokenid=$app.'~'.$clientId;
