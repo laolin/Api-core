@@ -168,7 +168,7 @@ class BINDWX{
     
     //$ret[]=$user_info;
     $uname='wx-'.substr($user_info['openid'],-8);
-    $newUserId = self::user_save($appid,$user_info,$uname);
+    $newUserId = WX::save_user($appid,$user_info,$uname);
     $tokenid=$app.'~'.$clientId;
     $newToken=USER::__ADMIN_addToken($newUserId,$tokenid);
     $newToken['uname']=$uname;
@@ -176,76 +176,6 @@ class BINDWX{
     //TODO 下面又多了一次 SQL 查询，待优化
     $newToken['rights']=USER::getUserRights($newUserId);
     return API::data($newToken);
-
-  }
-  static public function user_save($appid,$user_info,$uname){
-    $prefix=api_g("api-table-prefix");
-    $db=API::db();
-    
-    $r_old=$db->select($prefix.'user_wx',
-      ['id','appFrom','uidBinded'],
-      ['or'=>[
-        'openid'=>$user_info['openid'],
-        'unionid'=>$user_info['unionid'] ? $user_info['unionid'] : time()
-        //注，由于有时可能 unionid 是空的，故写个 time 以让此条件不成立。
-      ]]
-      );
-    $uidBinded=0;
-    $indexOfData=-1;
-    if($r_old) {
-      api_g('$r_old',$r_old);
-      $uidBinded=$r_old[0]['uidBinded'];//默认数据中不会发生绑定到多个UID的情况。
-      for($i=count($r_old);$i--; ) {
-        if($appid==$r_old[$i]['appFrom']) {
-          $indexOfData=$i;
-          break;
-        }
-      }
-    }
-    
-    //1,  uidBinded=0, 需要到根用户表中创建一个新用户
-    if(!$uidBinded) { // not binded to any uid, so create one
-      $r_ad=USER::__ADMIN_addUser($uname,//用户名： wx-xxx
-        'ab:'.time()//随便指定一个不可登录的密码
-      );
-      if($r_ad['errcode']!=0) {
-        return $r_ad;
-      }
-      $uidBinded=$r_ad['data'];
-    }
-    $user_info['uidBinded']=$uidBinded;
-      
-    
-    //2, else (indexOfData< 0), 未绑定
-    //3, indexOfData >=0 , 已绑定
-    
-   if($indexOfData < 0){//2,未绑定，添加绑定
-      $user_info['appFrom']=$appid;
-      $r=$db->insert($prefix.'user_wx',
-        $user_info);
-      $id=$r;
-    }
-    
-    
-    //if($indexOfData >=0) {//3,已绑定，更新资料
-    if(1) {//不管有没有绑定，由于存在多重绑定的可能，故都要更新资料
-      unset($user_info['appFrom']);// appFrom 不能 全更新为统一数据
-      unset($user_info['openid']);//  openid 不能 全更新为统一数据
-      unset($user_info['unionid']);// unionid 不能全更新为统一数据
-      unset($user_info['uidBinded']);//
-      $r=$db->update($prefix.'user_wx',
-        $user_info,
-        // 所有 uidBinded 相等的都是同一用户，要全更新
-        // 但 openid unionid 字段不能更新
-        ['uidBinded'=>$uidBinded,'LIMIT'=>100]);
-        
-        // 用下面这个，则只会更新一行。
-        // 但用户可能通过 web，公众号多途径登录，故会存在旧的用户资料
-        //['id'=>$r_old[$indexOfData]['id'],'LIMIT'=>1]);
-        
-    } 
-    api_g('$r_new',$r);
-    return $uidBinded;//;
 
   }
 }
