@@ -151,7 +151,6 @@ class BINDWX{
     $user_info['province']=$uif['province'];
     $user_info['country']=$uif['country'];
    
-    $user_info['groupid']=-3;//随便写个数，用于识别与旧用户数据库区别。
     if($appid==$apps['main'][0]) {
       $sys_mp_tk=WX::GetToken();
       $info_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $sys_mp_tk . '&openid=' . $json_token['openid'];
