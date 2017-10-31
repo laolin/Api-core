@@ -164,7 +164,7 @@ class class_wx{
     
     $prefix=api_g("api-table-prefix");
     $r2=$db->select($prefix.'user_wx',
-      ['uidBinded','nickname','sex','headimgurl'],
+      ['subscribe','subscribe_time','uidBinded','nickname','sex','headimgurl'],
       ['uidBinded'=>$arrIds ]  );
 
     //根据 $idx 的索引，把wxinfo加到 $d[data] 中
