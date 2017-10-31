@@ -191,13 +191,13 @@ class BINDWX{
       ]]
       );
     $uidBinded=0;
-    $appBinded=-1;
+    $indexOfData=-1;
     if($r_old) {
       api_g('$r_old',$r_old);
       $uidBinded=$r_old[0]['uidBinded'];//默认数据中不会发生绑定到多个UID的情况。
       for($i=count($r_old);$i--; ) {
         if($appid==$r_old[$i]['appFrom']) {
-          $appBinded=$i;
+          $indexOfData=$i;
           break;
         }
       }
@@ -216,22 +216,35 @@ class BINDWX{
     $user_info['uidBinded']=$uidBinded;
       
     
-    //2, appBinded >=0 , 已绑定
-    //3, else (appBinded== -1), 未绑定
+    //2, else (indexOfData< 0), 未绑定
+    //3, indexOfData >=0 , 已绑定
     
-    if($appBinded >=0) {//2,已绑定，更新资料
-      $r=$db->update($prefix.'user_wx',
-        $user_info,
-        ['and'=>['id'=>$r_old[$appBinded]['id']],'LIMIT'=>1]);
-    } else {//3,未绑定，添加绑定
+   if($indexOfData < 0){//2,未绑定，添加绑定
       $user_info['appFrom']=$appid;
       $r=$db->insert($prefix.'user_wx',
         $user_info);
       $id=$r;
     }
+    
+    
+    //if($indexOfData >=0) {//3,已绑定，更新资料
+    if(1) {//不管有没有绑定，由于存在多重绑定的可能，故都要更新资料
+      unset($user_info['appFrom']);// appFrom 不能 全更新为统一数据
+      unset($user_info['openid']);//  openid 不能 全更新为统一数据
+      unset($user_info['unionid']);// unionid 不能全更新为统一数据
+      unset($user_info['uidBinded']);//
+      $r=$db->update($prefix.'user_wx',
+        $user_info,
+        // 所有 uidBinded 相等的都是同一用户，要全更新
+        // 但 openid unionid 字段不能更新
+        ['uidBinded'=>$uidBinded,'LIMIT'=>100]);
+        
+        // 用下面这个，则只会更新一行。
+        // 但用户可能通过 web，公众号多途径登录，故会存在旧的用户资料
+        //['id'=>$r_old[$indexOfData]['id'],'LIMIT'=>1]);
+        
+    } 
     api_g('$r_new',$r);
-    //$vv=API::data(['uidBinded',$uidBinded,'appBinded',$appBinded,'r_old',$r_old,'r_NEW',$r,$db]);
-    //var_dump($vv);
     return $uidBinded;//;
 
   }
