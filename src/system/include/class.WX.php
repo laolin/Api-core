@@ -73,6 +73,47 @@ class WX {
 
   }
   
+  public static function get_users( $ids ) {
+    //if( ! USER::userVerify() ) {
+    //  return API::msg(2001,'Error verify token.');
+    //}
+    if(!$ids) {
+      return API::msg(3002,'No user.');
+    }
+    $users=explode(',',$ids);
+    
+    $d=USER::get_users( $users );
+    
+    if(API::is_error($d)) {
+      return $d;
+    }
+    $arrIds=[];
+    $idx=[];//保存id在 返回数据$d[data]的下标
+    //为有效用户的uid
+    for($i=count($d['data']);$i--; ) {
+      $arrIds[$i]=$d['data'][$i]['uid'];
+      $idx[$d['data'][$i]['uid']]=$i;
+    }
+    
+    $db=API::db();
+    
+    $prefix=api_g("api-table-prefix");
+    $r2=$db->select($prefix.'user_wx',
+      ['subscribe','subscribe_time','uidBinded','nickname','sex','headimgurl'],
+      ['uidBinded'=>$arrIds ]  );
+
+    //根据 $idx 的索引，把wxinfo加到 $d[data] 中
+    if(count($r2)) {
+      for($i=0;$i<count($r2);$i++) {
+        $d['data'][ $idx[$r2[$i]['uidBinded']] ]['wxinfo']=$r2[$i];
+      }
+    }
+    
+    
+    return $d;
+  }
+  
+  
   static function GetToken() {
     //注意
     //目前依靠从下面文件中的函数 WxToken::xxx() 
@@ -89,6 +130,25 @@ class WX {
     
     $r=$db->select($prefix.'user_wx',
       ['uidBinded','openid'],
+      [
+        'and'=>[ 'uidBinded'=>$uidArr, 'appFrom'=>$appid ],
+        'LIMIT'=>999
+      ]
+    );
+    return $r;
+  }
+  
+  //返回是否关注
+  static function isUserGz($uid,$appid) {
+    $prefix=api_g("api-table-prefix");
+    $db=API::db();
+    
+    $apps=api_g('WX_APPS');
+    $appid==$apps['main'][0];
+  
+    $r=$db->select($prefix.'user_wx',
+      ['uidBinded','openid','openid'
+      ],
       [
         'and'=>[ 'uidBinded'=>$uidArr, 'appFrom'=>$appid ],
         'LIMIT'=>999
