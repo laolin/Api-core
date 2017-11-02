@@ -29,13 +29,20 @@ class WX {
     
     //1,  uidBinded=0, 需要到根用户表中创建一个新用户
     if(!$uidBinded) { // not binded to any uid, so create one
-      $r_ad=USER::__ADMIN_addUser($uname,//用户名： wx-xxx
-        'ab:'.time()//随便指定一个不可登录的密码
-      );
-      if($r_ad['errcode']!=0) {
-        return $r_ad;
+    
+      //有可能以前绑定失败，故查找一下uname 是否存在
+      $r_o2=$db->get($prefix.'user',['uid'],['uname'=>$uname]);
+      if($r_o2) {//uname  存在
+        $uidBinded=$r_o2['uid'];
+      } else {//uname 不存在
+        $r_ad=USER::__ADMIN_addUser($uname,//用户名： wx-xxx
+          'ab:'.time()//随便指定一个不可登录的密码
+        );
+        if($r_ad['errcode']!=0) {
+          return $r_ad;
+        }
+        $uidBinded=$r_ad['data'];
       }
-      $uidBinded=$r_ad['data'];
     }
     $user_info['uidBinded']=$uidBinded;
       
