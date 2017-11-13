@@ -50,7 +50,7 @@ class class_log {
       `cur_time` > $secAfter 
       group by uid 
       order by n DESC 
-      LIMIT 100";
+      LIMIT 1000";
     $r=$db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     //var_dump($db);
     if(count($r))
