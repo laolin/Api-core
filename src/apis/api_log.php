@@ -26,7 +26,7 @@ class class_log {
     //0~30天
     $day=intval(API::INP('day'));
     if($day<0)$day=0;
-    if($day>30)$day=30;
+    if($day>365)$day=365;
     
     //0~24小时
     $hour=intval(API::INP('hour'));
