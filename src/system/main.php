@@ -50,21 +50,22 @@ require_once api_g('path-sys').'/include/include.all.php';
 
 
 function main() {
-  $r=api_core__runapi();
-  if($r)return API::json($r);
-}
-
-//此函数不 调用 API::json，不会显示内容给客户端。
-function api_core__runapi() {
   api_g('time',Date('Y-m-d H:i:s'));
   api_g('YmdHis',Date('YmdHis'));
   
-  $data=[];
   
   $api=isset($_GET['api'])?trim($_GET['api']):'';
   $call=isset($_GET['call'])?trim($_GET['call']):'';
   $para1=isset($_GET['__para1'])?trim($_GET['__para1']):'';
   $para2=isset($_GET['__para2'])?trim($_GET['__para2']):'';
+  $r=api_core__runapi($api,$call,$para1,$para2);
+
+  if($r)return API::json($r);
+}
+
+//此函数不 调用 API::json，不会显示内容给客户端。
+function api_core__runapi($api,$call,$para1,$para2) {
+  $data=[];
   
   
   api_g('api',"/$api/$call/$para1/$para2");
