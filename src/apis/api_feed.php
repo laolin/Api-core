@@ -23,6 +23,10 @@ class class_feed {
   static function userVerify() {
     return USER::userVerify();
   }
+  static function adminVerify() {
+    //TODO 暂写死管理员权限数值
+    return USER::userVerify()&&USER::checkUserRights($uid,0x10000);
+  }
   
   //test
   public static function test( ) {
@@ -88,8 +92,7 @@ class class_feed {
       return API::msg(202001,'error userVerify');
     $uid=API::INP('uid');
     $fid=API::INP('fid');
-    if($needadmin &&
-       ! USER::checkUserRights($uid,0x10000) ) {//TODO 暂写死管理员权限数值
+    if($needadmin && ! self::adminVerify()) {
       return API::msg(202001,'error adminVerify');
     }
     
@@ -212,6 +215,10 @@ class class_feed {
     return self::update_special('access',$access);
   }
   static function update_special( $key,$val ) {
+    $r=self::userVerify();
+    if(!$r)
+      return API::msg(202001,'error userVerify');
+
     $keyList=['del','access'];
     if (!in_array($key, $keyList)) {
       return API::msg(202001,'error key '.$key);
@@ -219,16 +226,16 @@ class class_feed {
 
     $uid=API::INP('uid');    
    
-    $r=USER::checkUserRights($uid,0x10000);
-    if(!$r)
-      return API::msg(202001,'error access');
-    
     $fid=API::INP('fid');
     //要确保fid是对应一个存在的数据
     $r=FEED::feed_get($uid,$fid,'*');
     if(API::is_error($r)){
       return $r;
     }
+    if($r['data']['uid']!=$uid && ! self::adminVerify() ) {
+      return API::msg(202001,'Not-admin, cannot modify data of uid:'.$r['data']['uid']);
+    }
+    
     $r=FEED::feed_update($fid,[$key=>$val]);
     return API::data($r);
   }  
