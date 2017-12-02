@@ -146,12 +146,12 @@ class WX {
   }
   
   //返回是否关注
-  static function isUserGz($uid,$appid) {
+  static function isUserGz($uid,$appid='') {
     $prefix=api_g("api-table-prefix");
     $db=API::db();
     
     $apps=api_g('WX_APPS');
-    $appid==$apps['main'][0];
+    if($appid=='')$appid=$apps['main'][0];
   
     $r=$db->select($prefix.'user_wx',
       ['uidBinded','openid','openid'
