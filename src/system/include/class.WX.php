@@ -80,6 +80,46 @@ class WX {
 
   }
   
+  
+  static public function update_user_by_uid( $uid ){
+    $apps=api_g('WX_APPS');
+    $appid=$apps['main'][0];
+    $op=WX::getOpenIdByUid($appid,$uid);
+    $uinfo=self::update_user_by_openid($appid,$op[0]['openid']);
+    return $uinfo;
+  }
+  
+  
+  static public function update_user_by_openid($appid,$openid){
+    $sys_mp_tk=WX::GetToken();
+    $info_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $sys_mp_tk . '&openid=' . $openid;
+    $uif = json_decode(file_get_contents($info_url),true);
+
+    // 字段，名字要和数据库要对应
+    $user_info=[];
+    
+    $user_info['openid']=$uif['openid'];
+    $user_info['subscribe']=$uif['subscribe'];
+
+    $uif['subscribe_time']&&$user_info['subscribe_time']=$uif['subscribe_time'];
+    $uif['groupid']&&$user_info['groupid']=$uif['groupid'];
+
+    $uif['unionid']&&$user_info['unionid']=$uif['unionid'];
+    $uif['nickname']&&$user_info['nickname']=$uif['nickname'];
+    $uif['headimgurl']&&$user_info['headimgurl']=$uif['headimgurl'];
+    $uif['sex']&&$user_info['sex']=$uif['sex'];
+    $uif['language']&&$user_info['language']=$uif['language'];
+    $uif['city']&&$user_info['city']=$uif['city'];
+    $uif['province']&&$user_info['province']=$uif['province'];
+    $uif['country']&&$user_info['country']=$uif['country'];
+    
+    $uname='wx-'.substr($user_info['openid'],-8);
+    $uidBinded = WX::save_user($appid,$user_info,$uname);
+    $user_info['uidBinded']=$uidBinded;
+    return $user_info;
+  
+  } 
+  
   public static function get_users( $ids ) {
     //if( ! USER::userVerify() ) {
     //  return API::msg(2001,'Error verify token.');
