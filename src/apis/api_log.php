@@ -59,4 +59,46 @@ class class_log {
     
     
   }
+  public static function user() { 
+    $uid=API::INP('uid');
+    $r=self::_assertAdmin($uid);
+    if(API::is_error($r))
+      return $r; 
+    $userid=API::INP('userid');
+    
+    //0~30天
+    $day=intval(API::INP('day'));
+    if($day<0)$day=0;
+    if($day>365)$day=365;
+    
+    //0~24小时
+    $hour=intval(API::INP('hour'));
+    if($hour<0)$hour=0;
+    if($hour>24) $hour=24;
+    
+    //默认2小时
+    if($hour==0 && $day==0) {
+      $hour=2;
+    }
+    $secAfter = time() - $hour * 3600 - $day * 24 * 3600;
+      
+    $tablename=self::_tableName();
+    
+    $db=api_g("db");
+
+    $sql=
+      "select  `api`,`get`,`host`,`time`,
+      from `$tablename`
+      where uid = $userid and 
+      `cur_time` > $secAfter 
+      order by id DESC 
+      LIMIT 1000";
+    $r=$db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    //var_dump($db);
+    if(count($r))
+      return API::data($r);
+    return API::msg(1000,'E:noLog:'.$userid);
+    
+    
+  }
 }
