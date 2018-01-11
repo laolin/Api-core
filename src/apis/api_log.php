@@ -87,7 +87,7 @@ class class_log {
     $db=api_g("db");
 
     $sql=
-      "select  `api`,`get`,`host`,`time`,
+      "select  `api`,`get`,`host`,`time`
       from `$tablename`
       where uid = $userid and 
       `cur_time` > $secAfter 
