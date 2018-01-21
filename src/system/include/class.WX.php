@@ -1,5 +1,7 @@
 <?php
 
+use DJApi\API as DjApi;
+
 class WX {
   
   static public function save_user($appid,$user_info,$uname){
@@ -160,8 +162,12 @@ class WX {
     return $d;
   }
   
-  
+
   static function GetToken() {
+    $json = DjApi::post("https://api.jdyhy.com/test/response/", "wx/access_token", ['name'=>'请高手']);
+    //print_r($json);
+    return $json['datas']['access_token'];
+
     //注意
     //目前依靠从下面文件中的函数 WxToken::xxx() 
     // 获取全局 access_token
