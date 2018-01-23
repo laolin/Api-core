@@ -37,6 +37,7 @@ class Request {
     $this->call  = $call;
     $this->para1 = $options['para1'];
     $this->para1 = $options['para1'];
+    $this->query = $_REQUEST;
     if(!$this->call ) $this->call  = 'main';
     if(!$this->para1) $this->para1 = '';
     if(!$this->para1) $this->para1 = '';
@@ -53,6 +54,7 @@ class Request {
 
     require_once($apiFile);
     $C="class_{$this->api}";
+    $CALL="{$this->call}";
     if(! class_exists($C) ) {
       return API::error(API::E_CLASS_NOT_EXITS, '请求错误', [$this, $apiFile, $C]);
     }
@@ -61,10 +63,10 @@ class Request {
       // 调用共享 API 函数
       return $C::API($this->call, $para1, $para2);
     }
-    else if(! method_exists($C,$this->call) ) {
+    else if(! method_exists($C,$CALL) ) {
       return API::error(API::E_FUNCTION_NOT_EXITS, '请求错误');
     }
-    return $C::$this->call($para1, $para2);
+    return $C::$CALL($this, $para1, $para2);
   }
 
   /**

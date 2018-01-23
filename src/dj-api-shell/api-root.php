@@ -141,7 +141,7 @@ class API{
     curl_setopt ($ch, CURLOPT_REFERER, "http://pgy");
     curl_setopt($ch, CURLOPT_POST, 1);
     if(is_array($param) && count($param)>0){
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($param));
     }
     else if(is_string($param)){
       curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
