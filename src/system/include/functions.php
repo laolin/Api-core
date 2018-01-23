@@ -12,6 +12,7 @@ class API{
       else header('Content-type: application/json; charset=utf-8');
       header("Expires: Thu, 01 Jan 1970 00:00:01 GMT");
       header("Cache-Control: no-cache, must-revalidate");
+      header("Access-Control-Allow-Origin:*");
       header("Pragma: no-cache");
     }
     $str='';
