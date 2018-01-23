@@ -164,8 +164,8 @@ class WX {
   
 
   static function GetToken() {
-    $json = DjApi::post(SERVER_API_ROOT, "response/wx/access_token", ['name'=>'请高手']);
-    //print_r($json);
+    $json = DjApi::post(SERVER_API_ROOT, "server-wx/wx/access_token", ['name'=>'请高手']);
+    //error_log("GetToken: " . json_encode($json));
     return $json['datas']['access_token'];
 
     //注意
