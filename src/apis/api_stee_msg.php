@@ -14,8 +14,8 @@ class class_stee_msg{
     $from_type = $query['from_type'];
     $from_id   = $query['from_id'];
     $to_type   = $query['to_type'];
-    $to_ids    = $query['to_ids'];
-    $db = DB::db();
+    $to_ids    = explode(',', $query['to_ids']);
+    $db = DJApi\DB::db();
     // 获取 推送者 使用量(openid, name, )
 
     // 获取 推送者 详情(openid, name, )
@@ -40,7 +40,7 @@ class class_stee_msg{
     ]);
 
 
-    return API::OK(['r' => '请求成功，服务器正在为您处理', 'test'=>[
+    return DJApi\API::OK(['r' => '请求成功，服务器正在为您处理', 'test'=>[
       $from_type,
       $from_id  ,
       $to_type  ,
