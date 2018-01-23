@@ -5,8 +5,7 @@
  */
 
 namespace DJApi;
-
-require_once( "lib/medoo/medoo.php");
+if(!class_exists('medoo') ) require_once( "lib/medoo/medoo.php");
 require_once( "api-root.php");
 use DJApi\API;
 use DJApi\Configs;
