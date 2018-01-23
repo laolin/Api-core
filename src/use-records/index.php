@@ -11,11 +11,13 @@ ini_set("error_log", "php_errors.log");
 
 define('API_SHELL' , 'dj-api-shell/api-all.php');
 define('CONFIG_INC', 'config.inc.php');
+define('CONFIG_MODULE', 'config.inc.use-record.php');
 
 //echo json_encode([API_SHELL, CONFIG_INC]); return;
 
 search_require(API_SHELL , 3, '', true); // 只需要一次
 search_require(CONFIG_INC); // 请包含API-SHELL!允许多重配置，最近的覆盖远的
+search_require(CONFIG_MODULE); // 请包含API-SHELL!允许多重配置，最近的覆盖远的
 //echo "\n当前配置："; print_r(DJApi\Configs::$values);
 
 
