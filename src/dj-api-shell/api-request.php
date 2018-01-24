@@ -46,14 +46,14 @@ class Request {
   /**
    * 执行 api 调用，并返回 json 数据
    */
-  function getJson(){
+  function getJson($namespace){
     $apiFile = $this->getApiFile();
     if(!$apiFile){
       return API::error(API::E_API_NOT_EXITS, '请求错误');
     }
 
     require_once($apiFile);
-    $C="class_{$this->api}";
+    $C = ($namespace? "$namespace\\": "") ."class_{$this->api}";
     $CALL="{$this->call}";
     if(! class_exists($C) ) {
       return API::error(API::E_CLASS_NOT_EXITS, '请求错误', [$this, $apiFile, $C]);
