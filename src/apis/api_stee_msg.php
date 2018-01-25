@@ -44,6 +44,7 @@ class class_stee_msg{
    */
   public static function send($request) {
     $query = $_REQUEST;
+    $uid       = $query['uid'];
     $from_type = $query['from_type'];
     $from_id   = $query['from_id'];
     $to_type   = $query['to_type'];
@@ -59,11 +60,11 @@ class class_stee_msg{
     }
     $info = $db->get(self::$table[$from_type], $fields[$from_type], ['id'=>$from_id]);
     if($from_type == 'steefac'){
-      $info['text'] = $info['text'] ? ("擅长：{$info['text']}") : '没有数据，这里填什么？';
+      $info['text'] = $info['text'] ? ("擅长：{$info['text']}") : '';
       $info['url'] = "https://qinggaoshou.com/cmoss.html#!/fac-detail/$from_id";
     }
     if($from_type == 'steeproj'){
-      $info['text'] = $info['text'] ? ("采购量：{$info['text']}") : "没有数据，这里填什么？";
+      $info['text'] = $info['text'] ? ("采购量：{$info['text']}") : '';
       $info['url'] = "https://qinggaoshou.com/cmoss.html#!/project-detail/$from_id";
     }
 
@@ -80,14 +81,18 @@ class class_stee_msg{
         ]
       ]
     ])['datas']['R'];
+    if(!$uid || !in_array($uid, $uidGroup['from'])){
+      return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '不是管理员');
+    }
 
     // 获取 openid 列表
     $apps  = api_g('WX_APPS');
     $appid = $apps['main'][0];
-    $openidGroup = DJApi\API::post(LOCAL_API_ROOT, "user-bind/wx/openidgroups", [
+    $openidGroupJson = DJApi\API::post(LOCAL_API_ROOT, "user-bind/wx/openidgroups", [
       'appid' => $appid,
       'uid'=> $uidGroup
-    ])['datas']['R'];
+    ]);
+    $openidGroup = $openidGroupJson['datas']['R'];
 
     // 测试, 只发给自己：
     $openidGroup['to'] = [
@@ -124,9 +129,16 @@ class class_stee_msg{
     if(DJApi\API::isOK($jsonSended)) {
       $jsonRecord = DJApi\API::post(LOCAL_API_ROOT, "use-records/data/record", [
         'module' => 'cmoss',
-        'uid'    => $uidGroup['from'][0],
-        'k1'     => $from_type=='steefac' ? '公司推广': '项目推广',
-        'n'      => $jsonSended['datas']['sended']
+        'uid'    => $uid,
+        'k1'     => $from_type=='steefac' ? '公司': '项目',
+        'k2'     => '发送推广消息',
+        'n'      => $jsonSended['datas']['sended'],
+        'json'   => [
+          'from_type' => $from_type,
+          'from_id'   => $from_id,
+          'to_type'   => $to_type,
+          'to_ids'    => $to_ids
+        ]
       ]);
     }
 
@@ -134,7 +146,7 @@ class class_stee_msg{
       'DB' => $db->getShow(),
       'jsonSended' => $jsonSended,
       'uidGroup' => $uidGroup,
-      'openidGroup' => $openidGroup,
+      'openidGroupJson' => $openidGroupJson,
       'jsonRecord' => $jsonRecord
     ]]);
   }
