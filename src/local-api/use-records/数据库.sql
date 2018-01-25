@@ -4,6 +4,7 @@
 
 CREATE TABLE `api_tbl_use_record` (
   `id`   int(11) not null auto_increment,
+  `module` varchar( 32) DEFAULT '默认模块' COMMENT  '模块名字',
   `uid`  int(11) NOT NULL COMMENT '用户id',
   `time` varchar( 32) DEFAULT '' COMMENT  '时间',
   `k1`   varchar( 32) DEFAULT '' COMMENT  '主分类',
