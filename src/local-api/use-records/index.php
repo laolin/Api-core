@@ -31,7 +31,7 @@ $options = [
   "para2" => $para2
 ];
 $request = new DJApi\Request($api, $call, $options);
-DJApi\Response::response($request->getJson());
+DJApi\Response::response($request->getJson('DJApi\UseRecords'));
 
 
 

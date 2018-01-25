@@ -1,10 +1,11 @@
 <?php
-// ================================
-/*
-*/
-use DJApi\DB;
-use DJApi\API;
-use DJApi\Request\Request;
+/**
+ * 使用记录模块
+ * 1. 记录各模块、分类情况下，各项功能的使用数量及基本信息
+ * 2. 提供使用情况查询
+ */
+namespace DJApi\UseRecords;
+use DJApi;
 
 class class_data{
   static $tableName = 'api_tbl_use_record';
