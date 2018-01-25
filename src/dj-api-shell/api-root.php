@@ -63,6 +63,7 @@ class API{
   const E_API_NOT_EXITS      = 101;
   const E_CLASS_NOT_EXITS    = 102;
   const E_FUNCTION_NOT_EXITS = 103;
+  const E_PARAM_ERROR        = 201; // 参数错误
 
 
   static function cn_json($arr){
