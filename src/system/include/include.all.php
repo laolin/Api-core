@@ -1,7 +1,7 @@
 <?php
 require_once api_g('path-sys').'/include/G.php';// Good tools
 
-require_once api_g('path-sys').'/lib/medoo/medoo.php';
+if(!class_exists('medoo') ) require_once api_g('path-sys').'/lib/medoo/medoo.php';
 
 require_once api_g('path-sys').'/include/functions.php';
 
