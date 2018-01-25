@@ -26,6 +26,8 @@ class class_data{
   public static function record($request) {
     $db = DJApi\DB::db();
 
+    $json = DJApi\API::cn_json($request->safeQuery('json', []));
+
     $id = $db->insert(self::$tableName, $aa = [
       'time'   => DJApi\API::now(),
       'module' => $request->safeQuery('module', '无模块'),
@@ -34,7 +36,8 @@ class class_data{
       'k2'     => $request->safeQuery('k2'    ),
       'v1'     => $request->safeQuery('v1'    ),
       'v2'     => $request->safeQuery('v2'    ),
-      'n'      => $request->safeQuery('n'     , 0)
+      'n'      => $request->safeQuery('n'     , 0),
+      'json'   => $json
     ]);
 
     return DJApi\API::OK(['n' => $id? 1: 0, 'aa'=>$aa, 'query'=>$request->query]);
