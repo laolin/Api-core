@@ -113,11 +113,7 @@ class class_stee_msg{
       $db->getShow(),
       $jsonSended,
       $uidGroup,
-      $openidGroup,
-      $from_type,
-      $from_id  ,
-      $to_type  ,
-      $to_ids   ,
+      $openidGroup
     ]]);
   }
 
