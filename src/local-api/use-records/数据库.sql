@@ -12,6 +12,7 @@ CREATE TABLE `api_tbl_use_record` (
   `v1`   varchar(128) DEFAULT '' COMMENT  '主值',
   `v2`   varchar(128) DEFAULT '' COMMENT  '次值',
   `n`    varchar( 11) DEFAULT '' COMMENT  '数量',
+  `json` text COMMENT  '使用的相关信息',
   primary key (`id`),
   unique key `id` (`id`)
 ) DEFAULT CHARSET=utf8;
