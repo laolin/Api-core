@@ -79,8 +79,12 @@ class class_data{
       $AND['k1'] = $request->query['k1'];
     }
     $rows = $db->select(self::$tableName, $fields, ["AND"=>$AND, "GROUP"=>$GROUP]);
+    $used = [];
+    foreach($rows as $row){
+      $used[$row['k1']] = $row['n'] + 0;
+    }
 
-    return DJApi\API::OK(['rows' => $rows, "query"=>$request->query, "AND"=>$AND, "DB"=>$db->getShow()]);
+    return DJApi\API::OK(['used' => $used, "query"=>$request->query, "AND"=>$AND, "DB"=>$db->getShow()]);
   }
 
 }
