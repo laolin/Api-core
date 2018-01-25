@@ -80,5 +80,12 @@ class Request {
     }
     return false;
   }
+  /**
+   * 安全的请求参数
+   */
+  function safeQuery($name, $defaultValue = ''){
+    if(!isset($this->query[$name]))return $defaultValue;
+    return $this->query[$name];
+  }
 }
 
