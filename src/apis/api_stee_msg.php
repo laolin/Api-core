@@ -24,6 +24,11 @@ class class_stee_msg{
     return self::getTosendInfo($_REQUEST);
   }
   private static function getTosendInfo($query) {
+    $json = DJApi\API::post(LOCAL_API_ROOT, "use-records/data/count", [
+      'module' => 'cmoss',
+      'and'=>['uid'=>$uid, 'time[~]'=>"%$today"],
+      'k1'=>['公司推广', '项目推广']
+    ]);
   }
 
   /**
@@ -49,13 +54,16 @@ class class_stee_msg{
       'steefac' => ['name', 'goodat(text)'],
       'steeproj' => ['name', 'need_steel(text)']
     ];
+    if(!$fields[$from_type]){
+      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误');
+    }
     $info = $db->get(self::$table[$from_type], $fields[$from_type], ['id'=>$from_id]);
     if($from_type == 'steefac'){
-      $info['text'] = '擅长：' . $info['text'];
+      $info['text'] = $info['text'] ? ("擅长：{$info['text']}") : '没有数据，这里填什么？';
       $info['url'] = "https://qinggaoshou.com/cmoss.html#!/fac-detail/$from_id";
     }
     if($from_type == 'steeproj'){
-      $info['text'] = '采购量：' . $info['text'];
+      $info['text'] = $info['text'] ? ("采购量：{$info['text']}") : "没有数据，这里填什么？";
       $info['url'] = "https://qinggaoshou.com/cmoss.html#!/project-detail/$from_id";
     }
 
@@ -89,31 +97,45 @@ class class_stee_msg{
     ];
 
     // 请求发送
+    $first = [
+      'steefac' => '依据您的项目特点，CMOSS推荐：',
+      'steeproj' => '依据贵司产能特点，CMOSS推荐：'
+    ];
+    $remark = [
+      'steefac' => '依据为距离、价格、剩余产能…',
+      'steeproj' => '依据为距离、付款、擅长构件…'
+    ];
     $jsonSended = DJApi\API::post(LOCAL_API_ROOT, "local-wx/msg/send_tpl", [
       'name' => '请高手',
       'openids' => $openidGroup['to'],
       'url' => $info['url'],
       'tplName' => 'cmoss-资料发送提醒',
       'data' =>[
-        '尊敬的管理员，有新项目啦，快来围观',
+        $first[$from_type],
         [
           $info['name'],
           $info['text']
         ],
-        '洽谈机会，不妨一试！'
+        $remark[$from_type]
       ]
     ]);
 
     // 保存发送结果
-    if(0+$jsonSended['errcode'] === 0){
-      //
+    if(DJApi\API::isOK($jsonSended)) {
+      $jsonRecord = DJApi\API::post(LOCAL_API_ROOT, "use-records/data/record", [
+        'module' => 'cmoss',
+        'uid'    => $uidGroup['from'][0],
+        'k1'     => $from_type=='steefac' ? '公司推广': '项目推广',
+        'n'      => $jsonSended['datas']['sended']
+      ]);
     }
 
     return DJApi\API::OK(['r' => '请求成功，服务器正在为您处理', 'test'=>[
-      $db->getShow(),
-      $jsonSended,
-      $uidGroup,
-      $openidGroup
+      'DB' => $db->getShow(),
+      'jsonSended' => $jsonSended,
+      'uidGroup' => $uidGroup,
+      'openidGroup' => $openidGroup,
+      'jsonRecord' => $jsonRecord
     ]]);
   }
 
