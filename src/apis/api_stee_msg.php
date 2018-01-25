@@ -82,7 +82,12 @@ class class_stee_msg{
       ]
     ])['datas']['R'];
     if(!$uid || !in_array($uid, $uidGroup['from'])){
-      return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '不是管理员', ['uid'=>$uid, 'uidGroup'=>$uidGroup]);
+      return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '不是管理员', ['uid'=>$uid, 'uidGroup'=>$uidGroup, 'query'=>[
+        'from_type' => $from_type,
+        'from_id'   => $from_id,
+        'to_type'   => $to_type,
+        'to_ids'    => $to_ids
+      ]]);
     }
 
     // 获取 openid 列表
