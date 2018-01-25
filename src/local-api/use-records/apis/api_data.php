@@ -40,6 +40,20 @@ class class_data{
     return DJApi\API::OK(['n' => $id? 1: 0, 'aa'=>$aa, 'query'=>$request->query]);
   }
 
+
+
+  /**
+   * 记录使用数量查询
+   * api地址: data/count
+   *
+   * @query module 模块名称
+   * @query uid 用户id
+   * @query k1 主分类
+   * @query k2 次分类(可选)
+   * @query v1 主值(可选)
+   * @query v2 次值(可选)
+   * @query n 数量
+   */
   public static function count($request) {
 
     $fieldsAll = ['uid', 'time', 'k1', 'k2'];
@@ -49,19 +63,21 @@ class class_data{
     foreach($request->query['and'] as $k => $v){
       $subk = explode('[', $k);
       if(in_array($subk[0], $fieldsAll)){
+        // PHP-BUG 在 curl 中当键名含有]时，
+        if(count($subk) > 1 && substr($k, -1) != ']') $k = $k . ']';
         $AND[$k] = $v;
       }
     }
-    
-    $db = DB::db();
+
+    $db = DJApi\DB::db();
     if($request->query['k1']){
-      $fields = ['k1', 'count(n) as n'];
+      $fields = ['k1', 'sum(n) as n'];
       $GROUP = 'k1';
       $AND['k1'] = $request->query['k1'];
     }
     $rows = $db->select(self::$tableName, $fields, ["AND"=>$AND, "GROUP"=>$GROUP]);
 
-    return API::OK(['rows' => $rows, "DB"=>$db->getShow()]);
+    return DJApi\API::OK(['rows' => $rows, "query"=>$request->query, "AND"=>$AND, "DB"=>$db->getShow()]);
   }
 
 }
