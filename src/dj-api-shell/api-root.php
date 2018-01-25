@@ -13,16 +13,17 @@ class Configs {
    * 设置一个配置值
    */
   static function set($keys, $value){
-    if(!is_array($key)){
+    if(!is_array($keys)){
       $keys = [$keys];
     }
+    $length = count($keys);
     $arr = &self::$values;
-    foreach($keys as $k){
-      if(!is_array($arr)) $arr = [];
-      if(!isset($arr[$k])) $arr[$k] = '';
+    for($i =0; $i < $length - 1; $i ++){
+      $k = $keys[$i];
+      if(!is_array($arr[$k])) $arr[$k] = [];
       $arr = &$arr[$k];
     }
-    return $arr = $value;
+    $arr[$keys[$length - 1]] = $value;
   }
 
   /**
@@ -32,10 +33,10 @@ class Configs {
     if(!is_array($keys)){
       $keys = [$keys];
     }
-    $arr = &self::$values;
+    $arr = self::$values;
     foreach($keys as $k){
       if(!isset($arr[$k])) return "";
-      $arr = &$arr[$k];
+      $arr = $arr[$k];
     }
     return $arr;
   }

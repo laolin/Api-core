@@ -61,7 +61,7 @@ class Request {
 
     if( method_exists($C, 'API') ) {
       // 调用共享 API 函数
-      return $C::API($this->call, $para1, $para2);
+      return $C::API($this->call, $this, $para1, $para2);
     }
     else if(! method_exists($C,$CALL) ) {
       return API::error(API::E_FUNCTION_NOT_EXITS, '请求错误');
