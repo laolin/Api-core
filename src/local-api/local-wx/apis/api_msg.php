@@ -26,7 +26,7 @@ class class_msg{
     $data    = $request->query['data'];
     $url     = $request->query['url'];
     $R = self::SendTPL($access_token, $openids, $tplName, $data, $url);
-    return API::OK([$R, 'access_token'=>$json, $access_token]);
+    return API::OK(['sended'=> count($openids), 'R'=>$R]);
   }
 
   /**
