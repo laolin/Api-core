@@ -93,6 +93,10 @@ class API{
     return self::toJson([0, $datas]);
   }
 
+  public static function isOk($json) {
+    return $json && 0 + $json['errcode'] === 0;
+  }
+
   /**
    * 两个旧版函数
    */
@@ -102,6 +106,18 @@ class API{
   public static function datas($datas = []) {
     return self::OK([0, $datas]);
   }
+
+
+  /**
+   * 时间函数
+   */
+  public static function now() {
+    return date('Y-m-d H:i:s');
+  }
+  public static function today() {
+    return date('Y-m-d');
+  }
+
 
   /**
    * 向其它模块发出请求
