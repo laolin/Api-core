@@ -24,11 +24,18 @@ class class_stee_msg{
     return self::getTosendInfo($_REQUEST);
   }
   private static function getTosendInfo($query) {
+    $uid       = $query['uid'];
+    $from_type = $query['from_type'];
+    $from_id   = $query['from_id'];
+    $to_type   = $query['to_type'];
+    $to_ids    = $query['to_ids'];
     $json = DJApi\API::post(LOCAL_API_ROOT, "use-records/data/count", [
       'module' => 'cmoss',
-      'and'=>['uid'=>$uid, 'time[~]'=>"%$today"],
-      'k1'=>['公司推广', '项目推广']
+      'and'=>['uid'=>$uid, "time[~]"=>DJApi\API::today() . "%"],
+      'k2' => '发送推广消息',
+      'k1' =>['公司', '项目']
     ]);
+    return $json;
   }
 
   /**
@@ -43,6 +50,11 @@ class class_stee_msg{
    * @return rest: 你的剩余额度有几条
    */
   public static function send($request) {
+    $used = self::getTosendInfo($_REQUEST)['datas']['used'];
+    $totleUsed = $used['公司'] + $used['项目'];
+    if($totleUsed >= 50){
+      return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '额度已用完');
+    }
     $query = $_REQUEST;
     $uid       = $query['uid'];
     $from_type = $query['from_type'];
