@@ -2,7 +2,8 @@
 // ================================
 /*
 */
-require_once dirname(dirname(__FILE__)) . "/dj-api-shell/api-all.php";
+namespace RequestByApiShell;
+use DJApi;
 
 class class_stee_msg{
   static $table = [
@@ -21,7 +22,7 @@ class class_stee_msg{
    * @return rest: 你的剩余额度有几条
    */
   public static function presend($request) {
-    return self::getTosendInfo($_REQUEST);
+    return self::getTosendInfo($request->query);
   }
   private static function getTosendInfo($query) {
     $uid       = $query['uid'];
