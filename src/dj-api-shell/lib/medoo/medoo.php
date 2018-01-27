@@ -7,6 +7,10 @@
  * Copyright 2016, Angel Lai
  * Released under the MIT license
  */
+namespace DJApi;
+use \PDO as PDO;
+
+
 class medoo
 {
 	// General

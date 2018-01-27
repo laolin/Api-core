@@ -5,12 +5,12 @@
  */
 
 namespace DJApi;
-if(!class_exists('medoo') ) require_once( "lib/medoo/medoo.php");
+require_once( "lib/medoo/medoo.php");
 require_once( "api-root.php");
-use DJApi\API;
+use DJApi;
 use DJApi\Configs;
 
-class DB extends \medoo {
+class DB extends DJApi\medoo {
   public static $_db;
   public static function db(){
     if(!self::$_db) self::$_db = new DB();

@@ -120,6 +120,14 @@ class API{
 
 
   /**
+   * 直接调用本地 API 函数
+   * 方式：函数调用(暂时模拟，仅提供接口，以后再实现)
+   */
+  static function call($module, $api, $param) {
+    return self::post($module, $api, $param);
+  }
+
+  /**
    * 向其它模块发出请求
    * 方式：curl, post
    */

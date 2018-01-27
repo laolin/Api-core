@@ -18,14 +18,13 @@
   ];
   $request = new Request($api, $call, $options);
 
-  echo API::cn_json($request->getJson());
+  echo DJApi\API::cn_json($request->getJson());
 
  */
 
 namespace DJApi;
-
+use DJApi;
 require_once( "api-root.php");
-use DJApi\API;
 
 
 class Request {
@@ -49,14 +48,14 @@ class Request {
   function getJson($namespace){
     $apiFile = $this->getApiFile();
     if(!$apiFile){
-      return API::error(API::E_API_NOT_EXITS, '请求错误');
+      return DJApi\API::error(DJApi\API::E_API_NOT_EXITS, '请求错误');
     }
 
     require_once($apiFile);
     $C = ($namespace? "$namespace\\": "") ."class_{$this->api}";
     $CALL="{$this->call}";
     if(! class_exists($C) ) {
-      return API::error(API::E_CLASS_NOT_EXITS, '请求错误', [$this, $apiFile, $C]);
+      return DJApi\API::error(DJApi\API::E_CLASS_NOT_EXITS, '请求错误', [$this, $apiFile, $C]);
     }
 
     if( method_exists($C, 'API') ) {
@@ -64,7 +63,7 @@ class Request {
       return $C::API($this->call, $this, $para1, $para2);
     }
     else if(! method_exists($C,$CALL) ) {
-      return API::error(API::E_FUNCTION_NOT_EXITS, '请求错误');
+      return DJApi\API::error(DJApi\API::E_FUNCTION_NOT_EXITS, '请求错误');
     }
     return $C::$CALL($this, $para1, $para2);
   }
