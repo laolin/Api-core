@@ -29,7 +29,7 @@ class class_stee_msg{
     $from_id   = $query['from_id'];
     $to_type   = $query['to_type'];
     $to_ids    = $query['to_ids'];
-    $json = DJApi\API::post(LOCAL_API_ROOT, "use-records/data/count", [
+    $json = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/count", [
       'module' => 'cmoss',
       'and'=>['uid'=>$uid, "time[~]"=>DJApi\API::today() . "%"],
       'k2' => '发送推广消息',
@@ -81,7 +81,7 @@ class class_stee_msg{
     }
 
     // 获取 uid 列表
-    $uidGroup = DJApi\API::post(LOCAL_API_ROOT, "user-bind/steeobj/adminidgroups", [
+    $uidGroup = DJApi\API::call(LOCAL_API_ROOT, "user-bind/steeobj/adminidgroups", [
       'group'=> [
         "to" => [
           'type' => $to_type,
@@ -105,7 +105,7 @@ class class_stee_msg{
     // 获取 openid 列表
     $apps  = api_g('WX_APPS');
     $appid = $apps['main'][0];
-    $openidGroupJson = DJApi\API::post(LOCAL_API_ROOT, "user-bind/wx/openidgroups", [
+    $openidGroupJson = DJApi\API::call(LOCAL_API_ROOT, "user-bind/wx/openidgroups", [
       'appid' => $appid,
       'uid'=> $uidGroup
     ]);
@@ -127,7 +127,7 @@ class class_stee_msg{
       'steefac' => '依据为距离、价格、剩余产能…',
       'steeproj' => '依据为距离、付款、擅长构件…'
     ];
-    $jsonSended = DJApi\API::post(LOCAL_API_ROOT, "local-wx/msg/send_tpl", [
+    $jsonSended = DJApi\API::call(LOCAL_API_ROOT, "local-wx/msg/send_tpl", [
       'name' => '请高手',
       'openids' => $openidGroup['to'],
       'url' => $info['url'],
@@ -144,7 +144,7 @@ class class_stee_msg{
 
     // 保存发送结果
     if(DJApi\API::isOK($jsonSended)) {
-      $jsonRecord = DJApi\API::post(LOCAL_API_ROOT, "use-records/data/record", [
+      $jsonRecord = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", [
         'module' => 'cmoss',
         'uid'    => $uid,
         'k1'     => $from_type=='steefac' ? '公司': '项目',
