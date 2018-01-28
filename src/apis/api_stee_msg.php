@@ -112,12 +112,17 @@ class class_stee_msg{
     ]);
     $openidGroup = $openidGroupJson['datas']['R'];
 
-    // 测试, 只发给自己：
-    $openidGroup['to'] = [
-      'od6xzv0DW3ZEmJ1eC0t60w5Eqa8M', // 我
-      'od6xzvxb4M6WVdRYjLO4b9k1nHXo', // 老林
-      'od6xzv1_nHUey1cg-_zfXtiLde9w'  // 大照
-    ];
+    // // 测试, 只发给自己：
+    // $openidGroup['to'] = [
+    //   'od6xzv0DW3ZEmJ1eC0t60w5Eqa8M', // 我
+    //   //'od6xzvxb4M6WVdRYjLO4b9k1nHXo', // 老林
+    //   //'od6xzv1_nHUey1cg-_zfXtiLde9w', // 大照
+    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
+    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
+    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
+    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
+    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
+    // ];
 
     // 请求发送
     $first = [
