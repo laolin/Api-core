@@ -22,7 +22,13 @@ class class_stee_msg{
    * @return rest: 你的剩余额度有几条
    */
   public static function presend($request) {
-    return self::getTosendInfo($request->query);
+    $used = self::getTosendInfo($request->query);
+    return DJApi\API::OK([
+      'limit' =>[
+        'steefac'  =>['limit' => 50, 'used' => $used['公司']],
+        'steeproj' =>['limit' => 'never', 'used' => $used['项目']]
+      ]
+    ]);
   }
   private static function getTosendInfo($query) {
     $uid       = $query['uid'];
