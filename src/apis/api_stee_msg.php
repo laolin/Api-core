@@ -57,19 +57,28 @@ class class_stee_msg{
    * @return rest: 你的剩余额度有几条
    */
   public static function send($request) {
-    $used = self::getTosendInfo($_REQUEST)['datas']['used'];
-    $totleUsed = $used['公司'] + $used['项目'];
-    if($totleUsed >= 50){
-      return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '额度已用完');
-    }
     $query = $_REQUEST;
     $uid       = $query['uid'];
     $from_type = $query['from_type'];
     $from_id   = $query['from_id'];
     $to_type   = $query['to_type'];
     $to_ids    = $query['to_ids'];
+
+    // 消息额度限制
+    if($from_type == 'steefac' && !in_array($uid, [
+        301710, // 大照
+        301171, // 况
+        301168, // Authony
+      ]
+    )){
+      $used = self::getTosendInfo($_REQUEST)['datas']['used'];
+      $totleUsed = $used['公司'];
+      if($totleUsed >= 50){
+        return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '额度已用完');
+      }
+    }
     $db = DJApi\DB::db();
-    // 获取 推送者 使用量(openid, name, )
+    // 获取 推送内容基本信息
     $fields = [
       'steefac' => ['name', 'goodat(text)'],
       'steeproj' => ['name', 'need_steel(text)']
