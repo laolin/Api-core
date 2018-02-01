@@ -74,7 +74,7 @@ class class_data{
    * api地址: data/select
    *
    * @query module 模块名称
-   * @query filed 用户id
+   * @query field 用户id
    * @query and 条件
    * @query group 分组
    * @query order 排序
@@ -83,7 +83,7 @@ class class_data{
    */
   public static function select($request) {
     $module = $request->query['module'];
-    $filed  = $request->query['filed' ];
+    $field  = $request->query['field' ];
     $and    = $request->query['and'   ];
     $group  = $request->query['group' ];
     $order  = $request->query['order' ];
@@ -97,8 +97,8 @@ class class_data{
     ];
     if($group) $where['GROUP'] = $group;
     if($order) $where['ORDER'] = $order;
-    if(!$filed) $filed = '*';
-    $rows = $db->select(self::$tableName, $filed, $where);
+    if(!$field) $field = '*';
+    $rows = $db->select(self::$tableName, $field, $where);
     return DJApi\API::OK(['rows' => $rows, "query"=>$request->query, "where"=>$where, "DB"=>$db->getShow()]);
   }
 
