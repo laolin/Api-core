@@ -114,8 +114,8 @@ class API{
   public static function now() {
     return date('Y-m-d H:i:s');
   }
-  public static function today() {
-    return date('Y-m-d');
+  public static function today($nday = 0) {
+    return date('Y-m-d', time() + $nday * 3600 * 24);
   }
 
 
