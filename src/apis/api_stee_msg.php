@@ -59,6 +59,8 @@ class class_stee_msg{
   public static function send($request) {
     $query = $_REQUEST;
     $uid       = $query['uid'];
+    $uid       = $query['uid'];
+    $pageUri   = $query['page'];
     $from_type = $query['from_type'];
     $from_id   = $query['from_id'];
     $to_type   = $query['to_type'];
@@ -87,13 +89,15 @@ class class_stee_msg{
       return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误');
     }
     $info = $db->get(self::$table[$from_type], $fields[$from_type], ['id'=>$from_id]);
+    $t0 = DJApi\API::today( 0 );
+    $hash = md5($t0 . $uid . $from_id);
+
+    $info['url'] = "$pageUri#!/hash-page/$hash";
     if($from_type == 'steefac'){
       $info['text'] = $info['text'] ? ("擅长：{$info['text']}") : '';
-      $info['url'] = "https://qinggaoshou.com/cmoss.html#!/fac-detail/$from_id";
     }
     if($from_type == 'steeproj'){
       $info['text'] = $info['text'] ? ("采购量：{$info['text']}") : '';
-      $info['url'] = "https://qinggaoshou.com/cmoss.html#!/project-detail/$from_id";
     }
 
     // 获取 uid 列表
@@ -127,17 +131,19 @@ class class_stee_msg{
     ]);
     $openidGroup = $openidGroupJson['datas']['R'];
 
-    // // 测试, 只发给自己：
-    // $openidGroup['to'] = [
-    //   'od6xzv0DW3ZEmJ1eC0t60w5Eqa8M', // 我
-    //   //'od6xzvxb4M6WVdRYjLO4b9k1nHXo', // 老林
-    //   //'od6xzv1_nHUey1cg-_zfXtiLde9w', // 大照
-    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
-    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
-    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
-    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
-    //   'od6xzv0D-----------60w5Eqa8M', // 充当数量
-    // ];
+    // 测试, 只发给自己：
+    if(0){
+      $openidGroup['to'] = [
+        'od6xzv0DW3ZEmJ1eC0t60w5Eqa8M', // 我
+        //'od6xzvxb4M6WVdRYjLO4b9k1nHXo', // 老林
+        //'od6xzv1_nHUey1cg-_zfXtiLde9w', // 大照
+        'od6xzv0D-----------60w5Eqa8M', // 充当数量
+        'od6xzv0D-----------60w5Eqa8M', // 充当数量
+        'od6xzv0D-----------60w5Eqa8M', // 充当数量
+        'od6xzv0D-----------60w5Eqa8M', // 充当数量
+        'od6xzv0D-----------60w5Eqa8M', // 充当数量
+      ];
+    }
 
     // 请求发送
     $first = [
@@ -168,8 +174,10 @@ class class_stee_msg{
       $jsonRecord = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", [
         'module' => 'cmoss',
         'uid'    => $uid,
-        'k1'     => $from_type=='steefac' ? '公司': '项目',
-        'k2'     => '发送推广消息',
+        'k1'     => $from_type,
+        'k2'     => '用户推广',
+        'v1'     => $from_id,
+        'v2'     => $hash,
         'n'      => $jsonSended['datas']['sended'],
         'json'   => [
           'from_type' => $from_type,
