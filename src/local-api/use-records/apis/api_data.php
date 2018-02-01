@@ -40,7 +40,66 @@ class class_data{
       'json'   => $json
     ]);
 
-    return DJApi\API::OK(['n' => $id? 1: 0, 'aa'=>$aa, 'query'=>$request->query]);
+    return DJApi\API::OK(['n' => $id? 1: 0, 'id'=>$id, 'query'=>$request->query]);
+  }
+
+
+  /**
+   * 内部函数
+   * 解析 and 参数
+   * @return $AND
+   */
+  protected static function parseAnd($module, $and) {
+    $fieldsAll = ['uid', 'time', 'k1', 'k2', 'v1', 'v2'];
+    if(is_string($and)){
+      $and = json_decode($and, true);
+    }
+    // 解析条件， 无效的不用
+    $AND = [];
+    foreach($and as $k => $v){
+      $subk = explode('[', $k);
+      if(in_array($subk[0], $fieldsAll)){
+        // PHP-BUG 在 curl 中当键名含有]时，
+        if(count($subk) > 1 && substr($k, -1) != ']') $k = $k . ']';
+        $AND[$k] = $v;
+      }
+    }
+    $AND['module'] = $module;
+    return $AND;
+  }
+
+
+  /**
+   * 记录使用数量查询
+   * api地址: data/select
+   *
+   * @query module 模块名称
+   * @query filed 用户id
+   * @query and 条件
+   * @query group 分组
+   * @query order 排序
+   *
+   * @return 数组
+   */
+  public static function select($request) {
+    $module = $request->query['module'];
+    $filed  = $request->query['filed' ];
+    $and    = $request->query['and'   ];
+    $group  = $request->query['group' ];
+    $order  = $request->query['order' ];
+    if(!$module){
+      return DJApi\API::error(1002, '未指定模块');
+    }
+
+    $db = DJApi\DB::db();
+    $where = [
+      "AND" => self::parseAnd($module, $and)
+    ];
+    if($group) $where['GROUP'] = $group;
+    if($order) $where['ORDER'] = $order;
+    if(!$filed) $filed = '*';
+    $rows = $db->select(self::$tableName, $filed, $where);
+    return DJApi\API::OK(['rows' => $rows, "query"=>$request->query, "where"=>$where, "DB"=>$db->getShow()]);
   }
 
 
