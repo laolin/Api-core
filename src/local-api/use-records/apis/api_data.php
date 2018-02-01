@@ -118,11 +118,15 @@ class class_data{
    */
   public static function count($request) {
 
-    $fieldsAll = ['uid', 'time', 'k1', 'k2'];
+    $fieldsAll = ['uid', 'time', 'k1', 'k2', 'v1', 'v2'];
 
+    $and = $request->query['and'];
+    if(is_string($and)){
+      $and = json_decode($and, true);
+    }
     // 解析条件， 无效的不用
     $AND = [];
-    foreach($request->query['and'] as $k => $v){
+    foreach($and as $k => $v){
       $subk = explode('[', $k);
       if(in_array($subk[0], $fieldsAll)){
         // PHP-BUG 在 curl 中当键名含有]时，
@@ -143,7 +147,7 @@ class class_data{
       $used[$row['k1']] = $row['n'] + 0;
     }
 
-    return DJApi\API::OK(['used' => $used, "query"=>$request->query, "AND"=>$AND, "DB"=>$db->getShow()]);
+    return DJApi\API::OK(['used' => $used, "tableName" => self::$tableName, "query"=>$request->query, "AND"=>$AND, "DB"=>$db->getShow()]);
   }
 
 }
