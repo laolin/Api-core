@@ -8,19 +8,18 @@ namespace DJApi;
 require_once( "lib/medoo/medoo.php");
 require_once( "api-root.php");
 use DJApi;
-use DJApi\Configs;
 
 class DB extends DJApi\medoo {
   public static $_db;
-  public static function db(){
-    if(!self::$_db) self::$_db = new DB();
+  public static function db($options = []){
+    if(!self::$_db) self::$_db = new DB($options);
     return self::$_db;
   }
   /**
    * 构造函数，保存参数
    */
   public function __construct($options = []) {
-    $defaults = Configs::get(['main_db', 'medoo']);
+    $defaults = DJApi\Configs::get(['main_db', 'medoo']);
     $keys = [
       'database_type',
       'database_name',
@@ -37,7 +36,7 @@ class DB extends DJApi\medoo {
     parent::__construct($optn);
   }
   static function table($name){
-    $tableName = Configs.get(["main_db", "tableName", $name]);
+    $tableName = DJApi\Configs.get(["main_db", "tableName", $name]);
     return $tableName ? $tableName : $name;
   }
   //DEBUG

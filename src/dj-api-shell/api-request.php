@@ -60,12 +60,16 @@ class Request {
 
     if( method_exists($C, 'API') ) {
       // 调用共享 API 函数
-      return $C::API($this->call, $this, $para1, $para2);
+      return $C::API($this->call, $this);
     }
     else if(! method_exists($C,$CALL) ) {
       return DJApi\API::error(DJApi\API::E_FUNCTION_NOT_EXITS, '请求错误');
     }
-    return $C::$CALL($this, $para1, $para2);
+    $json = $C::$CALL($this);
+    if(DJApi\API::$enable_debug && DJApi\API::$debug){
+      $json['__debug__'] = DJApi\API::$debug;
+    }
+    return $json;
   }
 
   /**
@@ -73,12 +77,22 @@ class Request {
    * 根据构造的参数，获取需要调用的文件名
    */
   protected function getApiFile(){
-    $apiFile = dirname($_SERVER['SCRIPT_FILENAME']) . "/apis/api_{$this->api}.php";
-    if(file_exists($apiFile)){
-      return $apiFile;
+    $paths = DJApi\Configs::get('main-api-path');
+    if(!$paths){
+      $paths = ['apis', 'apis-core'];
+    }
+    if(is_string($paths)) {
+      $paths = [$paths];
+    }
+    foreach($paths as $path){
+      $apiFile = dirname($_SERVER['SCRIPT_FILENAME']) . "/$path/api_{$this->api}.php";
+      if(file_exists($apiFile)){
+        return $apiFile;
+      }
     }
     return false;
   }
+
   /**
    * 安全的请求参数
    */

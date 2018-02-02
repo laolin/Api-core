@@ -5,6 +5,36 @@
  */
 
 namespace DJApi;
+use DJApi;
+
+/**
+ * 自动加载自己的类库
+ * @类库基目录: 从 index.php 所在目录开始计算
+ *   默认：['classes', 'apis/classes', 'system/include']
+ *   自定义：
+ *     DJApi\Configs::set('main-include-path', [include_path1, ...])
+ */
+class AutoClass {
+  static function classLoader($class){
+    $fn = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+    $paths = DJApi\Configs::get('main-include-path');
+    if(!$paths){
+      $paths = ['classes', 'apis/classes', 'system/include'];
+    }
+    if(is_string($paths)) {
+      $paths = [$paths];
+    }
+    foreach($paths as $path){
+      $fullFilename = dirname($_SERVER['SCRIPT_FILENAME']) . "/$path/$fn";
+      // error_log("查找类名： {$fullFilename}");
+      if(file_exists($fullFilename)){
+        require_once $fullFilename;
+      }
+    }
+  }
+}
+spl_autoload_register('DJApi\AutoClass::classLoader');
+
 
 class Configs {
   static $values = [];
@@ -64,6 +94,21 @@ class API{
   const E_CLASS_NOT_EXITS    = 102;
   const E_FUNCTION_NOT_EXITS = 103;
   const E_PARAM_ERROR        = 201; // 参数错误
+
+
+  static $debug;
+  static $enable_debug = false;
+  static function enable_debug($b){
+    self::$enable_debug = $b;
+  }
+  static function debug($value, $k = ''){
+    if($k){
+      self::$debug[$k] = $value;
+    }
+    else{
+      self::$debug[] = $value;
+    }
+  }
 
 
   static function cn_json($arr){
