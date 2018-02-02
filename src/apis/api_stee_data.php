@@ -9,6 +9,48 @@ class class_stee_data{
   const MAX_REREAD_DAYS = 10; // 在几天之内查看的，允许直接再次查看而不用额度
 
 
+  /**
+   * 请求 hash 页面
+   * @request hash : 页面推送时生成的 hash
+   * @return DJApi\API::OK([
+   *   path,  // 页面地址
+   *   search // 页面参数
+   * ])
+   */
+  public static function hash($request) {
+    $uid = $request->query['uid'];
+    $hash = $request->query['hash'];
+    $json = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
+      'module' => 'cmoss',
+      'and' => DJApi\API::cn_json([
+        'v2' => $hash
+      ])
+    ]);
+
+    $row = $json['datas']['rows'][0];
+    $type = $row['k1'];
+    $facid = $row['k2'];
+
+    if($row['k1'] == 'steefac' && $row['k2'] == '用户推广'){
+      $path = "/fac-detail/{$row['v1']}";
+      self::recordReadDetail($uid, $type, $facid);
+    }
+    if($row['k1'] == 'steeproj' && $row['k2'] == '用户推广'){
+      $path = "/project-detail/{$row['v1']}";
+      self::recordReadDetail($uid, $type, $facid);
+    }
+
+    return DJApi\API::OK([
+      'json' => $json,  // 页面地址
+      'path' => $path,  // 页面地址
+      'search' => $search // 页面参数
+    ]);
+  }
+
+
+
+
+
 
 
 
