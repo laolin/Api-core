@@ -10,6 +10,39 @@ class class_stee_data{
 
 
   /**
+   * 查看详情前，预请求
+   * @request type: steefac/steeproj ，要查看详情的类型，公司或项目
+   * @request facid: id ，公司若项目的 id
+   * 返回：
+   * @return API::OK([limit])
+   * @return limit='never': 不受限制
+   * @return limit.max: 当前剩余额度
+   * @return limit.used: 当前已用额度
+   */
+  public static function getReadDetailLimit($request) {
+    $uid = $request->query['uid'];
+    $facid = $request->query['facid'];
+    $type = $request->query['type'];
+
+    // 今天额度使用多少
+    $used = self::usedReadDetail    ($uid, $type);
+    $max  = self::maxLimitReadDetail($uid, $type);
+
+    // 不受限制
+    if($max == 'never'){
+      return DJApi\API::OK(['limit' => 'never']);
+    }
+
+    // 近几天之内看过的，允许再看
+    if(self::newlyReadDetail($uid, $type, $facid) > 0){
+      return DJApi\API::OK(['limit' => 'never']);
+    }
+
+    // 返回
+    return DJApi\API::OK(['limit' => ["max"=>$max, "used"=>$used]]);
+  }
+
+  /**
    * 请求 hash 页面
    * @request hash : 页面推送时生成的 hash
    * @return DJApi\API::OK([
