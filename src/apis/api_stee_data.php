@@ -5,8 +5,8 @@
 namespace RequestByApiShell;
 use DJApi;
 
-class class_stee_data{
-  const MAX_REREAD_DAYS = 10; // 在几天之内查看的，允许直接再次查看而不用额度
+
+class class_stee_data {
 
 
   /**
@@ -24,9 +24,14 @@ class class_stee_data{
     $facid = $request->query['facid'];
     $type = $request->query['type'];
 
+    // 不受限制
+    if(\MyClass\SteeData::isSimpleAdmin($uid, $type, $facid)){
+      return DJApi\API::OK(['limit' => 'never']);
+    }
+
     // 今天额度使用多少
-    $used = self::usedReadDetail    ($uid, $type);
-    $max  = self::maxLimitReadDetail($uid, $type);
+    $used = \MyClass\SteeData::usedReadDetail    ($uid, $type);
+    $max  = \MyClass\SteeData::maxLimitReadDetail($uid, $type);
 
     // 不受限制
     if($max == 'never'){
@@ -34,7 +39,7 @@ class class_stee_data{
     }
 
     // 近几天之内看过的，允许再看
-    if(self::newlyReadDetail($uid, $type, $facid) > 0){
+    if(\MyClass\SteeData::newlyReadDetail($uid, $type, $facid) > 0){
       return DJApi\API::OK(['limit' => 'never']);
     }
 
@@ -58,13 +63,13 @@ class class_stee_data{
     $type = $request->query['type'];
 
     // 今天额度使用多少
-    $used = self::usedReadDetail    ($uid, $type);
-    $max  = self::maxLimitReadDetail($uid, $type);
+    $used = \MyClass\SteeData::usedReadDetail    ($uid, $type);
+    $max  = \MyClass\SteeData::maxLimitReadDetail($uid, $type);
     if($max !== 'never' && $used >= $max){
       return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '额度已用完');
     }
     // 记录
-    self::recordReadDetail($uid, $type, $facid);
+    \MyClass\SteeData::recordReadDetail($uid, $type, $facid);
 
     // 返回
     return DJApi\API::OK([]);
@@ -94,11 +99,11 @@ class class_stee_data{
 
     if($row['k1'] == 'steefac' && $row['k2'] == '用户推广'){
       $path = "/fac-detail/{$row['v1']}";
-      self::recordReadDetail($uid, $type, $facid);
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid);
     }
     if($row['k1'] == 'steeproj' && $row['k2'] == '用户推广'){
       $path = "/project-detail/{$row['v1']}";
-      self::recordReadDetail($uid, $type, $facid);
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid);
     }
 
     return DJApi\API::OK([
@@ -109,90 +114,4 @@ class class_stee_data{
   }
 
 
-
-
-
-
-
-
-  /** 最近几天查看过的数量
-   * @param uid
-   * @param type: steefac/steeproj ，公司或项目
-   * @param facid: id ，公司若项目的 id
-   * 返回：
-   * @return 数量
-   */
-  protected static function newlyReadDetail($uid, $type, $facid) {
-    $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
-      'module' => 'cmoss',
-      'field' => 'sum(n) as n',
-      'and' => DJApi\API::cn_json([
-        'uid'     => $uid,
-        "time[>]" => DJApi\API::today(- self::MAX_REREAD_DAYS),
-        'k1'      => $type,
-        'k2'      => ['使用额度查看', '推广查看'],
-        'v1'      => $facid,
-      ])
-    ]);
-    return 0 + $jsonReaded['datas']['rows'][0];
-  }
-
-  /** 今天的最大额度
-   * @param uid
-   * @param type: steefac/steeproj ，公司或项目
-   * 返回：
-   * @return 数量
-   */
-  protected static function maxLimitReadDetail($uid, $type) {
-    // 一些人，不限额度
-    if(in_array($uid, [
-      301710, // 大照
-      301171, // 况
-      301168, // Authony
-    ])) return 'never';
-
-    // 项目，目前不限额度
-    if($type == 'steeproj') return 'never';
-
-    // 一般情况下，每天 10 条额度
-    return 10;
-  }
-
-  /** 今天的额度使用
-   * @param uid
-   * @param type: steefac/steeproj ，公司或项目
-   * 返回：
-   * @return 数量
-   */
-  protected static function usedReadDetail($uid, $type) {
-    $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
-      'module' => 'cmoss',
-      'field' => 'sum(n) as n',
-      'and' => DJApi\API::cn_json([
-        'uid'     => $uid,
-        "time[>]" => DJApi\API::today( 0 ),
-        'k1'      => $type,
-        'k2'      => ['使用额度查看']
-      ])
-    ]);
-    return 0 + $jsonReaded['datas']['rows'][0];
-  }
-
-  /** 记录一次使用
-   * @param uid
-   * @param type: steefac/steeproj ，公司或项目
-   * @param facid: id ，公司若项目的 id
-   * 返回：
-   * @return 数量
-   */
-  protected static function recordReadDetail($uid, $type, $facid) {
-    $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", [
-      'module' => 'cmoss',
-      'uid'    => $uid,
-      'k1'     => $type,
-      'k2'     => '使用额度查看',
-      'v1'     => $facid,
-      'n'      => 1
-    ]);
-  }
 }
