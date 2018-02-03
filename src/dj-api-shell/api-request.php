@@ -73,7 +73,15 @@ class Request {
    */
   static function debugJson($json){
     if(DJApi\API::$enable_debug && DJApi\API::$debug){
-      $json['__debug__'] = DJApi\API::$debug;
+      if($json['__debug__']){
+        $json['__debug__'] = [
+          "old" => $json['__debug__'],
+          "New" => DJApi\API::$debug
+        ];
+      }
+      else{
+        $json['__debug__'] = DJApi\API::$debug;
+      }
     }
     return $json;
   }
