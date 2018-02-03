@@ -68,8 +68,12 @@ class class_stee_data {
     if($max !== 'never' && $used >= $max){
       return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '额度已用完');
     }
-    // 记录
-    \MyClass\SteeData::recordReadDetail($uid, $type, $facid);
+    if($max == 'never'){
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '再次查看');
+    }
+    else{
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '使用额度查看');
+    }
 
     // 返回
     return DJApi\API::OK([]);
@@ -99,11 +103,11 @@ class class_stee_data {
 
     if($row['k1'] == 'steefac' && $row['k2'] == '用户推广'){
       $path = "/fac-detail/{$row['v1']}";
-      \MyClass\SteeData::recordReadDetail($uid, $type, $facid);
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '推广查看');// 每次均记录，可用于推广效果分析
     }
     if($row['k1'] == 'steeproj' && $row['k2'] == '用户推广'){
       $path = "/project-detail/{$row['v1']}";
-      \MyClass\SteeData::recordReadDetail($uid, $type, $facid);
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '推广查看');// 每次均记录，可用于推广效果分析
     }
 
     return DJApi\API::OK([
