@@ -60,6 +60,7 @@ function main() {
   $para2=isset($_GET['__para2'])?trim($_GET['__para2']):'';
   $r=api_core__runapi($api,$call,$para1,$para2);
 
+  return $r;
   if($r)return API::json($r);
 }
 
