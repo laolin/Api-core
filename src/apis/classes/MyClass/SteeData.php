@@ -134,7 +134,8 @@ class SteeData{
         $data[$k] = $v;
       }
     }
-    return DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", $data);
+    $data = ['param'=>DJApi\API::cn_json($data)];
+    return DJApi\API::call(LOCAL_API_ROOT, "use-records/data/json_record", $data);
   }
 
   /** 用户是否超级管理员
