@@ -97,15 +97,16 @@ class SteeData{
    * @param uid
    * @param type: steefac/steeproj ，公司或项目
    * @param facid: id ，公司若项目的 id
+   * @param k2: 查看方式 (使用额度查看/推广查看/再次查看)
    * 返回：
    * @return 数量
    */
-  static function recordReadDetail($uid, $type, $facid) {
+  static function recordReadDetail($uid, $type, $facid, $k2='使用额度查看') {
     $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", [
       'module' => 'cmoss',
       'uid'    => $uid,
       'k1'     => $type,
-      'k2'     => '使用额度查看',
+      'k2'     => $k2,
       'v1'     => $facid,
       'n'      => 1
     ]);
