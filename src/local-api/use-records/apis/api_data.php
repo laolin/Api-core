@@ -42,6 +42,34 @@ class class_data{
 
     return DJApi\API::OK(['n' => $id? 1: 0, 'id'=>$id, 'query'=>$request->query]);
   }
+  /**
+   * 接收一条json数据，解析后，予以记录
+   * api地址: data/json_record
+   *
+   * @query param 要记录的参数，允许的参数：['uid', 'module', 'k1', 'k2', 'v1', 'v2', 'n', 'json']
+   */
+  public static function json_record($request) {
+    $db = DJApi\DB::db();
+
+    $param = json_decode($request->safeQuery('param', ''), true);
+    if(!is_array($param) || count($param) == 0){
+      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误', [$param, $request]);
+    }
+    $data = [
+      'time'   => DJApi\API::now(),
+      'module' => '无模块',
+      'json'   => ''
+    ];
+    $fields = ['module', 'k1', 'k2', 'v1', 'v2', 'n', 'json'];
+    foreach($param as $k=>$v){
+      if(in_array($k, $fields)){
+        $data[$k] = $v;
+      }
+    }
+    $id = $db->insert(self::$tableName, $data);
+    DJApi\API::debug([$db->getShow()], "DB");
+    return DJApi\API::OK(['id'=>$id]);
+  }
 
 
   /**
