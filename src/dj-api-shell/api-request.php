@@ -65,7 +65,13 @@ class Request {
     else if(! method_exists($C,$CALL) ) {
       return DJApi\API::error(DJApi\API::E_FUNCTION_NOT_EXITS, '请求错误');
     }
-    $json = $C::$CALL($this);
+    return $C::$CALL($this);
+  }
+
+  /**
+   * 增加调试数据到 json 数据
+   */
+  static function debugJson($json){
     if(DJApi\API::$enable_debug && DJApi\API::$debug){
       $json['__debug__'] = DJApi\API::$debug;
     }
