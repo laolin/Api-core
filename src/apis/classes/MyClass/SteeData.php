@@ -99,10 +99,10 @@ class SteeData{
    * @param facid: id ，公司若项目的 id
    * @param k2: 查看方式 (使用额度查看/推广查看/再次查看)
    * 返回：
-   * @return 数量
+   * @return 记录结果, json
    */
   static function recordReadDetail($uid, $type, $facid, $k2='使用额度查看') {
-    $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", [
+    return DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", [
       'module' => 'cmoss',
       'uid'    => $uid,
       'k1'     => $type,
@@ -110,6 +110,31 @@ class SteeData{
       'v1'     => $facid,
       'n'      => 1
     ]);
+  }
+
+  /** 记录一条数据
+   * @param uid
+   * @param param: 要记录的参数，允许的参数：['module', 'k1', 'k2', 'v1', 'v2', 'n', 'json']
+   *        当为字符串时，就当作 k1 的值
+   * 返回：
+   * @return 记录结果, json
+   */
+  static function recordItem($uid, $param) {
+    if(is_string($param)){
+      $param = ['k1' => $param];
+    }
+    $data = [
+      'uid' => $uid,
+      'n' => 1,
+      'module' => 'cmoss'
+    ];
+    $fields = ['module', 'k1', 'k2', 'v1', 'v2', 'n', 'json'];
+    foreach($param as $k=>$v){
+      if(in_array($k, $fields)){
+        $data[$k] = $v;
+      }
+    }
+    return DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", $data);
   }
 
   /** 用户是否超级管理员
