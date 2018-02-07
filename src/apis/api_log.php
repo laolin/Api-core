@@ -22,7 +22,57 @@ class class_log {
     $r=self::_assertAdmin($uid);
     if(API::is_error($r))
       return $r;
-    
+
+
+    $from = intval(API::INP('from'));
+    $to = intval(API::INP('to'));
+    $AND = [];
+    /* 按开始和结束时间查询 */
+    if($from){
+      $AND["cur_time[>]"] = $from;
+      if($to){
+        $AND["cur_time[<]"] = $to;
+      }
+    }
+    else{
+      $now = time();
+      $day = intval(API::INP('day'));
+      if($day > 365)$day = 365;
+      /* 按最近几天查询 */
+      if($day > 0){
+        $AND["cur_time[>]"] = $now - $day * 24 * 3600;
+      }
+      else{
+        $hour = intval(API::INP('hour'));
+        if($hour > 24) $hour=24;
+        /* 按最近几小时查询 */
+        if($hour > 0){
+          $AND["cur_time[>]"] = $now - $hour * 3600;
+        }
+        /* 按最近 2 小时查询 */
+        else{
+          $AND["cur_time[>]"] = $now - 2 * 3600;
+        }
+      }
+    }
+
+    $db = \DJApi\DB::db();
+    $rows = $db->select(self::_tableName(), ['count(*) as n', 'uid'],
+      [
+        "AND"   => $AND,
+        "GROUP" => 'uid',
+        "ORDER" => ["n" =>"DESC"]
+      ]
+    );
+    \DJApi\API::debug($db->getShow(), "DB");
+    if(count($rows))
+      return API::data($rows);
+    return API::msg(1000, 'No-log');
+
+
+
+
+
     //0~30天
     $day=intval(API::INP('day'));
     if($day<0)$day=0;
