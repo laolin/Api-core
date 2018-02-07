@@ -17,13 +17,7 @@ class class_log {
     return $prefix.$name;
   }
 
-  public static function n() { 
-    $uid=API::INP('uid');
-    $r=self::_assertAdmin($uid);
-    if(API::is_error($r))
-      return $r;
-
-
+  protected static function getAND() {
     $from = intval(API::INP('from'));
     $to = intval(API::INP('to'));
     $AND = [];
@@ -55,6 +49,58 @@ class class_log {
         }
       }
     }
+    return $AND;
+  }
+
+  /**
+   * 列出一个用户指定时间内的请求
+   * 敏感数据不返回
+   */
+  public static function list_user() {
+    $uid=API::INP('uid');
+    $r=self::_assertAdmin($uid);
+    if(API::is_error($r))
+      return $r;
+
+    $AND = self::getAND();
+    $userid = API::INP('userid');
+    $AND['uid'] = $userid;
+
+    $db = \DJApi\DB::db();
+    $rows = $db->select(self::_tableName(), ['get', 'time', 'host'],
+      [
+        "AND"   => $AND,
+        "ORDER" => ["time" =>"DESC"],
+        "LIMIT" => 1000
+      ]
+    );
+    \DJApi\API::debug($db->getShow(), "DB");
+    // 部分数据不要返回
+    $dontReturn = ['api_signature', 'tokenid', 'timestamp', 'uid', 'callback'];
+    if($rows) foreach($rows as $row){
+      $item = [
+        'host' => $row['host'],
+        'date' => substr($row['time'], 0, 10),
+        'time' => substr($row['time'], 11, 8),
+      ];
+      $api = json_decode($row['get'], true);
+      foreach($api as $k=>$v){
+        if($v && !in_array($k, $dontReturn)){
+          $item[$k] = $v;
+        }
+      }
+      $R[] = $item;
+    }
+    return \DJApi\API::OK($R);
+  }
+
+  public static function n() {
+    $uid=API::INP('uid');
+    $r=self::_assertAdmin($uid);
+    if(API::is_error($r))
+      return $r;
+
+    $AND = self::getAND();
 
     $db = \DJApi\DB::db();
     $rows = $db->select(self::_tableName(), ['count(*) as n', 'uid'],
