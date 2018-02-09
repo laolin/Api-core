@@ -60,7 +60,7 @@ class class_data{
       'module' => '无模块',
       'json'   => ''
     ];
-    $fields = ['module', 'k1', 'k2', 'v1', 'v2', 'n', 'json'];
+    $fields = ['module', 'uid', 'k1', 'k2', 'v1', 'v2', 'n', 'json'];
     foreach($param as $k=>$v){
       if(in_array($k, $fields)){
         $data[$k] = $v;
@@ -69,6 +69,44 @@ class class_data{
     $id = $db->insert(self::$tableName, $data);
     DJApi\API::debug([$db->getShow()], "DB");
     return DJApi\API::OK(['id'=>$id]);
+  }
+  /**
+   * 接收一条json数据，解析后，如果不存在满足条件的记录，予以记录
+   * api地址: data/json_record
+   *
+   * @query param 要记录的参数，允许的参数：['uid', 'module', 'k1', 'k2', 'v1', 'v2', 'n', 'json']
+   */
+  public static function json_record_if($request) {
+    $db = DJApi\DB::db();
+    /* 原已有的，不再添加 */
+    $if = json_decode($request->safeQuery('if', ''), true);
+    if(!is_array($if) || count($if) == 0){
+      $if = false;
+    }
+    if($if){
+      if($db->has(self::$tableName, ["AND" => $if])){
+        return DJApi\API::OK("already");
+      }
+    }
+    /** 原没有的，就添加 */
+    $param = json_decode($request->safeQuery('param', ''), true);
+    if(!is_array($param) || count($param) == 0){
+      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误', [$param, $request]);
+    }
+    $data = [
+      'time'   => DJApi\API::now(),
+      'module' => '无模块',
+      'json'   => ''
+    ];
+    $fields = ['module', 'uid', 'k1', 'k2', 'v1', 'v2', 'n', 'json'];
+    foreach($param as $k=>$v){
+      if(in_array($k, $fields)){
+        $data[$k] = $v;
+      }
+    }
+    $id = $db->insert(self::$tableName, $data);
+    DJApi\API::debug([$db->getShow()], "DB");
+    return DJApi\API::OK(['id'=>$id, $db->getShow(), $if]);
   }
 
 
