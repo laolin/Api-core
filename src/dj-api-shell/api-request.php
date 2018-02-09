@@ -93,7 +93,7 @@ class Request {
   protected function getApiFile(){
     $paths = DJApi\Configs::get('main-api-path');
     if(!$paths){
-      $paths = ['apis', 'apis-core'];
+      $paths = ['apis', 'apis/apis-user', 'apis/apis-core'];
     }
     if(is_string($paths)) {
       $paths = [$paths];
