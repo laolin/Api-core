@@ -7,6 +7,10 @@ use DJApi;
 
 
 class class_stee_data {
+  static $table = [
+    "wx" => 'api_tbl_user_wx',
+    "user" => 'api_tbl_user',
+  ];
 
 
   /**
@@ -45,6 +49,30 @@ class class_stee_data {
 
     // 返回
     return DJApi\API::OK(['limit' => ["max"=>$max, "used"=>$used]]);
+  }
+
+  /**
+   * 搜索用户
+   * @request text: 搜索的关键字，搜索用户呢称、id
+   * 返回：
+   * @return API::OK([list=>[]])
+   */
+  public static function search_user($request) {
+    $text = $request->query['text'];
+    $db = DJApi\DB::db();
+    $list = $db->select(self::$table['user'], ["[>]" .self::$table['wx']=>['uid' => 'uidBinded']],
+     ['headimgurl', 'uidBinded', 'nickname', self::$table['wx'].'.id'],
+     ["AND" =>[
+       'appFrom' => DJApi\Configs::get(["WX_APPID_APPSEC_DEFAULT", "WX_APPID"]),
+       'OR'=>[
+          "uidBinded[~]" => $text,
+          "nickname[~]" => $text,
+        ]
+      ]]
+    );
+    DJApi\API::debug($db->getShow());
+    // 返回
+    return DJApi\API::OK(['list' => $list]);
   }
 
   /**
