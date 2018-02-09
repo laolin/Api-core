@@ -132,7 +132,7 @@ class class_stee_msg{
     $openidGroup = $openidGroupJson['datas']['R'];
 
     // 测试, 只发给自己：
-    if(0){
+    if(1){
       $openidGroup['to'] = [
         'od6xzv0DW3ZEmJ1eC0t60w5Eqa8M', // 我
         //'od6xzvxb4M6WVdRYjLO4b9k1nHXo', // 老林

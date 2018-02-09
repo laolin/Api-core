@@ -145,5 +145,45 @@ class class_stee_data {
     ]);
   }
 
+  /**
+   * 记录前端用户操作
+   * 5分钟之内(k1,k2,v1)相同的，不再重复记录
+   * @request hash : 页面推送时生成的 hash
+   * @return DJApi\API::OK([
+   *   path,  // 页面地址
+   *   search // 页面参数
+   * ])
+   */
+  public static function logAction($request) {
+    $uid  = $request->query['uid' ];
+    $k1   = $request->query['k1'  ];
+    $k2   = $request->query['k2'  ];
+    $v1   = $request->query['v1'  ];
+    $v2   = $request->query['v2'  ];
+    $json = $request->query['json'];
+    $base = [
+      'module' => 'cmoss',
+      'uid'    => $uid,
+      'k1'     => $k1,
+      'k2'     => $k2,
+      'v1'     => $v1
+    ];
+    $if = array_merge($base, [
+      'time[>]' => \DJApi\API::now(-300) // 5分钟之内不再重复记录
+    ]);
+    $param = array_merge($base, [
+      'v2'     => $v2,
+      'n'      => 1
+    ]);
+    if($json) $param['json'] = \DJApi\API::cn_json($json);
+    $data = [
+      'if'   =>\DJApi\API::cn_json($if),
+      'param'=>\DJApi\API::cn_json($param)
+    ];
+    DJApi\API::debug($if, 'if');
+    DJApi\API::debug($param, 'param');
+    return \DJApi\API::call(LOCAL_API_ROOT, "use-records/data/json_record_if", $data);
+  }
+
 
 }
