@@ -82,7 +82,7 @@ class class_sa_data extends \MyClass\SteeStatic {
    * 活跃度排行
    */
   public static function countUserLog($request) {
-    $AND = self::getAND();
+    $AND = self::getAND($request->query);
 
     $db = \DJApi\DB::db();
     $rows = $db->select(self::$table['log'], ['count(*) as n', 'uid'],
