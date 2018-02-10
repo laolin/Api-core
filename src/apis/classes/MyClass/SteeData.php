@@ -5,14 +5,7 @@
 namespace MyClass;
 use DJApi;
 
-class SteeData{
-  const MAX_REREAD_DAYS = 10; // 在几天之内查看的，允许直接再次查看而不用额度
-
-  static $table = [
-    'steefac' => 'api_tbl_steelfactory',
-    'steeproj' => 'api_tbl_steelproject',
-    'stee_user' => 'api_tbl_stee_user',
-  ];
+class SteeData extends SteeStatic{
 
   /** 用户是否可以查看指定公司或项目的详情
    * @param uid
