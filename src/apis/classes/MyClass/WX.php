@@ -13,12 +13,16 @@ class WX extends SteeStatic{
    * @return 微信信息数组
    */
   static function getWxInfo($userid) {
-    return DJApi\DB::db()->select(self::$table['user'], ["[>]" .self::$table['wx']=>['uid' => 'uidBinded']],
-     ['headimgurl', 'uidBinded', 'nickname', self::$table['wx'].'.id'],
-     ["AND" =>[
-       'appFrom' => DJApi\Configs::get(["WX_APPID_APPSEC_DEFAULT", "WX_APPID"]),
-       "uidBinded" => $userid,
-      ]]
+    return DJApi\DB::db()->select(
+      self::$table['user'], ["[>]" .self::$table['wx']=>['uid' => 'uidBinded']],
+      ['headimgurl', 'uidBinded', 'nickname', self::$table['wx'].'.id'],
+      [
+        "AND" =>[
+          'appFrom' => DJApi\Configs::get(["WX_APPID_APPSEC_DEFAULT", "WX_APPID"]),
+          "uidBinded" => $userid,
+        ],
+        "LIMIT" => 1000
+      ]
     );
   }
 }
