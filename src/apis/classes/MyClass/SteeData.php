@@ -57,10 +57,10 @@ class SteeData extends SteeStatic{
       301710, // 大照
       301171, // 况
       301168, // Authony
-    ])) return 'never';
+    ])) return 10000; //'never'; //返回一个数量，让其具有查看记录功能
 
     // 项目，目前不限额度
-    if($type == 'steeproj') return 'never';
+    if($type == 'steeproj') return 10000; //'never'; //返回一个数量，让其具有查看记录功能
 
     // 一般情况下，每天 10 条额度
     return 10;

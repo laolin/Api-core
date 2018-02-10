@@ -33,6 +33,12 @@ class class_stee_data {
       return DJApi\API::OK(['limit' => 'never']);
     }
 
+    // 超级管理员，虽有使用记录，但仍返回已用 0，以便无限使用，而可以同一般人员一样记录操作
+    // 当然也可以当作灌水功能，提高某项目/厂的受欢迎度
+    if(\MyClass\SteeData::isSuperAdmin($uid)){
+      return DJApi\API::OK(['limit' => ["max"=>10000, "used"=>0]]);
+    }
+
     // 今天额度使用多少
     $used = \MyClass\SteeData::usedReadDetail    ($uid, $type);
     $max  = \MyClass\SteeData::maxLimitReadDetail($uid, $type);
