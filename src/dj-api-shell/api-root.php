@@ -156,8 +156,8 @@ class API{
   /**
    * 时间函数
    */
-  public static function now() {
-    return date('Y-m-d H:i:s');
+  public static function now($ds = 0) {
+    return date('Y-m-d H:i:s', time() + $ds);
   }
   public static function today($nday = 0) {
     return date('Y-m-d', time() + $nday * 3600 * 24);
