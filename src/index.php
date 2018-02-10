@@ -21,5 +21,6 @@ if($json['errcode'] == DJApi\API::E_CLASS_NOT_EXITS || $json['errcode'] == DJApi
   DJApi\Response::response(DJApi\Request::debugJson($json));
 }
 else{
+  \MyClass\SteeLog::log();
   DJApi\Response::response(DJApi\Request::debugJson($json));
 }
