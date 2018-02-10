@@ -79,6 +79,23 @@ class class_sa_data extends \MyClass\SteeStatic {
     return $AND;
   }
   /**
+   * 活跃度排行
+   */
+  public static function countUserLog($request) {
+    $AND = self::getAND();
+
+    $db = \DJApi\DB::db();
+    $rows = $db->select(self::$table['log'], ['count(*) as n', 'uid'],
+      [
+        "AND"   => $AND,
+        "GROUP" => 'uid',
+        "ORDER" => ["n" =>"DESC"]
+      ]
+    );
+    \DJApi\API::debug($db->getShow(), "DB");
+    return \DJApi\API::OK($rows);
+  }
+  /**
    * 列出一个用户指定时间内的请求
    * 敏感数据不返回
    * 意义：多人活跃度
