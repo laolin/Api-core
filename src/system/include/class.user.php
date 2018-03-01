@@ -328,8 +328,7 @@ class USER {
     $db=API::db();
     $prefix=api_g("api-table-prefix");
     $rr=$db->get($prefix.'token',['id','token'],
-      ['and'=>['uid'=>$uid,'tokenid'=>$tokenid ],
-          "LIMIT" => 1]  );
+      ['and'=>['uid'=>$uid + 0, "tokenid"=>"$tokenid" ]]  );
 
     if(isset($rr['id']) && $rr['token']) {
       return $rr['token'];
