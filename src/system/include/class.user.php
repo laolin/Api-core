@@ -222,6 +222,14 @@ class USER {
     $tokenid=API::INP('tokenid');
     $timestamp=API::INP('timestamp');
     $sign=API::INP('api_signature');
+
+    $verify = \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", [
+      'tokenid' => $tokenid,
+      'timestamp' => $timestamp,
+      'sign' => API::INP('sign')
+    ]);
+    return \DJApi\API::isOk($verify);
+
     if( ! $uid || ! $tokenid || ! $timestamp || ! $sign )return false;
     return self::_signVerify( $uid,$tokenid,$timestamp,$sign );
   } 
