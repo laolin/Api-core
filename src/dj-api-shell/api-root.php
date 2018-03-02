@@ -163,6 +163,18 @@ class API{
     return date('Y-m-d', time() + $nday * 3600 * 24);
   }
 
+  /**
+   * 随机串
+   */
+  static function createNonceStr($length = 16) {
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    $bits = strlen($chars) - 1;
+    $str = "";
+    for ($i = 0; $i < $length; $i++) {
+      $str .= substr($chars, mt_rand(0, $bits), 1);
+    }
+    return $str;
+  }
 
   /**
    * 直接调用本地 API 函数
@@ -179,6 +191,10 @@ class API{
   static function post($module, $api, $param) {
     $url = $module . $api;
     $res = self::httpPost($url, $param);
+    \DJApi\API::debug(['API::post()',
+      'url'=>$url,
+      '返回'=>$res,
+    ]);
     return self::toJson($res);
   }
 
@@ -236,6 +252,11 @@ class API{
     $output = curl_exec($ch);
     //$info = curl_getinfo($ch);
     //error_log(curl_error($ch));
+    \DJApi\API::debug(['httpPost',
+      'info'=>curl_getinfo($ch),
+      'error'=>curl_error($ch),
+      '返回'=>$output,
+    ]);
     curl_close($ch);
     //if($output===false)return curl_error($ch);
     return $output;
