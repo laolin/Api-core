@@ -15,7 +15,7 @@ class class_wx{
   public static function access_token($request){
     $name = $request->query['name'];
     if(!$name)return API::error(1001, "参数无效");
-    return DjApi::post(SERVER_API_ROOT, "server-wx/wx/access_token", ['name'=>$name]);
+    return DjApi::post(SERVER_API_ROOT, "user/wx_token/access_token", ['name'=>$name]);
   }
 
 }

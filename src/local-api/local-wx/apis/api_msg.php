@@ -19,7 +19,7 @@ class class_msg{
   public static function send_tpl($request){
     $name = $request->query['name'];
     if(!$name)return API::error(1001, "参数无效");
-    $json = API::post(SERVER_API_ROOT, "server-wx/wx/access_token", ['name'=>'请高手']);
+    $json = API::post(SERVER_API_ROOT, "user/wx_token/access_token", ['name'=>'请高手']);
     $access_token = $json['datas']['access_token'];
     $openids = $request->query['openids'];
     $tplName = $request->query['tplName'];
