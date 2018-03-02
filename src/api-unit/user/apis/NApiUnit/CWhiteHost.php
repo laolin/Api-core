@@ -11,14 +11,15 @@ class CWhiteHost {
     // 允许同域名调用
     $sameDomain  = $_SERVER['HTTP_ORIGIN'] == "https://".$_SERVER['HTTP_HOST'] || $_SERVER['HTTP_ORIGIN'] == "http://".$_SERVER['HTTP_HOST'];
     $sameIP      = $_SERVER['SERVER_ADDR'] && $_SERVER['SERVER_ADDR'] == $_SERVER['REMOTE_ADDR'];
-    $whiteDomain = in_array($_SERVER['HTTP_ORIGIN'], $whiteList["whiteDomain"]);
+    $whiteDomain = in_array($_SERVER['HTTP_ORIGIN'], $whiteList["whiteDomain"]) || in_array($_SERVER['HTTP_REFERER'], $whiteList["whiteDomain"]);
     $whiteIP     = in_array($_SERVER['REMOTE_ADDR'], $whiteList["whiteIP"    ]);
     if(!$sameDomain && !$whiteDomain && !$sameIP && !$whiteIP){
-      return \DJApi\API::error(\DJApi\API::E_NEED_RIGHT, "非法调用");
+      //return \DJApi\API::error(\DJApi\API::E_NEED_RIGHT, "非法调用");
       return \DJApi\API::error(\DJApi\API::E_NEED_RIGHT, "非法调用", [
         'sameDomain'=>$sameDomain,
         'whiteDomain'=>$whiteDomain,
         'sameIP'=>$sameIP,
+        'whiteIP'=>$whiteIP,
         $_SERVER,
       ]);
     }

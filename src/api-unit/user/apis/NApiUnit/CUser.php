@@ -8,7 +8,7 @@ class CUser {
   
   /**
    *  验证签名
-   *  sign = hex_md5(api+call+uid+token+timestamp) 或 hex_md5(api+call+token+timestamp)
+   *  sign = hex_md5(api+call+uid+token+timestamp) 或 hex_md5(token+timestamp)
    *  其中 token 客户端不用传给服务器，只需要传tokenid
    *  服务器
    */
@@ -40,9 +40,9 @@ class CUser {
     $uid   = $tokenRow['uid'  ];
     $token = $tokenRow['token'];
     $sign_true == md5($api.$call.$uid.$token.$timestamp);
-    if($sign != $sign_true) $sign_true = md5($api.$call.$token.$timestamp);
+    if($sign != $sign_true) $sign_true = md5($token.$timestamp);
     if($sign != $sign_true){
-      \DJApi\API::debug(['签名非法（危险！）', ['a'=>$sign, 'b'=>'1'.$sign_true.'a']]);
+      \DJApi\API::debug(['签名非法（危险！）', ['请求'=>$sign, 'b'=>'1'.$sign_true.'a', 'a'=>$token.$timestamp]]);
       return \DJApi\API::error(\DJApi\API::E_NEED_LOGIN, '签名非法');
     }
     return \DJApi\API::OK(['uid' => $uid]);

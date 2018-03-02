@@ -26,6 +26,7 @@ class CWxBase {
     $access_token = $step1['access_token'];
     // 拉取失败
     if(!$openid){
+      \DJApi\API::debug(['拉取失败', $step1]);
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "拉取失败", [$step1]);
     }
     return \DJApi\API::OK($step1);

@@ -21,7 +21,7 @@ class class_user{
    * @request uid: 可选
    * @request tokenid
    * @request timestamp: 5分钟之内
-   * @request sign: 签名 = md5($api.$call.$uid.$token.$timestamp) 或 md5($api.$call.$token.$timestamp)
+   * @request sign: 签名 = md5($api.$call.$uid.$token.$timestamp) 或 md5($token.$timestamp)
    *
    * @return uid, 由于用户签名时，必须用到token, 所以，不再返回
    */
