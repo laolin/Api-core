@@ -36,7 +36,7 @@ require_once('apis/class-loader.php');
 
 
 
-require_once('../index.api-shell.php');
+require_once('index.api-shell.php');
 // 加载配置
 search_require('config.inc.php');
 // 开启调试信息
