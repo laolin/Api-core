@@ -12,14 +12,14 @@ class CDbBase {
     'token'      => 'z_user_token',
     'g_settings' => 'g_settings',
   ];
-  static $db;
+  static $db = [];
   static function db($configName = 'user_login_db'){
-    if(!self::$db){
+    if(!self::$db[$configName]){
       $db_config = \DJApi\Configs::get($configName);
       $dbParams = $db_config['medoo'];
-      self::$db = new \DJApi\DB($dbParams);
+      self::$db[$configName] = new \DJApi\DB($dbParams);
     }
-    return self::$db;
+    return self::$db[$configName];
   }
   static function table($baseTableName = 'user', $configName = 'user_login_db'){
     $db_config = \DJApi\Configs::get($configName);
