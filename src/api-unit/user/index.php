@@ -24,6 +24,8 @@
  * 5.2 bind/get_bind: 获取指定uid绑定情况，同时包含[微信openid/微信unionid/手机号]
  * 5.2 bind/get_uid:  根据[微信openid/微信unionid/手机号], 获取用户uid
  *
+ * 6.1 mix/wx_code_to_token_uid: 用code换取用户登录票据和uid
+ *
  */
 error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING );
 ini_set("display_errors", 1);
