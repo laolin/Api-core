@@ -122,17 +122,8 @@ class WX {
   
   } 
   
-  public static function get_users( $ids ) {
-    //if( ! USER::userVerify() ) {
-    //  return API::msg(2001,'Error verify token.');
-    //}
-    if(!$ids) {
-      return API::msg(3002,'No user.');
-    }
-    $users=explode(',',$ids);
-    
-    $d=USER::get_users( $users );
-    
+  public static function get_users( $users ) {
+    $d = USER::get_users( $users );
     if(API::is_error($d)) {
       return $d;
     }

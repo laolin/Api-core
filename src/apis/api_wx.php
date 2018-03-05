@@ -142,7 +142,7 @@ class class_wx{
     if( ! USER::userVerify() ) {
       return API::msg(2001,'Error verify token.');
     }
-    return WX::get_users( $para1 );
+    return WX::get_users( $_REQUEST['ids'] );
   }
 
   
