@@ -62,8 +62,8 @@ class class_app {
     $data = ['uid' => $uid];
 
     $db = \DJApi\DB::db();
-    $data['nFac'] = $db->count(\MyClass\SteeStatic::$table['steefac'], ['mark'=>'']);
-    $data['nProj'] = $db->count(\MyClass\SteeStatic::$table['steeproj'], ['mark'=>'']);
+    $data['nFac'] = $db->count(\MyClass\SteeStatic::$table['steefac'], ['OR'=>['mark'=>'', 'mark#2'=>null]]);
+    $data['nProj'] = $db->count(\MyClass\SteeStatic::$table['steeproj'], ['OR'=>['mark'=>'', 'mark#2'=>null]]);
 
     // 微信信息
     $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid'=>$uid, 'bindtype'=>'wx-unionid']);
