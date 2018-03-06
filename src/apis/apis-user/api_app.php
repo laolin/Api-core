@@ -29,7 +29,7 @@ class class_app {
   }
 
   /**
-   * 接口： user/verify_token
+   * 接口： app/verify_token
    * 根据票据和签名，进行用户登录，获取uid
    * @request uid: 可选
    * @request tokenid

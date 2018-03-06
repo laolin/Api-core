@@ -44,30 +44,17 @@ class CUser extends SteeStatic{
    * @return bool
    */
   public static function checkSign($query){
-    $uid       = $query['uid'          ];
-    $tokenid   = $query['tokenid'      ];
-    $timestamp = $query['timestamp'    ];
-    $sign      = $query['api_signature'];
-    $api       = $query['api'];
-    $call      = $query['call'];
-    // 所有参数不能为空
-    if( !$uid || !$tokenid || !$timestamp || !$sign )return false;
-    // 仅允许5分钟以内的时间差
-    if( abs($timestamp - time()) > 300)return false;
-    // 获取真正的token
-    $token = self::getToken($uid, $tokenid);
-    if(!$token)return false;
-    // 计算正确的签名
-    $signRight = md5("$api$call$uid$token$timestamp");
-    // 前端给的签名是否正确
-    return $signRight == $sign;
-  }
 
-  /** 获取真正的用户登录票据 */
-  public static function getToken($uid, $tokenid) {
-    $db = DJApi\DB::db();
-    $token = $db->get(self::$table['token'], 'token', ['and'=>['uid'=>$uid, 'tokenid'=>$tokenid]]);
-    return $token;
+    $tokenid   = $query['tokenid'];
+    $timestamp = $query['timestamp'];
+    $sign      = $query['sign'];
+
+    $verify = \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", [
+      'tokenid'   => $tokenid,
+      'timestamp' => $timestamp,
+      'sign'      => $sign
+    ]);
+    return \DJApi\API::isOk($verify);
   }
 }
 class SteeUser extends CUser{

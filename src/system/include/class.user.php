@@ -228,7 +228,8 @@ class USER {
       'timestamp' => $timestamp,
       'sign' => API::INP('sign')
     ]);
-    return \DJApi\API::isOk($verify);
+    \DJApi\API::debug(['向独立服务器请求验证：', $verify]);
+    return $verify['datas']['uid'];
 
     if( ! $uid || ! $tokenid || ! $timestamp || ! $sign )return false;
     return self::_signVerify( $uid,$tokenid,$timestamp,$sign );
