@@ -31,6 +31,9 @@ class class_mix{
    * @return timestamp
    */
   public static function wx_code_to_token_uid($request){
+    $appname = $request->query["name"];
+    if(!$appname)return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "参数无效1", [$request]);
+    list($appid, $secret) = WxTokenBase::appid_appsec($appname);
 
     // 1. 用 code 换取 unionid
     require_once "api_wx.php";
@@ -38,19 +41,22 @@ class class_mix{
     \DJApi\API::debug(['code_login', $json_unionid]);
     if(!\DJApi\API::isOk($json_unionid)) return $json_unionid;
     $unionid = $json_unionid['datas']['unionid'];
+    $openid = $json_unionid['datas']['openid'];
 
     // 2. 用 unionid 换取 uid
-    require_once "api_bind.php";
-    $request->query = ['bindtype'=>'wx-unionid', 'value'=>$unionid];
-    $json_uid = class_bind::get_uid($request);
+    $query_uid = ['bindtype'=>['wx-unionid', 'wx-openid'], 'value'=>[$unionid, $openid]];
+    $json_uid = CBind::get_uid($query_uid);
     \DJApi\API::debug(['get_uid', $json_uid]);
-    if(!\DJApi\API::isOk($json_uid)) return $json_uid;
     $uid = $json_uid['datas']['uid'];
+    if(!$uid){
+      // 未绑定的，新建用户
+      $uid = CUser::create_uid();
+      CBind::bind(['uid'=>$uid, 'bindtype'=>'wx-openid', 'param1'=>$appid, 'param2'=>$appname, 'value'=>$openid]);
+      CBind::bind(['uid'=>$uid, 'bindtype'=>'wx-unionid', 'param1'=>$appid, 'param2'=>$appname, 'value'=>$unionid]);
+    }
 
     // 3. 用 uid 换取 token
-    require_once "api_user.php";
-    $request->query = ['uid'=>$uid];
-    $json_token = class_user::create_token($request);
+    $json_token = CUser::create_token($uid);
     \DJApi\API::debug(['create_token', $json_token]);
     if(!\DJApi\API::isOk($json_token)) return $json_token;
 
