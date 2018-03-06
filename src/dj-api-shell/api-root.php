@@ -192,6 +192,7 @@ class API{
     $res = self::httpPost($url, $param);
     \DJApi\API::debug(['API::post()',
       'url'=>$url,
+      'param'=>$param,
       '返回'=>$res,
     ]);
     return self::toJson($res);
@@ -259,6 +260,39 @@ class API{
     curl_close($ch);
     //if($output===false)return curl_error($ch);
     return $output;
+  }
+}
+
+/**
+ * 一些PHP版本兼容性函数
+ */
+class FN{
+
+  static function array_column($arr, $k1, $k2 = false){
+    if($k2 === true){
+      $R = [];
+      foreach($arr as $row){
+        $R[$row[$k1]] = $row;
+      };
+      return $R;
+    }
+    if(function_exists("array_column")){
+      return array_column($arr, $k1, $k2);
+    }
+    if($k2){
+      $R = [];
+      foreach($arr as $row){
+        $R[$row[$k2]] = $row[$k1];
+      };
+      return $R;
+    }
+    else{
+      $R = [];
+      foreach($arr as $row){
+        $R[] = $row[$k1];
+      };
+      return $R;
+    }
   }
 }
 
