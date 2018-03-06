@@ -140,9 +140,41 @@ class class_wx{
    */
   public static function get_users( $para1 ) {
     if( ! USER::userVerify() ) {
-      return API::msg(2001,'Error verify token.');
+      return \DJApi\API::error(\DJApi\API::E_NEED_LOGIN, 'Error verify token.');
     }
-    return WX::get_users( $_REQUEST['ids'] );
+
+    // 先获取用户数据
+    $ids = $_REQUEST['ids'];
+    $userJson = \MyClass\SteeUser::get_users($ids);
+    \DJApi\API::debug(['先获取用户数据', $ids, $userJson]);
+    if(!\DJApi\API::isOk($userJson)){
+      return $userJson;
+    }
+    $users = $userJson['datas']['list'];
+    if(! is_array($users)) {
+      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, 'No id error.');
+    }
+    if(!count($users)) {
+      return \DJApi\API::OK(['list'=>[]]);
+    }
+
+    // 从独立服务器获取微信信息
+    $uid = array_map(function($a){return $a['uid'];}, $users);
+    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $uid]);
+    \DJApi\API::debug(['从独立服务器获取微信信息', $wxInfoJson]);
+    if(!\DJApi\API::isOk($wxInfoJson)){
+      return $wxInfoJson;
+    }
+    $wxInfo = $wxInfoJson['datas']['list'];
+
+    // 两者合并
+    $reget_users = \DJApi\FN::array_column($users, 'uid', true);
+    $bind = substr($bindtype, 3);
+    $list = [];
+    foreach($wxInfo as $k=>$row){
+      $list[] = array_merge(["wxinfo"=>$row], $reget_users[$row['uid']]);
+    }
+    return \DJApi\API::OK(['list'=>$list]);
   }
 
   
