@@ -1,10 +1,89 @@
+-- 从旧数据库中同步
+
+-- step1 从原正式库中备份数据
+--
+-- 表: api_tbl_user, api_tbl_user_wx
+
+
+-- step2 将备份的数据复制到测试库
+--
+-- 直接运行备份的 sql
+
+-- step3 清空测试库
+
+-- TRUNCATE TABLE `qgs-user-test`.z_user;
+-- TRUNCATE TABLE `qgs-user-test`.z_user_token;
+-- TRUNCATE TABLE `qgs-user-test`.z_user_bind;
+-- TRUNCATE TABLE `qgs-user-test`.z_wx_user;
+
+-- step4 转换数据
+-- step4.1 转换 z_user 数据
+TRUNCATE TABLE `qgs-user-test`.z_user;
+insert into `qgs-user-test`.z_user (uid, `name`, `password`)
+  select
+    uid, uname, upass
+  from `qgs-user-test`.api_tbl_user;
+-- step4.2 转换 z_user_bind openid 数据;
+TRUNCATE TABLE `qgs-user-test`.z_user_bind;
+insert into `qgs-user-test`.z_user_bind (uid, param1, `value`, bindtype)
+  select
+    uidBinded,
+    appFrom,
+    openid,
+    left('wx-openid', 20)
+  from `qgs-user-test`.api_tbl_user_wx WHERE length(openid)=28 AND length(unionid)=28;
+-- step4.2 转换 z_user_bind unionid 数据
+insert into `qgs-user-test`.z_user_bind (uid, param1, `value`, bindtype)
+  select
+    uidBinded,
+    appFrom,
+    unionid,
+    left('wx-unionid', 20)
+  from `qgs-user-test`.api_tbl_user_wx WHERE length(openid)=28 AND length(unionid)=28;
+
+-- step4.4 转换微信数据到 z_wx_user 表
+TRUNCATE TABLE `qgs-user-test`.z_wx_user;
+insert into `qgs-user-test`.z_wx_user (
+    `openid`        ,
+    `nickname`      ,
+    `headimgurl`    ,
+    `sex`           ,
+    `language`      ,
+    `province`      ,
+    `city`          ,
+    `country`       ,
+    `unionid`       ,
+    `subscribe`     ,
+    `subscribe_time`,
+    `groupid`
+  )
+  select
+    `openid`        ,
+    `nickname`      ,
+    `headimgurl`    ,
+    `sex`           ,
+    `language`      ,
+    `province`      ,
+    `city`          ,
+    `country`       ,
+    `unionid`       ,
+    `subscribe`     ,
+    `subscribe_time`,
+    `groupid`
+ from `qgs-user-test`.api_tbl_user_wx WHERE length(openid)=28 AND length(unionid)=28;
+
+
+
+
 
 
 -- 用户
+drop table if exists `z_user`;
 create table if not exists `z_user` 
 (
   `uid`            int(11)  not null auto_increment COMMENT  '用户id',
   `nick`           varchar(64) DEFAULT '' COMMENT  '呢称',
+  `name`           varchar(64) DEFAULT '' COMMENT  '姓名',
   `password`       varchar(64) DEFAULT '' COMMENT  '密码',
   primary key (`uid`),
   unique key `uid` (`uid`)
