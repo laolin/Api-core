@@ -96,4 +96,65 @@ class SteeUser extends CUser{
     return $list;
   }
 
+
+  /** 读取 uid 的用户详情
+   * @return 一行数据
+   */
+  public static function readSteeUser($uid){
+    $db = \DJApi\DB::db();
+    $row = $db->get(\MyClass\SteeStatic::$table['stee_user'], self::$field['stee_user'], ['AND'=>['uid'=>$uid ,'mark'=>'']]);
+    \DJApi\API::debug(['读取用户信息', "DB"=>$db->getShow()]);
+    return ($row);
+  }
+
+
+  /** 用签名换取 uid
+   * 数据来源：api请求
+   * @return bool
+   */
+  public static function sign2uid($query){
+    $tokenid   = $query['tokenid'];
+    $timestamp = $query['timestamp'];
+    $sign      = $query['sign'];
+    $verify = \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", [
+      'tokenid'   => $tokenid,
+      'timestamp' => $timestamp,
+      'sign'      => $sign
+    ]);
+    return $verify['datas']['uid'];
+  }
+
+  /** 获取多个用户信息列表
+   * @param user: 用户，一个数组，包含[]字段
+   * @param type: steefac/steeproj ，公司或项目
+   * 返回：
+   * @return 数组
+   */
+  static function get_users($ids) {
+    $db = DJApi\DB::db();
+    $list = $db->select(
+      self::$table['user'],
+      ['uid', 'uname'],
+      ['uid' => $ids ]
+    );
+    if(!$list){
+      DJApi\API::debug(['get_users()', $db->getShow(), $list]);
+      return \DJApi\API::error(2001, '读取失败');
+    }
+    return \DJApi\API::OK(["list"=>$list]);
+  }
+
+
+  /** 获取多个用户信息列表
+   * @param user: 用户，一个数组，包含[]字段
+   * @param type: steefac/steeproj ，公司或项目
+   * 返回：
+   * @return uid
+   */
+  static function create_user($ids) {
+    $db = DJApi\DB::db();
+    $uid = $db->insert( self::$table['user'], ['uname'=>'']);
+    DJApi\API::debug(['添加用户', $db->getShow(), $uid]);
+    return $uid;
+  }
 }
