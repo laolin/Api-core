@@ -36,7 +36,7 @@ class class_bind{
    * @return 是否成功
    */
   public static function bind($request){
-    return CBind::bind($request);
+    return CBind::bind($request->query);
   }
 
   /**
@@ -47,7 +47,7 @@ class class_bind{
    * @return binds: 数组
    */
   public static function get_bind($request){
-    return CBind::get_bind($request);
+    return CBind::get_bind($request->query);
   }
 
   /**
@@ -61,7 +61,7 @@ class class_bind{
    * @return uid
    */
   public static function get_uid($request){
-    return CBind::get_uid($request);
+    return CBind::get_uid($request->query);
   }
 
 }

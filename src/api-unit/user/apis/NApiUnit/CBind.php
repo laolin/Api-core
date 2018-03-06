@@ -17,12 +17,12 @@ class CBind {
    *
    * @return 是否成功
    */
-  public static function bind($request){
-    $uid      = $request->query["uid"     ];
-    $bindtype = $request->query["bindtype"];
-    $value    = $request->query["value"   ];
-    $param1   = $request->query["param1"  ];
-    $param2   = $request->query["param2"  ];
+  public static function bind($query){
+    $uid      = $query["uid"     ];
+    $bindtype = $query["bindtype"];
+    $value    = $query["value"   ];
+    $param1   = $query["param1"  ];
+    $param2   = $query["param2"  ];
     if(!$uid || !$bindtype || !$value){
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "参数无效1");
     }
@@ -54,14 +54,14 @@ class CBind {
 
   /**
    * 获取指定uid绑定情况，同时包含[微信openid/微信unionid/手机号]
-   * @request uid
+   * @query uid
    * @param bindtype: 可选, 绑定类型[mobile/wx-openid/wx-unionid/uidparent]
    *
    * @return binds: 数组
    */
-  public static function get_bind($request){
-    $uid      = $request->query["uid"     ];
-    $bindtype = $request->query["bindtype"];
+  public static function get_bind($query){
+    $uid      = $query["uid"     ];
+    $bindtype = $query["bindtype"];
     $AND = ['uid' => $uid];
     if($bindtype) $AND['bindtype'] = $bindtype;
     $db = CDbBase::db();
@@ -71,23 +71,20 @@ class CBind {
 
   /**
    * 根据[微信openid/微信unionid/手机号], 获取用户uid
-   * @request bindtype: 绑定类型[mobile/wx-openid/wx-unionid/uidparent]
-   * @request value: 绑定的值
-   * @request param1: 绑定子类型1, 可选
-   * @request param2: 绑定子类型2, 可选
+   * @query bindtype: 绑定类型[mobile/wx-openid/wx-unionid/uidparent]
+   * @query value: 绑定的值
+   * @query param1: 绑定子类型1, 可选
+   * @query param2: 绑定子类型2, 可选
    *
    * @return uid
    */
-  public static function get_uid($request){
-    $bindtype = $request->query["bindtype"];
-    $value    = $request->query["value"   ];
-    $param1   = $request->query["param1"  ];
-    $param2   = $request->query["param2"  ];
+  public static function get_uid($query){
+    $bindtype = $query["bindtype"];
+    $value    = $query["value"   ];
+    $param1   = $query["param1"  ];
+    $param2   = $query["param2"  ];
     if(!$bindtype || !$value){
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "参数无效1");
-    }
-    if(!in_array($bindtype, self::$bindtype)){
-      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "参数无效2");
     }
 
     $db = CDbBase::db();

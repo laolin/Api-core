@@ -26,7 +26,7 @@ class class_user{
    * @return uid, 由于用户签名时，必须用到token, 所以，不再返回
    */
   public static function verify_token($request){
-    return CUser::verifyRequest($request);
+    return CUser::verify_token($request);
   }
 
   /**

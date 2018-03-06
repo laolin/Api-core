@@ -12,7 +12,7 @@ class CUser {
    *  其中 token 客户端不用传给服务器，只需要传tokenid
    *  服务器
    */
-  public static  function verifyRequest($request) {
+  public static  function verify_token($request) {
     $query = $request->query;
     $tokenid   = $query['tokenid'      ];
     $timestamp = $query['timestamp'    ];
