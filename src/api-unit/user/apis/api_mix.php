@@ -66,4 +66,40 @@ class class_mix{
   }
 
 
+
+  /**
+   * 接口： mix/wx_infos
+   * 根据[uid]，获取微信呢称、头像等
+   * @request uid: uid或[uid]
+   * @request bindtype: 'wx-openid'(默认)/'wx-unionid'
+   * @request param1: 绑定子类型1, 可选
+   * @request param2: 绑定子类型2, 可选
+   */
+  public static function wx_infos($request){
+    $uid      = $request->query["uid"     ];
+    $bindtype = $request->query["bindtype"];
+    $param1   = $request->query["param1"  ];
+    $param2   = $request->query["param2"  ];
+    if(!$bindtype) $bindtype = 'wx-openid';
+    $bind = substr($bindtype, 3);
+
+    // 读取绑定
+    $bindsJson = CBind::get_binds(['uid'=>$uid, "bindtype"=>$bindtype, "param1"=>$param1, "param2"=>$param2]);
+    if(!\DJApi\API::isOk($bindsJson)){
+      return $bindsJson;
+    }
+    $binds = $bindsJson['datas']['binds'];
+    $values = array_map(function($row){return $row['value'];}, $binds);
+
+    // 读取微信头像等
+    $wxInfoJson = CWxBase::wx_infos($values, $bind);
+    $wxInfo = $wxInfoJson['datas']['list'];
+
+    // 两者合并
+    $reget_uid = \DJApi\FN::array_column($binds, 'uid', 'value');
+    foreach($wxInfo as $k=>$row){
+      $wxInfo[$k]['uid'] = $reget_uid[$row[$bind]];
+    }
+    return \DJApi\API::OK(['list'=>$wxInfo]);
+  }
 }

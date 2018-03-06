@@ -25,6 +25,7 @@
  * 5.2 bind/get_uid:  根据[微信openid/微信unionid/手机号], 获取用户uid
  *
  * 6.1 mix/wx_code_to_token_uid: 用code换取用户登录票据和uid
+ * 6.1 mix/wx_infos:             根据[uid]，获取微信呢称、头像等
  *
  */
 error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING );
