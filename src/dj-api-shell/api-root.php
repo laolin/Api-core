@@ -14,8 +14,8 @@ use DJApi;
  *   自定义：
  *     DJApi\Configs::set('main-include-path', [include_path1, ...])
  */
-class AutoClass {
-  static function classLoader($class){
+spl_autoload_register(
+  function ($class){
     $fn = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
     $paths = DJApi\Configs::get('main-include-path');
     if(!$paths){
@@ -32,8 +32,7 @@ class AutoClass {
       }
     }
   }
-}
-spl_autoload_register('DJApi\AutoClass::classLoader');
+);
 
 
 class Configs {
