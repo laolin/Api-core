@@ -77,5 +77,16 @@ class CUser {
     ]);
   }
 
+  /**
+   * 添加用户，生成新的 uid
+   * @return uid
+   */
+  public static function create_uid(){
+    $db = CDbBase::db();
+    $uid = $db->insert(CDbBase::table('user'), ['name' => '']);
+    return $uid;
+  }
+
+
 }
 

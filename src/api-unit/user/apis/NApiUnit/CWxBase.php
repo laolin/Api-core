@@ -88,5 +88,18 @@ class CWxBase {
     $wxUser = $db->get(CDbBase::table('wx_user'), '*', ['AND' => $AND]);
     return \DJApi\API::OK(['wxUser'=>$wxUser]);
   }
+
+  /**
+   * 根据[ openid/unionid ]，获取多个微信呢称、头像等
+   * @param values: openid/unionid的值
+   * @param valueType: 根据openid或unionid来查询
+   */
+  public static function wx_infos($values, $valueType){
+    $db = CDbBase::db();
+    $AND = [$valueType=>$values];
+    $wxUser = $db->select(CDbBase::table('wx_user'), '*', ['AND' => $AND, "GROUP"=>'unionid']);
+    \DJApi\API::debug(['获取多个微信', $db->getShow(), $wxUser]);
+    return \DJApi\API::OK(['list'=>$wxUser]);
+  }
 }
 

@@ -102,5 +102,40 @@ class CBind {
     return \DJApi\API::OK(['uid' => $uid]);
   }
 
+  /**
+   * 根据[微信openid/微信unionid/手机号], 获取用户uid
+   * @query bindtype: 绑定类型[mobile/wx-openid/wx-unionid/uidparent]
+   * @query uid: 绑定的值
+   * @query param1: 绑定子类型1, 可选
+   * @query param2: 绑定子类型2, 可选
+   *
+   * @return uid
+   */
+  public static function get_binds($query){
+    $bindtype = $query["bindtype"];
+    $uid      = $query["uid"     ];
+    $value    = $query["value"   ];
+    $param1   = $query["param1"  ];
+    $param2   = $query["param2"  ];
+    if(!$uid && !$value && !$bindtype){
+      \DJApi\API::debug(['获取绑定, 参数无效', $query]);
+      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "绑定查询, 参数无效");
+    }
+
+    $db = CDbBase::db();
+    $AND = [];
+    if($uid     ) $AND['uid'     ] = $uid     ;
+    if($bindtype) $AND['bindtype'] = $bindtype;
+    if($value   ) $AND['value'   ] = $value   ;
+    if($param1  ) $AND['param1'  ] = $param1  ;
+    if($param2  ) $AND['param2'  ] = $param2  ;
+    $binds = $db->select(CDbBase::table('bind'), ['uid', 'value'], ['AND' => $AND]);
+    if(!is_array($binds)){
+      \DJApi\API::debug(['获取绑定', $db->getShow(), $binds]);
+      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, '获取绑定, 失败');
+    }
+    return \DJApi\API::OK(['binds' => $binds]);
+  }
+
 }
 
