@@ -13,9 +13,12 @@ apiShellCall('DJApi\WxToken');
 
  */
 
+
+// 自动加载类库
+require_once('class-loader.php');
+
+// 主框架 api-shell
 search_require('dj-api-shell/api-all.php', 5, '', true);
-// 请在正式的 index.php 中调用
-//search_require('config.inc.php');
 
 
 /**

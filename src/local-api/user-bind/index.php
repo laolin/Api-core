@@ -10,10 +10,12 @@ ini_set("display_errors", 1);
 ini_set("error_log", "php_errors.log");
 
 require_once('../index.api-shell.php');
-// 加载配置
-search_require('config.inc.php');
-search_require('config.inc.use-record.php');
-// 开启调试信息
+
+
+
+// 开启调试信息, 可以config中关闭
 DJApi\API::enable_debug(true);
+// 加载配置
+search_require('config.inc.user-bind.php');
 //输出
 apiShellCall('DJApi\UserBind');

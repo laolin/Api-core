@@ -131,7 +131,7 @@ create table if not exists `z_wx_user`
   `subscribe_time` varchar(64)  COMMENT '用户关注时间，为时间戳。如果用户曾多次关注，则取最后关注时间'                      ,
   `remark`         varchar(64)  COMMENT '公众号运营者对粉丝的备注，公众号运营者可在微信公众平台用户管理界面对粉丝添加备注'  ,
   `groupid`        varchar(64)  COMMENT '用户所在的分组ID'                                                                  ,
-  `rqupdate`       varchar(16)  COMMENT '最后更新资料时间'                                                                  ,
+  `timeupdate`       varchar(16)  COMMENT '最后更新资料时间'                                                                  ,
   primary key (`id`),
   unique key `id` (`id`),
   key `openid` (`openid`)

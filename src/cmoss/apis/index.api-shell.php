@@ -1,6 +1,8 @@
 <?php
-search_require('dj-api-shell/api-all.php', 5, '', true);
-search_require('configs/config.inc.local-api.php');
+
+search_require('dj-api-shell/api-all.php', 6, '', true);
+// 请在正式的 index.php 中调用
+//search_require('config.inc.php');
 
 
 /**
@@ -20,20 +22,23 @@ function apiShellCall($namespace = 'RequestByApiShell'){
  */
 function autoAPI(){
   // 是否有 LaolinApi ?
-  $hasLaolinApi = file_exists('system/main.php');
-  if($hasLaolinApi)require_once 'system/main.php';
+  $laolin_php = dirname( __FILE__ ) . '/laolin/system/main.api-shell.php';
+  $hasLaolinApi = file_exists($laolin_php);
   /**
    * 优先使用 api-shell 执行
    */
   $request = new DJApi\Request($_GET['api'], $_GET['call']);
   $json = $request->getJson('RequestByApiShell');
   if($hasLaolinApi && in_array($json['errcode'], [DJApi\API::E_CLASS_NOT_EXITS, DJApi\API::E_API_NOT_EXITS])){
+    require_once $laolin_php;
+    search_require('configs/config.inc.laolin.php');
     // 调用旧的 API
     $json = main( );
     DJApi\API::debug('旧api，由 api-shell 拦截！');
     DJApi\Response::response(DJApi\Request::debugJson($json));
   }
   else{
+    DJApi\API::debug(['新API', $hasLaolinApi]);
     // 使用 api-shell
     DJApi\Response::response(DJApi\Request::debugJson($json));
   }

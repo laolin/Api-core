@@ -32,17 +32,12 @@ error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING );
 ini_set("display_errors", 1);
 ini_set("error_log", "php_errors.log");
 
-define('MY_SPACENAME', 'NApiUnit');
-
-// 自动加载类库
-require_once('apis/class-loader.php');
+require_once('apis/index.api-shell.php');
 
 
-
-require_once('index.api-shell.php');
-// 加载配置
-search_require('config.inc.php');
-// 开启调试信息
+// 开启调试信息, 可以config中关闭
 DJApi\API::enable_debug(true);
+// 加载配置
+search_require('configs/config.inc.unit.php');
 //输出
-apiShellCall(MY_SPACENAME);
+apiShellCall('NApiUnit');
