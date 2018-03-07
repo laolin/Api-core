@@ -29,6 +29,25 @@ class class_app {
   }
 
   /**
+   * 接口： app/jsapi_sign
+   * 前端请求jsapi签名
+   *
+   * @request name: 公众号名称
+   * @request url
+   *
+   * @return config: 签名参数
+   */
+  public static function jsapi_sign($request) {
+    $name = $request->query['name'];
+    $url  = $request->query['url'];
+
+    $json = \DJApi\API::post(SERVER_API_ROOT, "user/wx/jsapi_sign", ['name'=>$name, 'url'=>$url]);
+    \DJApi\API::debug(['jsapi_ticket', $json]);
+
+    return $json;
+  }
+
+  /**
    * 接口： app/verify_token
    * 根据票据和签名，进行用户登录，获取uid
    * @request uid: 可选

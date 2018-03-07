@@ -7,7 +7,7 @@
  *
  * 2.1 wx/appid:        获取微信公众号appid
  * 2.2 wx/code_login:   用code换取微信openid。 凭此，可转接bind+user模块换取用户登录票据和uid
- * 2.3 wx/jsapi_ticket: 前端请求jsapi签名
+ * 2.3 wx/jsapi_sign:   前端请求jsapi签名
  * 2.4 wx/wx_info:      根据[微信openid/微信unionid]，获取微信呢称、头像等
  *
  * 3.1 user/verify_token:  根据票据和签名，进行用户登录，获取uid
