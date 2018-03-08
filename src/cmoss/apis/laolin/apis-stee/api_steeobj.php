@@ -95,6 +95,7 @@ class class_steeobj{
       'id',
       'mark',
       "update_at",
+      "close_time",
       "name",
       "addr",
       "latE7",
@@ -196,6 +197,7 @@ class class_steeobj{
     //项目信息
     $kr['steeproj']= [
       "update_at"=>0,
+      "close_time"=>0,
       "name"=>4,
       "addr"=>4,
       "latE7"=>5,
