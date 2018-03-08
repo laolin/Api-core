@@ -92,6 +92,7 @@ class class_app {
     }
 
     $userRow = \MyClass\SteeUser::readSteeUser($uid);
+    \DJApi\API::debug(['读取个人信息', $userRow, $db->getShow()]);
     $data['me'] = $userRow;
 
     return \DJApi\API::OK($data);

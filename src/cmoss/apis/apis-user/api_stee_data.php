@@ -24,6 +24,7 @@ class class_stee_data {
    * @return limit.used: 当前已用额度
    */
   public static function getReadDetailLimit($request) {
+    return \MyClass\SteeData::getReadDetailLimit($request->query);
     $uid = $request->query['uid'];
     $facid = $request->query['facid'];
     $type = $request->query['type'];
@@ -100,10 +101,17 @@ class class_stee_data {
     $facid = $request->query['facid'];
     $type = $request->query['type'];
 
+    // 近几天之内看过的，允许再看
+    if(\MyClass\SteeData::newlyReadDetail($uid, $type, $facid) > 0){
+      DJApi\API::debug(['近几天之内看过', $uid, $type, $facid]);
+      return DJApi\API::OK(['limit' => 'never']);
+    }
+
     // 今天额度使用多少
     $used = \MyClass\SteeData::usedReadDetail    ($uid, $type);
     $max  = \MyClass\SteeData::maxLimitReadDetail($uid, $type);
     if($max !== 'never' && $used >= $max){
+      DJApi\API::debug(['额度已用完', 'used'=>$used, 'max'=>$max, 'uid'=>$uid, 'type'=>$type]);
       return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '额度已用完');
     }
     if($max == 'never'){

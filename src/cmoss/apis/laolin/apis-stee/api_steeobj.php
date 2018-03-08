@@ -326,9 +326,29 @@ class class_steeobj{
   public static function detail( ) {
     $uid = API::INP('uid');
     $type=API::INP('type');
+    $id=intval(API::INP('id'));
+    $confirm=intval(API::INP('confirm'));
     if(!stee_user::_check_obj_type( $type )) {
       return API::msg(202001,'E:type:',$type);
     }
+
+    /** 先获取权限情况 */
+    $limitJson = \MyClass\SteeData::getReadDetailLimit(['uid'=>$uid, 'type'=>$type, 'facid'=>$id]);
+    $limit = $limitJson['datas']['limit'];
+
+    if($limit === 'never'){
+      \DJApi\API::debug('查看不受限制');
+    }
+    else if($confirm){
+      \DJApi\API::debug('用户要求查看');
+      \MyClass\SteeData::recordReadDetail($uid, $type, $id, '使用额度查看');
+    }
+    else {
+      \DJApi\API::debug('查看受限');
+      return API::data(['limit'=>$limit]);
+    }
+
+
     $tblname=self::table_name($type);
     $db=API::db();
     
@@ -344,14 +364,6 @@ class class_steeobj{
     $r=$db->get($tblname, $ky,
       ['and' => ['id'=>$id,'or'=>['mark'=>null,'mark#'=>''] ] ] );
 
-    if($r){
-      // 最近几天查看情况
-      // 不受限制
-      $canReadDetail = \MyClass\SteeData::canReadDetail($uid, $type, $id);
-      if(!$canReadDetail){
-        return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '无权限，或未确认要查看');
-      }
-    }
     return API::data($r);
   }
   /**

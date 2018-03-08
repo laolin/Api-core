@@ -10,6 +10,9 @@ use DJApi;
 class Data{
   static $tableName = 'api_tbl_use_record';
 
+  static function safeValue($value, $defaultValue = ''){
+    return $value ? $value : $defaultValue;
+  }
 
   /**
    * 将使用情况予以记录
@@ -23,24 +26,24 @@ class Data{
    * @query v2 次值(可选)
    * @query n 数量
    */
-  public static function record($request) {
+  public static function record($query) {
     $db = DJApi\DB::db();
 
-    $json = DJApi\API::cn_json($request->safeQuery('json', []));
+    $json = DJApi\API::cn_json(self::safeValue('json', []));
 
     $id = $db->insert(self::$tableName, $aa = [
       'time'   => DJApi\API::now(),
-      'module' => $request->safeQuery('module', '无模块'),
-      'uid'    => $request->safeQuery('uid'   , 0),
-      'k1'     => $request->safeQuery('k1'    ),
-      'k2'     => $request->safeQuery('k2'    ),
-      'v1'     => $request->safeQuery('v1'    ),
-      'v2'     => $request->safeQuery('v2'    ),
-      'n'      => $request->safeQuery('n'     , 0),
+      'module' => self::safeValue($query['module'], '无模块'),
+      'uid'    => self::safeValue($query['uid'   ], 0),
+      'k1'     => self::safeValue($query['k1'    ]),
+      'k2'     => self::safeValue($query['k2'    ]),
+      'v1'     => self::safeValue($query['v1'    ]),
+      'v2'     => self::safeValue($query['v2'    ]),
+      'n'      => self::safeValue($query['n'     ], 0),
       'json'   => $json
     ]);
 
-    return DJApi\API::OK(['n' => $id? 1: 0, 'id'=>$id, 'query'=>$request->query]);
+    return DJApi\API::OK(['n' => $id? 1: 0, 'id'=>$id]);
   }
   /**
    * 接收一条json数据，解析后，予以记录
@@ -48,12 +51,12 @@ class Data{
    *
    * @query param 要记录的参数，允许的参数：['uid', 'module', 'k1', 'k2', 'v1', 'v2', 'n', 'json']
    */
-  public static function json_record($request) {
+  public static function json_record($query) {
     $db = DJApi\DB::db();
 
-    $param = json_decode($request->safeQuery('param', ''), true);
+    $param = json_decode($query['param'], true);
     if(!is_array($param) || count($param) == 0){
-      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误', [$param, $request]);
+      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误', [$param, $query]);
     }
     $data = [
       'time'   => DJApi\API::now(),
@@ -76,10 +79,10 @@ class Data{
    *
    * @query param 要记录的参数，允许的参数：['uid', 'module', 'k1', 'k2', 'v1', 'v2', 'n', 'json']
    */
-  public static function json_record_if($request) {
+  public static function json_record_if($query) {
     $db = DJApi\DB::db();
     /* 原已有的，不再添加 */
-    $if = json_decode($request->safeQuery('if', ''), true);
+    $if = json_decode($query['if'], true);
     if(!is_array($if) || count($if) == 0){
       $if = false;
     }
@@ -89,9 +92,9 @@ class Data{
       }
     }
     /** 原没有的，就添加 */
-    $param = json_decode($request->safeQuery('param', ''), true);
+    $param = json_decode($query['param'], true);
     if(!is_array($param) || count($param) == 0){
-      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误', [$param, $request]);
+      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误', [$param, $query]);
     }
     $data = [
       'time'   => DJApi\API::now(),
@@ -147,12 +150,12 @@ class Data{
    *
    * @return 数组
    */
-  public static function select($request) {
-    $module = $request->query['module'];
-    $field  = $request->query['field' ];
-    $and    = $request->query['and'   ];
-    $group  = $request->query['group' ];
-    $order  = $request->query['order' ];
+  public static function select($query) {
+    $module = $query['module'];
+    $field  = $query['field' ];
+    $and    = $query['and'   ];
+    $group  = $query['group' ];
+    $order  = $query['order' ];
     if(!$module){
       return DJApi\API::error(1002, '未指定模块');
     }
@@ -165,7 +168,8 @@ class Data{
     if($order) $where['ORDER'] = $order;
     if(!$field) $field = '*';
     $rows = $db->select(self::$tableName, $field, $where);
-    return DJApi\API::OK(['rows' => $rows, "query"=>$request->query, "where"=>$where, "DB"=>$db->getShow()]);
+    DJApi\API::debug(['记录使用数量查询', $rows, $db->getShow()]);
+    return DJApi\API::OK(['rows' => $rows, "query"=>$query, "where"=>$where, "DB"=>$db->getShow()]);
   }
 
 
@@ -182,11 +186,11 @@ class Data{
    * @query v2 次值(可选)
    * @query n 数量
    */
-  public static function count($request) {
+  public static function count($query) {
 
     $fieldsAll = ['uid', 'time', 'k1', 'k2', 'v1', 'v2'];
 
-    $and = $request->query['and'];
+    $and = $query['and'];
     if(is_string($and)){
       $and = json_decode($and, true);
     }
@@ -202,10 +206,10 @@ class Data{
     }
 
     $db = DJApi\DB::db();
-    if($request->query['k1']){
+    if($query['k1']){
       $fields = ['k1', 'sum(n) as n'];
       $GROUP = 'k1';
-      $AND['k1'] = $request->query['k1'];
+      $AND['k1'] = $query['k1'];
     }
     $rows = $db->select(self::$tableName, $fields, ["AND"=>$AND, "GROUP"=>$GROUP]);
     $used = [];
@@ -213,7 +217,7 @@ class Data{
       $used[$row['k1']] = $row['n'] + 0;
     }
 
-    return DJApi\API::OK(['used' => $used, "tableName" => self::$tableName, "query"=>$request->query, "AND"=>$AND, "DB"=>$db->getShow()]);
+    return DJApi\API::OK(['used' => $used, "tableName" => self::$tableName, "query"=>$query, "AND"=>$AND, "DB"=>$db->getShow()]);
   }
 
 }
