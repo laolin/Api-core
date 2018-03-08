@@ -31,7 +31,7 @@ class SteeData extends SteeStatic{
    * @return 数量
    */
   static function newlyReadDetail($uid, $type, $facid) {
-    $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
+    $jsonReaded = \API_UseRecords\Data::select([
       'module' => 'cmoss',
       'field' => 'sum(n) as n',
       'and' => DJApi\API::cn_json([
@@ -73,7 +73,7 @@ class SteeData extends SteeStatic{
    * @return 数量
    */
   static function usedReadDetail($uid, $type) {
-    $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
+    $jsonReaded = \API_UseRecords\Data::select([
       'module' => 'cmoss',
       'field' => 'sum(n) as n',
       'and' => DJApi\API::cn_json([
@@ -95,7 +95,7 @@ class SteeData extends SteeStatic{
    * @return 记录结果, json
    */
   static function recordReadDetail($uid, $type, $facid, $k2='使用额度查看') {
-    return DJApi\API::call(LOCAL_API_ROOT, "use-records/data/record", [
+    return \API_UseRecords\Data::record([
       'module' => 'cmoss',
       'uid'    => $uid,
       'k1'     => $type,
@@ -128,7 +128,7 @@ class SteeData extends SteeStatic{
       }
     }
     $data = ['param'=>DJApi\API::cn_json($data)];
-    return DJApi\API::call(LOCAL_API_ROOT, "use-records/data/json_record", $data);
+    return \API_UseRecords\Data::json_record($data);
   }
 
   /** 用户是否超级管理员

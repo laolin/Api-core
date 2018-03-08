@@ -20,10 +20,10 @@ class class_sa_data extends \MyClass\SteeStatic {
 
     DJApi\API::debug(__FILE__, 'FILE');
 
-    $wxinfo = \MyClass\WX::getWxInfo($userid)[0];
+    $wxinfo = \MyClass\CWxBase::getWxInfo($userid)[0];
     // 返回
     return DJApi\API::OK([
-      "wxinfo" => \MyClass\WX::getWxInfo($userid)[0],
+      "wxinfo" => \MyClass\CWxBase::getWxInfo($userid)[0],
       "activity" => \MyClass\SteeLog::countActivity($userid, [0.083, 1, 30]),
       "objAdmin" =>[
         "steefac" => \MyClass\SteeObj::listAdminObj($userid, 'steefac'),
@@ -38,7 +38,7 @@ class class_sa_data extends \MyClass\SteeStatic {
    * @return 微信信息数组
    */
   static function getWxInfo($request) {
-    $R = \MyClass\WX::getWxInfo($request->query['userid']);
+    $R = \MyClass\CWxBase::getWxInfo($request->query['userid']);
     \DJApi\API::debug(\DJApi\DB::db()->getShow(), "DB");
     return DJApi\API::OK($R);
   }

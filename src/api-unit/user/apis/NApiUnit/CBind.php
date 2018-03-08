@@ -56,16 +56,27 @@ class CBind {
    * 获取指定uid绑定情况，同时包含[微信openid/微信unionid/手机号]
    * @query uid
    * @param bindtype: 可选, 绑定类型[mobile/wx-openid/wx-unionid/uidparent]
+   * @param param1: 绑定子类型1, 可选
+   * @param param2: 绑定子类型2, 可选
+   * @param fields: 返回的列名列表，可选
    *
    * @return binds: 数组
    */
   public static function get_bind($query){
     $uid      = $query["uid"     ];
     $bindtype = $query["bindtype"];
+    $param1   = $query["param1"  ];
+    $param2   = $query["param2"  ];
     $AND = ['uid' => $uid];
     if($bindtype) $AND['bindtype'] = $bindtype;
+    if($param1  ) $AND['param1'  ] = $param1;
+    if($param2  ) $AND['param2'  ] = $param2;
+
     $db = CDbBase::db();
-    $binds = $db->select(CDbBase::table('bind'), ["bindtype", "value", "param1", "param2"], ['AND' => $AND]);
+    $fields = $query["fields"];
+    if(!$fields) $fields = ["uid", "bindtype", "value", "param1", "param2"];
+    $binds = $db->select(CDbBase::table('bind'), $fields, ['AND' => $AND]);
+    \DJApi\API::debug(['读 bind', $db->getShow()]);
     return \DJApi\API::OK(['binds' => $binds]);
   }
 

@@ -4,10 +4,10 @@
  * 1. 记录各模块、分类情况下，各项功能的使用数量及基本信息
  * 2. 提供使用情况查询
  */
-namespace DJApi\UseRecords;
+namespace API_UseRecords;
 use DJApi;
 
-class class_data{
+class Data{
   static $tableName = 'api_tbl_use_record';
 
 

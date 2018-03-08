@@ -1,14 +1,13 @@
 <?php
-// ================================
-/*
-*/
-namespace DJApi\UserBind;
+/**
+ * 使用记录模块
+ * 1. 记录各模块、分类情况下，各项功能的使用数量及基本信息
+ * 2. 提供使用情况查询
+ */
+namespace API_UserBind;
+use DJApi;
 
-use DJApi\DB;
-use DJApi\API;
-use DJApi\Request\Request;
-
-class class_steeobj{
+class Steeobj{
   static $tableWX = 'api_tbl_user_wx';
   static $tableObj = 'api_tbl_stee_user';
 

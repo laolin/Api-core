@@ -75,7 +75,7 @@ class class_steesys {
     $data['me']=($r?$r:1);//这里待改进（需要客户端更新）
 
     // 该用户id($uid)今天已发送的几种数量['and'=>['uid'=>$uid, 'time[~]'=>"%$today"], 'type'=>['公司推广', '项目推广']]
-    $json = \DJApi\API::post(LOCAL_API_ROOT, "use-records/data/count", [
+    $json = \API_UseRecords\Data::count([
       'module' => 'cmoss',
       'and'=>['uid'=>$uid, "time[~]"=>NewApi::today() . "%"],
       'k2' => '发送推广消息',

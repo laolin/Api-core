@@ -128,7 +128,7 @@ class class_stee_data {
   public static function hash($request) {
     $uid = $request->query['uid'];
     $hash = $request->query['hash'];
-    $json = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
+    $json = \API_UseRecords\Data::select([
       'module' => 'cmoss',
       'and' => DJApi\API::cn_json([
         'v2' => $hash
@@ -192,7 +192,7 @@ class class_stee_data {
     ];
     DJApi\API::debug($if, 'if');
     DJApi\API::debug($param, 'param');
-    return \DJApi\API::call(LOCAL_API_ROOT, "use-records/data/json_record_if", $data);
+    return \API_UseRecords\Data::json_record_if($data);
   }
 
 

@@ -4,6 +4,7 @@ ehthumbs.db
 
 config.inc.*.php
 config.inc.php
+php_errors.log
 
 # Folder config file
 Desktop.ini

@@ -43,6 +43,10 @@ class class_bind{
    * 接口： bind/get_bind
    * 获取指定uid绑定情况，同时包含[微信openid/微信unionid/手机号]
    * @request uid
+   * @request bindtype: 可选, 绑定类型[mobile/wx-openid/wx-unionid/uidparent]
+   * @request param1: 绑定子类型1, 可选
+   * @request param2: 绑定子类型2, 可选
+   * @request fields: 返回的列名列表，可选
    *
    * @return binds: 数组
    */

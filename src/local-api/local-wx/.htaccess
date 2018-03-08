@@ -1,8 +1,0 @@
-RewriteEngine on
-
-RewriteRule ^(index\.php/)?([a-zA-Z]\w*)/([a-zA-Z]\w*)(/([-,\w]+))?(/([-,\w]+))?(/)?$ index.php?api=$2&call=$3&__para1=$5&__para2=$7&%{QUERY_STRING}	[L]
-RewriteRule ^(index\.php/)?([a-zA-Z]\w*)(/?)$ index.php?api=$2&%{QUERY_STRING}	[L]
-
-RewriteRule ^(demo|test)\.index.php/([a-zA-Z]\w*)/([a-zA-Z]\w*)(/([-,\w]+))?(/([-,\w]+))?(/)?$ demo.index.php?api=$2&call=$3&__para1=$5&__para2=$7&%{QUERY_STRING}	[L]
-RewriteRule ^(demo|test)\.index.php/([a-zA-Z]\w*)(/?)$ demo.index.php?api=$2&%{QUERY_STRING}	[L]
-
