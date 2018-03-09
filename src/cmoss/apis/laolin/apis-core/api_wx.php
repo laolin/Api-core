@@ -146,7 +146,7 @@ class class_wx{
     // 先获取用户数据
     $ids = $_REQUEST['ids'];
     $userJson = \MyClass\SteeUser::get_users($ids);
-    \DJApi\API::debug(['先获取用户数据', $ids, $userJson]);
+    // \DJApi\API::debug(['先获取用户数据', $ids, $userJson]);
     if(!\DJApi\API::isOk($userJson)){
       return $userJson;
     }
@@ -160,20 +160,23 @@ class class_wx{
 
     // 从独立服务器获取微信信息
     $uid = array_map(function($a){return $a['uid'];}, $users);
-    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $uid]);
+    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $ids]);
     \DJApi\API::debug(['从独立服务器获取微信信息', $wxInfoJson]);
     if(!\DJApi\API::isOk($wxInfoJson)){
       return $wxInfoJson;
     }
     $wxInfo = $wxInfoJson['datas']['list'];
+    // \DJApi\API::debug(['wxInfo', $wxInfo]);
 
     // 两者合并
     $reget_users = \DJApi\FN::array_column($users, 'uid', true);
+    // \DJApi\API::debug(['wxInfo', $wxInfo, 'reget_users', $reget_users]);
     $bind = substr($bindtype, 3);
     $list = [];
     foreach($wxInfo as $k=>$row){
       $list[] = array_merge(["wxinfo"=>$row], $reget_users[$row['uid']]);
     }
+    // \DJApi\API::debug(['list=', $list]);
     return \DJApi\API::OK(['list'=>$list]);
   }
 

@@ -65,10 +65,15 @@ class WxTokenBase {
 
 
   static function appid_appsec($name){
-    $WX_APPID_APPSEC = \DJApi\Configs::get('WX_APPID_APPSEC');
-    if(!$WX_APPID_APPSEC[$name])return [];
-    $appid = $WX_APPID_APPSEC[$name]['WX_APPID'];
-    $secret = $WX_APPID_APPSEC[$name]['WX_APPSEC'];
+    $WX_APPID_APPSEC = \DJApi\Configs::get('WX_APPID_APPSEC')[$name];
+    if(!$WX_APPID_APPSEC)$WX_APPID_APPSEC = \DJApi\Configs::get('WX_APPID_APPSEC_DEFAULT');
+    if(!$WX_APPID_APPSEC){
+      // 敏感数据, 调试后删除！
+      \DJApi\API::debug(['获取 APPID', $name, \DJApi\Configs::get('WX_APPID_APPSEC'), \DJApi\Configs::get(['WX_APPID_APPSEC_DEFAULT'])]);
+      return [];
+    }
+    $appid = $WX_APPID_APPSEC['WX_APPID'];
+    $secret = $WX_APPID_APPSEC['WX_APPSEC'];
     return [$appid, $secret];
   }
 }

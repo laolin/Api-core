@@ -190,11 +190,7 @@ class API{
   static function post($module, $api, $param) {
     $url = $module . $api;
     $res = self::httpPost($url, $param);
-    \DJApi\API::debug(['API::post()',
-      'url'=>$url,
-      'param'=>$param,
-      '返回'=>$res,
-    ]);
+    // \DJApi\API::debug(['API::post()', 'url'=>$url, 'param'=>$param, '返回'=>$res]);
     return self::toJson($res);
   }
 
@@ -250,15 +246,8 @@ class API{
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //信任任何证书
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); // 检查证书中是否设置域名,0不验证
     $output = curl_exec($ch);
-    //$info = curl_getinfo($ch);
-    //error_log(curl_error($ch));
-    \DJApi\API::debug(['httpPost',
-      'info'=>curl_getinfo($ch),
-      'error'=>curl_error($ch),
-      '返回'=>$output,
-    ]);
+    // \DJApi\API::debug(['httpPost', 'info'=>curl_getinfo($ch), 'error'=>curl_error($ch), '返回'=>$output]);
     curl_close($ch);
-    //if($output===false)return curl_error($ch);
     return $output;
   }
 }

@@ -12,6 +12,15 @@ class CWxBase {
   static function callWxApi($subUrl){
     $url = "https:" . "//api.weixin.qq.com/{$subUrl}";
     $res = \DJApi\API::httpGet($url);
+    //敏感数据，调试后即关闭！
+    //\DJApi\API::debug(['从微信接口，获取一个 json 数据', $res, $url]);
+    return json_decode($res, true);
+  }
+  static function postWxApi($subUrl, $param){
+    $url = "https:" . "//api.weixin.qq.com/{$subUrl}";
+    $res = \DJApi\API::httpPost($url, $param);
+    //敏感数据，调试后即关闭！
+    //\DJApi\API::debug(['从微信接口，获取一个 json 数据', $res, $url]);
     return json_decode($res, true);
   }
 
@@ -34,7 +43,19 @@ class CWxBase {
 
 
   /**
-   * 用openid获取用户个人信息（UnionID机制）
+   * 用 openid 获取用户个人信息（网页授权）
+   */
+  public static function getWxUserOAuth2($json, $appid, $secret){
+    $token = $json['access_token'];
+    $openid = $json['openid'];
+    $wxUser = self::callWxApi("sns/userinfo?access_token=$token&openid=$openid&lang=zh_CN");
+    \DJApi\API::debug(['获取用户个人信息（网页授权）', $wxUser]);
+    return $wxUser;
+  }
+
+
+  /**
+   * 用openid获取用户个人信息（公众号拉取）
    */
   public static function getWxUser($openid, $appid, $secret){
     $token = WxTokenBase::GetWxToken($appid, $secret);
@@ -42,6 +63,24 @@ class CWxBase {
     return $wxUser;
   }
 
+
+  /**
+   * 批量获取用户基本信息
+   */
+  public static function getWxUserBatchget($openids, $appid, $secret){
+    $token = WxTokenBase::GetWxToken($appid, $secret);
+    $param = [
+      'user_list' => array_map(function($openid){
+        return ['openid' => $openid, 'lang'=>'zh_CN'];
+      }, $openids)
+    ];
+    $param = urldecode(json_encode($param));
+    
+    $wxUserJson = self::postWxApi("cgi-bin/user/info/batchget?access_token=$token", $param);
+    $wxUser = $wxUserJson['user_info_list'];
+    return $wxUser;
+  }
+  
   /**
    * 保存用户个人信息
    */
