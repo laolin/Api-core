@@ -87,8 +87,8 @@ class SteeData extends SteeStatic{
         'uid'     => $uid,
         "time[>]" => DJApi\API::today(- self::MAX_REREAD_DAYS),
         'k1'      => $type,
-        'k2'      => ['使用额度查看', '推广查看'],
-        'v1'      => $facid,
+        'k2'      => $facid,
+        'v1'      => ['使用额度查看', '推广查看'],
       ])
     ]);
     DJApi\API::debug(['近几天之内看过的情况', $jsonReaded]);
@@ -135,7 +135,7 @@ class SteeData extends SteeStatic{
         'uid'     => $uid,
         "time[>]" => DJApi\API::today( 0 ),
         'k1'      => $type,
-        'k2'      => ['使用额度查看']
+        'v1'      => ['使用额度查看']
       ])
     ]);
     return 0 + $jsonReaded['datas']['rows'][0];
@@ -145,17 +145,17 @@ class SteeData extends SteeStatic{
    * @param uid
    * @param type: steefac/steeproj ，公司或项目
    * @param facid: id ，公司若项目的 id
-   * @param k2: 查看方式 (使用额度查看/推广查看/再次查看)
+   * @param v1: 查看方式 (使用额度查看/推广查看/再次查看)
    * 返回：
    * @return 记录结果, json
    */
-  static function recordReadDetail($uid, $type, $facid, $k2='使用额度查看') {
+  static function recordReadDetail($uid, $type, $facid, $v1='使用额度查看') {
     return \API_UseRecords\Data::record([
       'module' => 'cmoss',
       'uid'    => $uid,
       'k1'     => $type,
-      'k2'     => $k2,
-      'v1'     => $facid,
+      'k2'     => $facid,
+      'v1'     => $k2,
       'n'      => 1
     ]);
   }

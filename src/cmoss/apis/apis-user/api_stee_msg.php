@@ -178,8 +178,8 @@ class class_stee_msg{
         'module' => 'cmoss',
         'uid'    => $uid,
         'k1'     => $from_type,
-        'k2'     => '用户推广',
-        'v1'     => $from_id,
+        'k2'     => $from_id,
+        'v1'     => '用户推广',
         'v2'     => $hash,
         'n'      => $jsonSended['datas']['sended'],
         'json'   => [

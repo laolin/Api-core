@@ -147,12 +147,12 @@ class class_stee_data {
     $type = $row['k1'];
     $facid = $row['k2'];
 
-    if($row['k1'] == 'steefac' && $row['k2'] == '用户推广'){
-      $path = "/fac-detail/{$row['v1']}";
+    if($row['k1'] == 'steefac' && $row['v1'] == '用户推广'){
+      $path = "/fac-detail/{$row['k2']}";
       \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '推广查看');// 每次均记录，可用于推广效果分析
     }
-    if($row['k1'] == 'steeproj' && $row['k2'] == '用户推广'){
-      $path = "/project-detail/{$row['v1']}";
+    if($row['k1'] == 'steeproj' && $row['v1'] == '用户推广'){
+      $path = "/project-detail/{$row['k2']}";
       \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '推广查看');// 每次均记录，可用于推广效果分析
     }
 
