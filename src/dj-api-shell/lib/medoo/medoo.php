@@ -298,7 +298,7 @@ class medoo
 			$type = gettype($value);
 
 			if (
-				preg_match("/^(AND|OR)(\s+#.*)?$/i", $key, $relation_match) &&
+				preg_match("/^(AND|OR)\s*#?/i", $key, $relation_match) &&
 				$type == 'array'
 			)
 			{
