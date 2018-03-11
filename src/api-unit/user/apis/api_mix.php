@@ -151,7 +151,7 @@ class class_mix{
     // 长期未更新的 wxUser
     $wxUser_long_pass = array_values(array_filter($wxUser, function($row){
       $time = time();
-      return $time - $row['timeupdate'] > 24 * 3600;
+      return ($row['subscribe']===null && $row['headimgurl']) ||$time - $row['timeupdate'] > 24 * 3600;
     }));
     // \DJApi\API::debug(['长期未更新的 wxUser', $wxUser_long_pass]);
 
