@@ -6,6 +6,10 @@ namespace MyClass;
 
 class SteeStatic{
 
+  // 在几天之内查看的，允许直接再次查看而不用额度
+  const MAX_REREAD_DAYS = 10;
+
+  
   // 用到的表名
   static $table = [
     'steefac'   => 'api_tbl_steelfactory',
@@ -17,9 +21,9 @@ class SteeStatic{
     "user"      => 'api_tbl_user',
   ];
 
-  // 在几天之内查看的，允许直接再次查看而不用额度
-  const MAX_REREAD_DAYS = 10;
-
+  static $field = [
+    'stee_user' => ['id','uid','name','is_admin','update_at','fac_can_admin','steefac_can_admin','steeproj_can_admin','rights','score']
+  ];
 
   static $fields_preivew=[
     'steefac'=>[
