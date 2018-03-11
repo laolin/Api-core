@@ -203,5 +203,23 @@ class class_stee_data {
     return \API_UseRecords\Data::json_record_if($data);
   }
 
+  /**
+   * stee_data/getActionDetail
+   * 查询多个详情的各种操作
+   * @query type: steefac/steeproj ，公司或项目
+   * @query facid: id ，公司若项目的 id
+   * @query scoreName: 积分名称[使用额度查看/再次查看/推广查看/点击电话/点击邮件/点击推送/用户推广]
+   * @query timeFrom: 开始时间
+   * @query timeTo: 结束时间
+   *
+   * @return DJApi\API::OK([
+   *   list: [list]  // 列表
+   * ])
+   */
+  public static function getActionDetail($request) {
+    $listJson = \MyClass\SteeData::getActionDetail($request->query);
+    return $listJson;
+  }
+
 
 }

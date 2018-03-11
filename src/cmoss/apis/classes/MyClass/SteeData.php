@@ -160,6 +160,43 @@ class SteeData extends SteeStatic{
     ]);
   }
 
+  /** 查询多个详情的各种操作
+   * @param type: steefac/steeproj ，公司或项目
+   * @param facid: id ，公司若项目的 id
+   * @param scoreName: 积分名称[使用额度查看/再次查看/推广查看/点击电话/点击邮件/点击推送/用户推广]
+   * @param timeFrom: 开始时间
+   * @param timeTo: 结束时间
+   * 返回：
+   * @return 记录结果, json
+   */
+  static function getActionDetail($query) {
+    $indexes = [
+      'k1'      => 'type',
+      'k2'      => 'facid',
+      'v1'      => 'ac',
+      "time[>]" => 'timeFrom',
+      "time[<]" => 'timeTo',
+    ];
+    $AND = [];
+    foreach($indexes as $k => $v){
+      if($query[$v]) $AND[$k] = $query[$v];
+    }
+    if(!count($AND)){
+      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误');
+    }
+    if(!$AND['k1']) $AND['k1'] = ['steefac', 'steeproj'];
+    if(!$AND['v1']) $AND['v1'] = ['使用额度查看', '再次查看', '推广查看', '点击电话', '点击邮件', '点击推送', '用户推广'];
+    $jsonAction = \API_UseRecords\Data::select([
+      'module' => 'cmoss',
+      'group' => 'k1","k2","v1',
+      'field' => ['k1', 'k2', 'v1', 'sum(n) as n'],
+      'and' => DJApi\API::cn_json($AND)
+    ]);
+    DJApi\API::debug(['Data::select = ', $jsonAction]);
+
+    return $jsonAction;
+  }
+
   /** 记录一条数据
    * @param uid
    * @param param: 要记录的参数，允许的参数：['module', 'k1', 'k2', 'v1', 'v2', 'n', 'json']
