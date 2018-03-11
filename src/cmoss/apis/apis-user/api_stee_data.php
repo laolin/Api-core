@@ -222,4 +222,104 @@ class class_stee_data {
   }
 
 
+  /**
+   * stee_data/search
+   * 产能搜索
+   * @query type: steefac/steeproj ，公司或项目
+   * @query facid: id ，公司或项目的 id, 可为数组
+   * @query days: 近多少天的操作数量，默认15天
+   *
+   * @return list: 列表
+   */
+  public static function search($request) {
+    $type = $request->query['type'];
+    $db = DJApi\DB::db();
+
+    $page = $request->query['page'] + 0;
+    $count = $request->query['count'] + 0;
+    $lat = $request->query['lat'];
+    $lng = $request->query['lng'];
+    $dist = $request->query['dist'];
+    $search = $request->query['s'];
+    $days = intval($request->query['days']);
+
+    if($page < 1)$page = 1;
+    if($days < 1)$days = 15;
+
+    $tik=0;
+    $andArray=[];
+
+    //坐标范围搜索： 纬度 ,经度(*1e7), 距离(m)
+    //1米 = 0.00001度 近似
+    if($lat > 10E7 && $lat < 55e7
+      && $lng > 70E7 && $lng < 140e7
+      && $dist >= 0 && $dist < 999E3) {
+        // 此条件下 假定其格式正确
+      $lat1 = $lat - $dist * 100;
+      $lng1 = $lng - $dist * 100;
+      $lat2 = $lat + $dist * 100;
+      $lng2 = $lng + $dist * 100;
+      $posand = ['lngE7[>]'=>$lng1, 'lngE7[<]'=>$lng2, 'latE7[>]'=>$lat1, 'latE7[<]'=>$lat2 ];
+      $tik++;
+      $andArray["and#t$tik"]=$posand;
+    }
+
+    //搜索字符
+    if(strlen($search)>0) {
+      $k = preg_split("/[\s,;]+/", $search);
+      $fields_search = \MyClass\SteeStatic::$fields_search[$type];
+
+      $w_or = [];
+      for($i=count($k); $i--;  ) {
+        $or_list=[];
+        for($j=count($fields_search); $j--; ) {
+          $or_list[$fields_search[$j].'[~]']=$k[$i];
+        }
+        $w_or["or#".$i]=$or_list;
+      }
+      $tik++;
+      $andArray["and#t$tik"]=$w_or;
+    }
+
+    //正常标记的才返回
+    $tik++;
+    $andArray["and#t$tik"] = ['or'=>['mark#1'=>null,'mark#2'=>'']];
+
+    $where = [
+      "LIMIT" => [$page*$count-$count, $count],
+      "ORDER" => ["update_at" => "DESC", "id" => "DESC"]
+    ] ;
+    if(count($andArray))
+      $where['and'] = $andArray ;
+    \DJApi\API::debug(['where = ', $where]);
+
+    // 读取数据库
+    $dbRows = $db->select(\MyClass\SteeStatic::$table[$type], \MyClass\SteeStatic::$fields_preivew[$type], $where);
+    if(!is_array($dbRows) || !count($dbRows)){
+      \DJApi\API::debug(['查无数据', $db->getShow()]);
+      return \DJApi\API::OK(['list'=>[]]);
+    }
+    // 改id为索引
+    $dbRows = \DJApi\FN::array_column($dbRows, 'id', true);
+
+    // 被查看等操作计数
+    $listJson = \MyClass\SteeData::getActionDetail([
+      'type' => $type,
+      'timeFrom' =>  \DJApi\API::today( - $days )
+    ]);
+    $actionList = $listJson['datas']['rows'];
+    if(is_array($actionList) && count($actionList) > 0){
+      foreach($actionList as $row){
+        $facid = $row['k2'];
+        if($dbRows[$facid]){
+          $dbRows[$facid]['action'][$row['v1']] = $row['n'];
+        }
+      }
+    }
+
+    // 返回
+    return \DJApi\API::OK(['list' => array_values($dbRows)]);
+  }
+
+
 }
