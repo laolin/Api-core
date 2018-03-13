@@ -15,19 +15,6 @@ class class_steesys {
     $res=API::data(['time'=>time().' - steefac is ready.']);
     return $res;
   }
-  static function userVerify() {
-    return USER::userVerify();
-  }
-  
-  //test
-  public static function test( ) {
-    //$r=self::userVerify();
-    //if(!$r)
-    //  return API::msg(202001,'error userVerify');
-    $tk=1;//WX::GetToken();
-    return API::data(['Test passed.',$tk]);
-  }
- 
 //=========================================================
   //获取 数据表名
   static function table_name($item ) {
@@ -61,7 +48,7 @@ class class_steesys {
       "SELECT count(*) as nProj FROM $tblname WHERE `mark` is  null or `mark` = '' "
     )->fetchAll()[0]['nProj'];
     
-    $uid = USER::userVerify();
+    $uid = \MyClass\SteeUser::sign2uid($_REQUEST);
     $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid'=>$uid, 'bindtype'=>'wx-unionid']);
     \DJApi\API::debug(['读取微信信息', $uid, $wxInfoJson]);
     if(\DJApi\API::isOk($wxInfoJson)){
@@ -92,8 +79,9 @@ class class_steesys {
   
  
   public static function send_todo_msg( ) {
-    
-    $uid=intval(API::INP('uid'));
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
     $user=stee_user::_get_user($uid );
     if(!($user['is_admin'] & 0x10000)) {
       return API::msg(202001,'not sysadmin '.$user['is_admin']);

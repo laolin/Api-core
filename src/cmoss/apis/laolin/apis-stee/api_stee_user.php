@@ -13,17 +13,6 @@ class class_stee_user {
     $res=API::data(['time'=>time().' - stee_user is ready.']);
     return $res;
   }
-  static function userVerify() {
-    return USER::userVerify();
-  }
-  
-  //test
-  public static function test( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    return API::data('Test passed.');
-  }
  
 //=========================================================
    
@@ -33,28 +22,31 @@ class class_stee_user {
    *    /steel_user/applyAdmins
    */
   public static function apply_fac_admin( ) {
-    if(!self::userVerify()) {
-      return API::msg(202001,'Error userVerify@get');
-    }
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    //$uid = $verify_token['datas']['uid'];
     $userid=intval(API::INP('userid'));
     $facid=intval(API::INP('facid'));
     return stee_user::apply_fac_admin($userid,$facid);
   }  
   public static function apply_admin( ) {
-    return self::_apply_admin('uid', '申请管理员', 'apply_admin');
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
+    return self::_apply_admin($uid, '申请管理员', 'apply_admin');
   }
   public static function restore_admin( ) {
-    return self::_apply_admin('userid', '恢复管理员', 'apply_admin');
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    return self::_apply_admin(API::INP('userid'), '恢复管理员', 'apply_admin');
   }
   public static function remove_admin( ) {
-    return self::_apply_admin('userid', '移除管理员', 'remove_admin');
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    return self::_apply_admin(API::INP('userid'), '移除管理员', 'remove_admin');
   }
-  protected static function _apply_admin($uidFieldName, $ac, $fn='apply_admin') {
-    if(!self::userVerify()) {
-      return API::msg(202001,'Error userVerify@get');
-    }
+  protected static function _apply_admin($userid, $ac, $fn='apply_admin') {
     $type   =API::INP('type');
-    $userid =intval(API::INP($uidFieldName));
     $facid  =intval(API::INP('facid'));
     // 先操作一下
     $json = stee_user::$fn($type, $userid, $facid);
@@ -79,13 +71,10 @@ class class_stee_user {
    *  获得自己的权限
    */
   public static function me( ) {
-    
-    if(!self::userVerify()) {
-      return API::msg(202001,'Error userVerify@get');
-    }
-    $uid=intval(API::INP('uid'));
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
     $r=stee_user::_get_user($uid);
-    
     return API::data($r);
   }
    /**
@@ -94,12 +83,9 @@ class class_stee_user {
    *  获得 用户权限
    */
   public static function get_user_rights( ) {
-    
-    if(!self::userVerify()) {
-      return API::msg(202001,'Error userVerify@get');
-    }
-    
-    $uid=intval(API::INP('uid'));//执行者
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
     $userid=intval(API::INP('userid'));//查询对象
     
     $user=stee_user::_get_user($uid );
@@ -117,12 +103,9 @@ class class_stee_user {
    *  获得 所有的管理员
    */
   public static function get_admins( ) {
-    
-    if(!self::userVerify()) {
-      return API::msg(202001,'Error userVerify@get');
-    }
-    
-    $uid=intval(API::INP('uid'));
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
     $user=stee_user::_get_user($uid );
     if(!($user['is_admin']& 0x10000)) {
       return API::msg(202001,"not sysadmin");
@@ -139,19 +122,17 @@ class class_stee_user {
    *  获得一个fac的管理员
    */
   public static function get_admin_of_fac( ) {
-    
-    if(!self::userVerify()) {
-      return API::msg(202001,'Error userVerify@get');
-    }
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    //$uid = $verify_token['datas']['uid'];
     $facid=intval(API::INP('facid'));
     return stee_user::get_admin_of_fac($facid);
   }  
 
   public static function get_admin_of_obj( ) {
-    
-    if(!self::userVerify()) {
-      return API::msg(202001,'Error userVerify@get');
-    }
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    //$uid = $verify_token['datas']['uid'];
     $type=API::INP('type');
     $facid=intval(API::INP('facid'));
     return stee_user::get_admin_of_obj($type,$facid);

@@ -13,18 +13,6 @@ class class_steeobj{
     $res=API::data(['time'=>time().' - steefac is ready.']);
     return $res;
   }
-  static function userVerify() {
-    return USER::userVerify();
-  }
-  
-  //test
-  public static function test( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    return API::data('Test passed.');
-  }
- 
 //=========================================================
   //获取 数据表名 $type 1
   static function table_name( $type ) {
@@ -279,10 +267,9 @@ class class_steeobj{
    *    /steefac/add
    */
   public static function add( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    $uid=intval(API::INP('uid'));
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
     
     $type=API::INP('type');
     if(!stee_user::_check_obj_type( $type )) {
@@ -326,7 +313,9 @@ class class_steeobj{
    *    /steefac/detail
    */
   public static function detail( ) {
-    $uid = API::INP('uid');
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
     $type=API::INP('type');
     $id=intval(API::INP('id'));
     $confirm=intval(API::INP('confirm'));
@@ -388,6 +377,7 @@ class class_steeobj{
     
     $ids=API::INP('ids');
     if(strlen($ids)==0) {
+      return API::data([]);
       return API::msg(202001,'Error: ids');
     }
     $idsArr=explode(',',$ids);
@@ -440,7 +430,7 @@ class class_steeobj{
     $kyRes[]='id';
     $kyRes[]='mark';
     
-    $uid=intval(API::INP('uid'));
+    $uid = \MyClass\SteeUser::sign2uid($_REQUEST);
 
     //页数
     $count=intval(API::INP('count'));
@@ -518,21 +508,20 @@ class class_steeobj{
    *    /steefac/update
    */
   public static function update( ) {
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
+
     $type=API::INP('type');
     if(!stee_user::_check_obj_type( $type )) {
       return API::msg(202001,'E:type:',$type);
     }
-    
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
     
     $id=intval(API::INP('id'));
     if( !$id) {
       return API::msg(202001,'Error: id'.$id);
     }
     
-    $uid=intval(API::INP('uid'));
     $user=stee_user::_get_user($uid );
     
     if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user[$type.'_can_admin'].',', ','.$id.',') ) {
@@ -562,6 +551,10 @@ class class_steeobj{
    *    /steefac/delete
    */
   public static function delete( ) {
+    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    if(!\DJApi\API::isOk($verify_token)) return $verify_token;
+    $uid = $verify_token['datas']['uid'];
+
     $type=API::INP('type');
     if(!stee_user::_check_obj_type( $type )) {
       return API::msg(202001,'E:type:',$type);
@@ -575,7 +568,6 @@ class class_steeobj{
       return API::msg(202001,'Error: id');
     }
 
-    $uid=intval(API::INP('uid'));
     $user=stee_user::_get_user($uid );
     
     //只允许系统管理员删除
