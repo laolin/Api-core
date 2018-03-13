@@ -56,17 +56,16 @@ class class_wx {
       return $R;
     }
 
-    // 获取用户个人信息（UnionID机制）
-    $wxUser = CWxBase::getWxUserOAuth2($R['datas'], $appid, $secret);
-    \DJApi\API::debug(['获取用户个人信息（UnionID机制）', $wxUser]);
-    if(!$wxUser['openid']){
-      $wxUser = CWxBase::getWxUser($R['datas']['openid'], $appid, $secret);
-      \DJApi\API::debug(['获取用户个人信息（公众号拉取）', $wxUser]);
-    }
-
-
-    // 保存
-    if($wxUser['openid'])CWxBase::saveWxInfo($wxUser, "openid");
+    //  // 获取用户个人信息（UnionID机制）
+    //  $wxUser = CWxBase::getWxUserOAuth2($R['datas'], $appid, $secret);
+    //  \DJApi\API::debug(['获取用户个人信息（UnionID机制）', $wxUser]);
+    //  if(!$wxUser['openid']){
+    //    $wxUser = CWxBase::getWxUser($R['datas']['openid'], $appid, $secret);
+    //    \DJApi\API::debug(['获取用户个人信息（公众号拉取）', $wxUser]);
+    //  }
+    //
+    //  // 保存
+    //  if($wxUser['openid'])CWxBase::saveWxInfo($wxUser, "openid");
 
     // 返回
     return $R;
