@@ -145,28 +145,46 @@ class class_wx{
 
     // 先获取用户数据
     $ids = $_REQUEST['ids'];
+    if(! is_array($ids)) {
+      $ids = [$ids];
+    }
     $userJson = \MyClass\SteeUser::get_users($ids);
     // \DJApi\API::debug(['先获取用户数据', $ids, $userJson]);
     if(!\DJApi\API::isOk($userJson)){
       return $userJson;
     }
     $users = $userJson['datas']['list'];
-    if(! is_array($users)) {
-      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, 'No id error.');
-    }
-    if(!count($users)) {
-      return \DJApi\API::OK(['list'=>[]]);
-    }
+    // 没有用户数据行的，也可以读微信！
+    if(!$users) $users = [];
 
     // 从独立服务器获取微信信息
-    $uid = array_map(function($a){return $a['uid'];}, $users);
+    //$uid = array_map(function($a){return $a['uid'];}, $users);
     $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $ids]);
-    \DJApi\API::debug(['从独立服务器获取微信信息', $wxInfoJson]);
+    \DJApi\API::debug(['从独立服务器获取微信信息', 'param'=>['uid' => $ids], "json"=>$wxInfoJson]);
     if(!\DJApi\API::isOk($wxInfoJson)){
       return $wxInfoJson;
     }
     $wxInfo = $wxInfoJson['datas']['list'];
     // \DJApi\API::debug(['wxInfo', $wxInfo]);
+
+
+    // 两者合并准备
+    $preData = [];
+    foreach($ids as $uid){ $preData[uid] = []; }
+
+    //合并用户数据
+    foreach($users as $row){
+      $uid = $row['uid'];
+      $preData[$uid] = $row;
+    }
+
+    //合并微信数据
+    foreach($wxInfo as $row){
+      $uid = $row['uid'];
+      $preData[$uid]["wxinfo"] = $row;
+    }
+    \DJApi\API::debug(['查到：', 'users' => $users, 'wxInfo' => $wxInfo, 'preData' =>$preData]);
+    return \DJApi\API::OK(['list'=>array_values($preData)]);
 
     // 两者合并
     $reget_users = \DJApi\FN::array_column($users, 'uid', true);
