@@ -59,7 +59,7 @@ class class_upload {
     $fn = "u{$uid}-$ms-$name";
     $to = $OSS_config['path'] . '/' . $fn;
     $url = $OSS_config['baseurl'] . "/" .$to;
-    $path = $OSS_config['baseurl'] . $OSS_config['path'] . '/';
+    $path = $OSS_config['baseurl'] . "/" . $OSS_config['path'] . '/';
     //return \DJApi\API::OK([$OSS_config['bucket'], $to, $from]);
     try{
       $ossClient->uploadFile($OSS_config['bucket'], $to, $from);
