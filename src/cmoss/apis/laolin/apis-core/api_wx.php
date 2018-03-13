@@ -242,6 +242,16 @@ class class_wx{
         sha1( $res['file'] ),
         $file_extension
       );
+
+
+    $uploadJson = \MyClass\CUploadOss::uploadObject($res['file'], $newname, 'cmoss');
+    if(!\DJApi\API::isOk($uploadJson)){
+      return $uploadJson;
+    }
+    return API::data(['name' => $uploadJson['datas']['url']]);
+
+
+
     if( file_exists ($pup.'/'.$newname) ) {
       //相同的文件不用重复保存
     }
