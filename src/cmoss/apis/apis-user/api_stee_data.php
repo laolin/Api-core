@@ -69,21 +69,9 @@ class class_stee_data {
    * @return API::OK([list=>[]])
    */
   public static function search_user($request) {
-    $text = $request->query['text'];
-    $db = DJApi\DB::db();
-    $list = $db->select(self::$table['user'], ["[>]" .self::$table['wx']=>['uid' => 'uidBinded']],
-     ['headimgurl', 'uidBinded', 'nickname', self::$table['wx'].'.id'],
-     ["AND" =>[
-       'appFrom' => DJApi\Configs::get(["WX_APPID_APPSEC_DEFAULT", "WX_APPID"]),
-       'OR'=>[
-          "uidBinded[~]" => $text,
-          "nickname[~]" => $text,
-        ]
-      ]]
-    );
-    DJApi\API::debug($db->getShow());
-    // 返回
-    return DJApi\API::OK(['list' => $list]);
+    $json = \DJApi\API::post(SERVER_API_ROOT, "user/mix/search_user", $request->query);
+    \DJApi\API::debug(['mix/search_user','param'=>$request->query, 'R'=> $json]);
+    return $json;
   }
 
   /**

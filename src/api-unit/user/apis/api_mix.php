@@ -66,6 +66,35 @@ class class_mix{
   }
 
 
+  /**
+   * 接口： mix/search_user
+   * 根据关键字，匹配uid和用户wx呢称，搜索用户，并获取微信呢称、头像等
+   * @request text: 搜索的关键字，搜索用户呢称、id
+   * 返回：
+   * @return API::OK([list=>[]])
+   */
+  public static function search_user($request) {
+    $text = $request->query['text'];
+    $appName = $request->query["appname"];
+    list($appid, $secret) = WxTokenBase::appid_appsec($appName);
+    $db = CDbBase::db();
+
+    // 匹配 uid
+    $uid_1 = $db->select(CDbBase::$table['user'], 'uid', ['uid[~]'=>$text]);
+    if(!$uid_1) $uid_1 = [];
+
+    // 匹配 wx 呢称
+    $unionid = $db->select(CDbBase::$table['wx_user'], 'unionid', ['nickname[~]'=>$text]);
+    $uid_2 = $db->select(CDbBase::table('bind'), 'uid', ['AND' => ["bindtype" => 'wx-unionid', "value" => $unionid]]);
+    if(!$uid_2) $uid_2 = [];
+
+    // 合并uid
+    $uid = array_unique(array_merge($uid_1, $uid_2));
+
+    \DJApi\API::debug(['匹配', 'uid'=>$uid, 'uid_1'=>$uid_1, 'uid_2'=>$uid_2, 'unionid'=>$unionid]);
+
+    return self::query_wx_infos(['uid'=>$uid]);
+  }
 
   /**
    * 接口： mix/wx_infos
@@ -76,10 +105,14 @@ class class_mix{
    * @request param2: 绑定子类型2, 可选
    */
   public static function wx_infos($request){
-    $uid      = $request->query["uid"     ];
-    $bindtype = $request->query["bindtype"];
-    $param1   = $request->query["param1"  ];
-    $param2   = $request->query["param2"  ];
+    return self::query_wx_infos($request->query);
+  }
+  protected static function query_wx_infos($query){
+    $showDebug = false;
+    $uid      = $query["uid"     ];
+    $bindtype = $query["bindtype"];
+    $param1   = $query["param1"  ];
+    $param2   = $query["param2"  ];
     if(!$bindtype) $bindtype = 'wx-openid';
     $bind = substr($bindtype, 3);
 
@@ -90,7 +123,7 @@ class class_mix{
     }
     $uid_1000 = $uid;
 
-    $appName = $request->query["appname"];
+    $appName = $query["appname"];
     list($appid, $secret) = WxTokenBase::appid_appsec($appName);
     if(!$appid){
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, '无微信配置');
@@ -98,7 +131,7 @@ class class_mix{
 
     $db = CDbBase::db();
     $time = time();
-    \DJApi\API::debug("time=$time");
+    if($showDebug)\DJApi\API::debug("time=$time");
 
     // 读取所有绑定，包括 wx-openid 和 wx-unionid
     $AND = [
@@ -118,13 +151,13 @@ class class_mix{
     $binds_unionid = array_filter($binds, function($row){
       return $row['bindtype'] =='wx-unionid';
     });
-    // \DJApi\API::debug(['获取绑定', $binds, $db->getShow()]);
+    if($showDebug)\DJApi\API::debug(['获取绑定', $binds, $db->getShow()]);
 
     // 读取所有满足条件的 openid 绑定
     $binds_openid = array_filter($binds, function($row){
       return $row['bindtype'] =='wx-openid';
     });
-    // \DJApi\API::debug(['获取 binds_openid', $binds_openid]);
+    if($showDebug)\DJApi\API::debug(['获取 binds_openid', $binds_openid]);
 
     // 所有满足条件的 openid
     $openids = array_map(function($row){
@@ -132,7 +165,7 @@ class class_mix{
     }, $binds_openid);
     //去重
     $openids = array_unique($openids);
-    // \DJApi\API::debug(['获取 openids', $openids]);
+    if($showDebug)\DJApi\API::debug(['获取 openids', $openids]);
 
     // 数据库中已有的数据
     $wxUser = $db->select(CDbBase::table('wx_user'), '*', ["AND"=>['openid' => $openids], "ORDER"=>["timeupdate"=>"DESC"]]);
@@ -140,20 +173,20 @@ class class_mix{
       if(!$row['timeupdate']) $row['timeupdate'] = 0;
       return $row;
     }, $wxUser);
-    // \DJApi\API::debug(['获取微信 wxUser = ', $wxUser, $db->getShow()]);
+    if($showDebug)\DJApi\API::debug(['获取微信 wxUser = ', $wxUser, $db->getShow()]);
 
     // 数据库中已有的 openid
     $openid_found = array_map(function($row){
       return $row['openid'];
     }, $wxUser);
-    // \DJApi\API::debug(['数据库中已有的 openid', $openid_found]);
+    if($showDebug)\DJApi\API::debug(['数据库中已有的 openid', $openid_found]);
 
     // 长期未更新的 wxUser
     $wxUser_long_pass = array_values(array_filter($wxUser, function($row){
       $time = time();
       return ($row['subscribe']===null && $row['headimgurl']) ||$time - $row['timeupdate'] > 24 * 3600;
     }));
-    // \DJApi\API::debug(['长期未更新的 wxUser', $wxUser_long_pass]);
+    if($showDebug)\DJApi\API::debug(['长期未更新的 wxUser', $wxUser_long_pass]);
 
     // 长期未更新的 openid
     $openid_long_pass = array_values(array_map(function($row){
@@ -161,11 +194,11 @@ class class_mix{
     }, $wxUser_long_pass));
     //去重
     $openid_long_pass = array_unique($openid_long_pass);
-    // \DJApi\API::debug(['长期未更新的 openid', $openid_long_pass]);
+    if($showDebug)\DJApi\API::debug(['长期未更新的 openid', $openid_long_pass]);
 
     // 数据库中没有的 openid
     $openid_unfound = array_diff($openids, $openid_found);
-    // \DJApi\API::debug(['数据库中没有的 openid', $openid_unfound]);
+    if($showDebug)\DJApi\API::debug(['数据库中没有的 openid', $openid_unfound]);
     
 
     // 如果不足100个，分析最旧的数据的 openid
@@ -177,17 +210,17 @@ class class_mix{
     else {
       $openid_renew = array_slice($openid_unfound, 0, $maxReget);
     }
-    // \DJApi\API::debug(['最旧 openids', $openid_renew]);
+    if($showDebug)\DJApi\API::debug(['最旧 openids', $openid_renew]);
 
     // 获取 100 个 openid 对应的信息
     if(count($openid_renew)){
       $wxUser_renew = CWxBase::getWxUserBatchget($openid_renew, $appid, $secret);
       if(!is_array($wxUser_renew)) $wxUser_renew = [];
-      \DJApi\API::debug(['批量获取微信', $wxUser_renew]);
+      if($showDebug)\DJApi\API::debug(['批量获取微信', $wxUser_renew]);
     }
     else{
       $wxUser_renew = [];
-      \DJApi\API::debug('没有需获取的微信');
+      if($showDebug)\DJApi\API::debug(['没有需重新获取的微信', 'openid_renew'=>$openid_renew, 'maxReget'=>$maxReget, 'openid_more'=>$openid_more, 'openid_unfound'=>$openid_unfound]);
     }
 
     // 保存这100个，包括未关注的
@@ -236,7 +269,7 @@ class class_mix{
         $unionid_uid[$row['value']] = $row['uid'];
       }
     }
-    // \DJApi\API::debug(['uid 索引', $openid_uid, $unionid_uid]);
+    if($showDebug)\DJApi\API::debug(['uid 索引', 'uid_1000'=>$uid_1000, 'openid_uid'=>$openid_uid, 'unionid_uid'=>$unionid_uid]);
     $list = [];
     // 从最近更新
     foreach($wxUser_renew as $row){
@@ -249,15 +282,15 @@ class class_mix{
       }
     }
     foreach($wxUser as $row){
-      // 要有头像或呢称
-      if(!$row['headimgurl'] && !$row['nickname']) continue;
+      // 要有头像或呢称（没有也要返回）
+      //if(!$row['headimgurl'] && !$row['nickname']) continue;
       $uid = $openid_uid[$row['openid']];
       if(!in_array($uid, $uid_1000)) continue;
       if($uid && !$list[$uid]){
         $row['uid'] = $uid;
         $list[$uid] = $row;
       }
-      $uid = $openid_uid[$row['unionid']];
+      $uid = $unionid_uid[$row['unionid']];
       if($uid && !$list[$uid]){
         $row['uid'] = $uid;
         $list[$uid] = $row;
