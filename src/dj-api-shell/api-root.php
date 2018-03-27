@@ -73,16 +73,31 @@ class Configs {
   /**
    * 从当前文件夹的某个上级文件夹开始查找配置文件，并使用配置
    */
-  static function readConfig($fileName = 'config.inc.php', $deep = 5, $path = ''){
+  static $readConfigOnceRecord = [];
+  static function readConfigOnce($fileName = 'config.inc.php', $deep = 5, $path = ''){
+    // 保证只引用一次，即使在多个目录中存在
+    if(self::$readConfigOnceRecord[$fileName]) return;
+    self::$readConfigOnceRecord[$fileName] = self::readConfig(fileName, $deep, $path, true);
+  }
+  static function readConfig($fileName = 'config.inc.php', $deep = 5, $path = '', $onlyonce = false){
     if(!$path){
       $path = dirname($_SERVER['PHP_SELF']);
     }
-    if($deep > 0 && strlen($path) > 1){
-      self::readConfig($fileName, $deep - 1, dirname($path));
-    }
-    if(file_exists("{$_SERVER['DOCUMENT_ROOT']}$path/$fileName")){
+    $foundHere = file_exists("{$_SERVER['DOCUMENT_ROOT']}$path/$fileName");
+    // 如果找到了，而且只要求一次，那么就仅使用这一个了
+    if($foundHere &&$onlyonce ){
       require_once("{$_SERVER['DOCUMENT_ROOT']}$path/$fileName");
+      return true;
     }
+    // 到上一级目录去找，有找到的先引用，然后再引用本级目录的(若有)，以保存越近的配置越优先
+    if($deep > 0 && strlen($path) > 1){
+      self::readConfig($fileName, $deep - 1, dirname($path), $onlyonce);
+    }
+    if($foundHere){
+      require_once("{$_SERVER['DOCUMENT_ROOT']}$path/$fileName");
+      return true;
+    }
+    return false;
   }
 }
 
@@ -190,7 +205,7 @@ class API{
   static function post($module, $api, $param) {
     $url = $module . $api;
     $res = self::httpPost($url, $param);
-    // \DJApi\API::debug(['API::post()', 'url'=>$url, 'param'=>$param, '返回'=>$res]);
+    \DJApi\API::debug(['API::post()', 'url'=>$url, 'param'=>$param, '返回'=>$res]);
     return self::toJson($res);
   }
 
