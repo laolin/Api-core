@@ -26,7 +26,7 @@ class CUploadOss{
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "参数错误");
     }
 
-    \DJApi\Configs::readConfig('api-lib/ali-oss-upload/autoload.php');
+    \DJApi\Configs::readConfigOnce('api-lib/ali-oss-upload/autoload.php', 5, '', true);
     $ossClient = new \OSS\OssClient($OSS_config['accessKeyId'], $OSS_config['accessKeySecret'], $OSS_config['endpoint'], false);
 
     try{
@@ -51,7 +51,7 @@ class CUploadOss{
     // \DJApi\API::debug(["OSS_config"=>$OSS_config]); 敏感数据，测试后即关闭
     //return \DJApi\API::OK();
 
-    \DJApi\Configs::readConfig('api-lib/ali-oss-upload/autoload.php');
+    \DJApi\Configs::readConfigOnce('api-lib/ali-oss-upload/autoload.php', 5, '', true);
 
     $ossClient = new \OSS\OssClient($OSS_config['accessKeyId'], $OSS_config['accessKeySecret'], $OSS_config['endpoint'], false);
 
