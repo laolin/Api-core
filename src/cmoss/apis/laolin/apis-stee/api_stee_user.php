@@ -33,6 +33,19 @@ class class_stee_user {
     $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
     if(!\DJApi\API::isOk($verify_token)) return $verify_token;
     $uid = $verify_token['datas']['uid'];
+
+    //未关注的，不允许申请
+    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid'=>$uid]);
+    if(\DJApi\API::isOk($wxInfoJson)){
+      $wx = $wxInfoJson['datas']['list'][0];
+      $subscribe = 0 + $wx['subscribe'];
+    }
+    if(!$subscribe){
+      return \DJApi\API::error(\DJApi\API::E_NEED_RIGHT, '请关注后再申请管理员');
+    }
+
+
+
     return self::_apply_admin($uid, '申请管理员', 'apply_admin');
   }
   public static function restore_admin( ) {
