@@ -91,6 +91,11 @@ class class_app {
       $data['wx'] = $wxInfoJson['datas']['list'][0];
     }
 
+    // 个人权限
+    $rights = \MyClass\CRoleright::getUserRightArray($uid);
+    \DJApi\API::debug(['读权限', $uid, $rights]);
+   $data['rights'] = $rights;
+
     $userRow = \MyClass\SteeUser::readSteeUser($uid);
     \DJApi\API::debug(['读取个人信息', $userRow, $db->getShow()]);
     $data['me'] = $userRow;
