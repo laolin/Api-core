@@ -18,6 +18,7 @@ class SteeStatic{
     'token'     => 'api_tbl_token',
     'log'       => 'api_tbl_log',
     "wx"        => 'api_tbl_user_wx',
+    'user_right'=> 'api_tbl_user_right', // 权限
     "user"      => 'api_tbl_user',
   ];
 
