@@ -7,6 +7,25 @@ use DJApi;
 
 
 class class_sa_data extends \MyClass\SteeStatic {
+  /**
+   * 统一入口，要求登录
+   */
+  public static function API($call, $request)
+  {
+    if (!method_exists(__CLASS__, $call)) {
+      return \DJApi\API::error(\DJApi\API::E_FUNCTION_NOT_EXITS, '参数无效', [$call]);
+    }
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uidLogin = $verify['datas']['uid'];
+    // 检查权限
+    // if (!\MyClass\CRoleright::hasRight($uidLogin, '用户管理')) {
+    //   return \DJApi\API::error(\DJApi\API::E_NEED_RIGHT, '无权限', [$call]);
+    // }
+    return self::$call($request, $uidLogin);
+  }
 
   /**
    * 获取用户信息
@@ -14,8 +33,7 @@ class class_sa_data extends \MyClass\SteeStatic {
    * 返回：
    * @return API::OK([limit])
    */
-  public static function getUserInfo($request) {
-    $uid = $request->query['uid'];
+  public static function getUserInfo($request, $uid) {
     $userid = $request->query['userid'];
 
     DJApi\API::debug(__FILE__, 'FILE');
@@ -37,14 +55,14 @@ class class_sa_data extends \MyClass\SteeStatic {
    * 返回：
    * @return 微信信息数组
    */
-  static function getWxInfo($request) {
+  static function getWxInfo($request, $uid) {
     $R = \MyClass\CWxBase::getWxInfo($request->query['userid']);
     \DJApi\API::debug(\DJApi\DB::db()->getShow(), "DB");
     return DJApi\API::OK($R);
   }
 
 
-  protected static function getAND($query) {
+  protected static function getAND($query, $uid) {
     $from = intval($query['from']);
     $to = intval($query['to']);
     $AND = [];
@@ -81,7 +99,7 @@ class class_sa_data extends \MyClass\SteeStatic {
   /**
    * 活跃度排行
    */
-  public static function countUserLog($request) {
+  public static function countUserLog($request, $uid) {
     $AND = self::getAND($request->query);
 
     $db = \DJApi\DB::db();
@@ -100,11 +118,7 @@ class class_sa_data extends \MyClass\SteeStatic {
    * 敏感数据不返回
    * 意义：多人活跃度
    */
-  public static function listUserLog($request) {
-    $uid = $request->query['uid'];
-    // $r=self::_assertAdmin($uid);
-    // if(API::is_error($r))
-    //   return $r;
+  public static function listUserLog($request, $uid) {
 
     $AND = self::getAND($request->query);
     $userid = $request->query['userid'];

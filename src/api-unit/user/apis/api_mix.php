@@ -247,6 +247,7 @@ class class_mix{
       if(count($update_datas) > 0) {
         $n = 0;
         foreach($update_datas as $row){
+          // 未关注的, 没有nickname等字段, 不会覆盖原来的头像呢称
           $n += $db->update(CDbBase::table('wx_user'), $row, ["openid"=>$row['openid']]);
         }
         \DJApi\API::debug(["更新了 $n 行", $db->getShow()]);

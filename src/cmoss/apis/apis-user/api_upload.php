@@ -20,7 +20,7 @@ class class_upload {
    * 上传图片
    */
   public static function img($request) {
-    $verify_token = \MyClass\SteeUser::verify_token($request->query);
+    $verify_token = \MyClass\CUser::verify($request->query);
     if(!\DJApi\API::isOk($verify_token)) return $verify_token;
     $uid = $verify_token['datas']['uid'];
 

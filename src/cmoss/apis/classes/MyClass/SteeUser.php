@@ -5,7 +5,7 @@
 namespace MyClass;
 use DJApi;
 
-class SteeUser extends CUser{
+class SteeUser {
 
   
   /** 获取指定id产能/项目[列表]
@@ -45,6 +45,21 @@ class SteeUser extends CUser{
   }
 
 
+  /** 自己管理的产能/项目
+   * @param type: steefac/steeproj
+   * @return 数组 [id1, id2 ...]
+   */
+  public static function adminObjIds($type){
+    $db = DJApi\DB::db();
+    $data = $db->get(
+      SteeStatic::$table['stee_user'],
+      SteeStatic::$field['stee_user'],
+      ['and'=>['uid'=>$uid ,'mark'=>'']]
+    );
+    $str = $data[$type . '_can_admin'];
+    return explode(',', $str);
+  }
+
   /** 读取 uid 的用户详情
    * @return 一行数据
    */
@@ -56,33 +71,6 @@ class SteeUser extends CUser{
   }
 
 
-  /** 验证签名
-   * @return Json
-   */
-  public static function verify_token($query){
-    return \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", [
-      'tokenid'   => $query['tokenid'],
-      'timestamp' => $query['timestamp'],
-      'sign'      => $query['sign']
-    ]);
-  }
-
-
-  /** 用签名换取 uid
-   * 数据来源：api请求
-   * @return bool
-   */
-  public static function sign2uid($query){
-    $tokenid   = $query['tokenid'];
-    $timestamp = $query['timestamp'];
-    $sign      = $query['sign'];
-    $verify = \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", [
-      'tokenid'   => $tokenid,
-      'timestamp' => $timestamp,
-      'sign'      => $sign
-    ]);
-    return $verify['datas']['uid'];
-  }
 
   /** 获取多个用户信息列表
    * @param user: 用户，一个数组，包含[]字段

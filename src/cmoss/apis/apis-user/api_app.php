@@ -72,7 +72,7 @@ class class_app {
    * @return uid, 由于用户签名时，必须用到token, 所以，不再返回
    */
   public static function me($request) {
-    $uid = \MyClass\SteeUser::sign2uid($request->query);
+    $uid = \MyClass\CUser::sign2uid($request->query);
     \DJApi\API::debug(['sign2uid()', $uid, $request->query]);
     if(!$uid){
       return \DJApi\API::error(\DJApi\API::E_NEED_LOGIN, '未登录');

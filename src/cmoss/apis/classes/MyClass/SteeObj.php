@@ -62,8 +62,8 @@ class SteeObj extends SteeStatic{
    * @return 数组
    */
   static function listAdminObj($userid, $type) {
-    $user = new \MyClass\SteeUser($userid);
-    return self::listObj($user->adminObjIds($type), $type);
+    $ids = \MyClass\SteeUser::adminObjIds($userid);
+    return self::listObj($ids, $type);
   }
 
 }

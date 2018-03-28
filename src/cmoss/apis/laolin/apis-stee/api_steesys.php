@@ -48,7 +48,7 @@ class class_steesys {
       "SELECT count(*) as nProj FROM $tblname WHERE `mark` is  null or `mark` = '' "
     )->fetchAll()[0]['nProj'];
     
-    $uid = \MyClass\SteeUser::sign2uid($_REQUEST);
+    $uid = \MyClass\CUser::sign2uid($_REQUEST);
     $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid'=>$uid, 'bindtype'=>'wx-unionid']);
     \DJApi\API::debug(['读取微信信息', $uid, $wxInfoJson]);
     if(\DJApi\API::isOk($wxInfoJson)){
@@ -79,7 +79,7 @@ class class_steesys {
   
  
   public static function send_todo_msg( ) {
-    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    $verify_token = \MyClass\CUser::verify($_REQUEST);
     if(!\DJApi\API::isOk($verify_token)) return $verify_token;
     $uid = $verify_token['datas']['uid'];
     $user=stee_user::_get_user($uid );

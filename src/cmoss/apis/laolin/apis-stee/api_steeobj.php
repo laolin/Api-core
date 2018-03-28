@@ -267,7 +267,7 @@ class class_steeobj{
    *    /steefac/add
    */
   public static function add( ) {
-    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    $verify_token = \MyClass\CUser::verify($_REQUEST);
     if(!\DJApi\API::isOk($verify_token)) return $verify_token;
     $uid = $verify_token['datas']['uid'];
     
@@ -313,18 +313,18 @@ class class_steeobj{
    *    /steefac/detail
    */
   public static function detail( ) {
-    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    $verify_token = \MyClass\CUser::verify($_REQUEST);
     if(!\DJApi\API::isOk($verify_token)) return $verify_token;
     $uid = $verify_token['datas']['uid'];
     $type=API::INP('type');
-    $id=intval(API::INP('id'));
+    $facid=intval(API::INP('id'));
     $confirm=intval(API::INP('confirm'));
     if(!stee_user::_check_obj_type( $type )) {
       return API::msg(202001,'E:type:',$type);
     }
 
     /** 先获取权限情况 */
-    $limitJson = \MyClass\SteeData::getReadDetailLimit(['uid'=>$uid, 'type'=>$type, 'facid'=>$id]);
+    $limitJson = \MyClass\SteeData::getReadDetailLimit($uid, $type, $facid);
     $limit = $limitJson['datas']['limit'];
 
     if($limit === 'never'){
@@ -332,7 +332,7 @@ class class_steeobj{
     }
     else if($confirm){
       \DJApi\API::debug('用户要求查看');
-      \MyClass\SteeData::recordReadDetail($uid, $type, $id, '使用额度查看');
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '使用额度查看');
     }
     else if($limitJson['datas']['admin'] || $limitJson['datas']['superadmin']){
       // 不要返回限制了
@@ -350,13 +350,13 @@ class class_steeobj{
     $ky=self::keys_list($type);
     $ky[]='id';
     $ky[]='mark';
-    $id=intval(API::INP('id'));
-    if($id<1) {
+    $facid=intval(API::INP('id'));
+    if($facid<1) {
       return API::msg(202001,'Error: id');
     }
     
     $r=$db->get($tblname, $ky,
-      ['and' => ['id'=>$id,'or'=>['mark'=>null,'mark#'=>''] ] ] );
+      ['and' => ['id'=>$facid,'or'=>['mark'=>null,'mark#'=>''] ] ] );
 
     return API::data($r);
   }
@@ -430,7 +430,7 @@ class class_steeobj{
     $kyRes[]='id';
     $kyRes[]='mark';
     
-    $uid = \MyClass\SteeUser::sign2uid($_REQUEST);
+    $uid = \MyClass\CUser::sign2uid($_REQUEST);
 
     //页数
     $count=intval(API::INP('count'));
@@ -508,7 +508,7 @@ class class_steeobj{
    *    /steefac/update
    */
   public static function update( ) {
-    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    $verify_token = \MyClass\CUser::verify($_REQUEST);
     if(!\DJApi\API::isOk($verify_token)) return $verify_token;
     $uid = $verify_token['datas']['uid'];
 
@@ -551,7 +551,7 @@ class class_steeobj{
    *    /steefac/delete
    */
   public static function delete( ) {
-    $verify_token = \MyClass\SteeUser::verify_token($_REQUEST);
+    $verify_token = \MyClass\CUser::verify($_REQUEST);
     if(!\DJApi\API::isOk($verify_token)) return $verify_token;
     $uid = $verify_token['datas']['uid'];
 

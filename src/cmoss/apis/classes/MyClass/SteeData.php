@@ -17,10 +17,7 @@ class SteeData extends SteeStatic{
    * @return limit.max: 当前剩余额度
    * @return limit.used: 当前已用额度
    */
-  public static function getReadDetailLimit($query) {
-    $uid = $query['uid'];
-    $facid = $query['facid'];
-    $type = $query['type'];
+  public static function getReadDetailLimit($uid, $type, $facid) {
 
     // 不受限制
     if(\MyClass\SteeData::isSimpleAdmin($uid, $type, $facid)){

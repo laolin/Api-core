@@ -24,42 +24,14 @@ class class_stee_data {
    * @return limit.used: 当前已用额度
    */
   public static function getReadDetailLimit($request) {
-    return \MyClass\SteeData::getReadDetailLimit($request->query);
-    $uid = $request->query['uid'];
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
     $facid = $request->query['facid'];
     $type = $request->query['type'];
-
-    // 不受限制
-    if(\MyClass\SteeData::isSimpleAdmin($uid, $type, $facid)){
-      DJApi\API::debug(['是相应的管理员', $uid, $type, $facid]);
-      return DJApi\API::OK(['limit' => 'never']);
-    }
-
-    // 超级管理员，虽有使用记录，但仍返回已用 0，以便无限使用，而可以同一般人员一样记录操作
-    // 当然也可以当作灌水功能，提高某项目/厂的受欢迎度
-    if(\MyClass\SteeData::isSuperAdmin($uid)){
-      DJApi\API::debug(['超级管理员', $uid, $type, $facid]);
-      return DJApi\API::OK(['limit' => ["max"=>10000, "used"=>0]]);
-    }
-
-    // 今天额度使用多少
-    $used = \MyClass\SteeData::usedReadDetail    ($uid, $type);
-    $max  = \MyClass\SteeData::maxLimitReadDetail($uid, $type);
-
-    // 不受限制
-    if($max == 'never'){
-      DJApi\API::debug(['不受限制', $uid, $type, $facid]);
-      return DJApi\API::OK(['limit' => 'never']);
-    }
-
-    // 近几天之内看过的，允许再看
-    if(\MyClass\SteeData::newlyReadDetail($uid, $type, $facid) > 0){
-      DJApi\API::debug(['近几天之内看过', $uid, $type, $facid]);
-      return DJApi\API::OK(['limit' => 'never']);
-    }
-
-    // 返回
-    return DJApi\API::OK(['limit' => ["max"=>$max, "used"=>$used]]);
+    return \MyClass\SteeData::getReadDetailLimit($uid, $type, $facid);
   }
 
   /**
@@ -85,7 +57,11 @@ class class_stee_data {
    * 本请求不会重复使用额度
    */
   public static function applyReadDetail($request) {
-    $uid = $request->query['uid'];
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
     $facid = $request->query['facid'];
     $type = $request->query['type'];
 
@@ -122,7 +98,11 @@ class class_stee_data {
    * ])
    */
   public static function hash($request) {
-    $uid = $request->query['uid'];
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
     $hash = $request->query['hash'];
     $json = \API_UseRecords\Data::select([
       'module' => 'cmoss',
@@ -161,7 +141,12 @@ class class_stee_data {
    * ])
    */
   public static function logAction($request) {
-    $uid  = $request->query['uid' ];
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+
     $k1   = $request->query['k1'  ];
     $k2   = $request->query['k2'  ];
     $v1   = $request->query['v1'  ];
@@ -205,6 +190,10 @@ class class_stee_data {
    * ])
    */
   public static function getActionDetail($request) {
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
     $listJson = \MyClass\SteeData::getActionDetail($request->query);
     return $listJson;
   }

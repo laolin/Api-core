@@ -109,7 +109,7 @@ class Data{
     }
     $id = $db->insert(self::$tableName, $data);
     DJApi\API::debug([$db->getShow()], "DB");
-    return DJApi\API::OK(['id'=>$id, $db->getShow(), $if]);
+    return DJApi\API::OK(['id'=>$id]);
   }
 
 

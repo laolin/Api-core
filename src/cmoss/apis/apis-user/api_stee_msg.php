@@ -11,6 +11,22 @@ class class_stee_msg{
     steeproj => 'api_tbl_steelproject',
   ];
   /**
+   * 统一入口，要求登录
+   */
+  public static function API($call, $request)
+  {
+    if (!method_exists(__CLASS__, $call)) {
+      return \DJApi\API::error(\DJApi\API::E_FUNCTION_NOT_EXITS, '参数无效', [$call]);
+    }
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uidLogin = $verify['datas']['uid'];
+    return self::$call($request, $uidLogin);
+  }
+
+  /**
    * 发送前预请求
    * @request from_type
    * @request from_id
@@ -30,8 +46,7 @@ class class_stee_msg{
       ]
     ]);
   }
-  private static function getTosendInfo($query) {
-    $uid       = $query['uid'];
+  private static function getTosendInfo($request, $uid) {
     $from_type = $query['from_type'];
     $from_id   = $query['from_id'];
     $to_type   = $query['to_type'];
@@ -56,10 +71,8 @@ class class_stee_msg{
    * @return accept: 已受理，将发送几条
    * @return rest: 你的剩余额度有几条
    */
-  public static function send($request) {
+  public static function send($request, $uid) {
     $query = $_REQUEST;
-    $uid       = $query['uid'];
-    $uid       = $query['uid'];
     $pageUri   = $query['page'];
     $from_type = $query['from_type'];
     $from_id   = $query['from_id'];
