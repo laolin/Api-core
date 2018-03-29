@@ -37,6 +37,48 @@ class class_mix{
 
     // 1. 用 code 换取 unionid
     require_once "api_wx.php";
+    $json_code_login = class_wx::code_login($request);
+    \DJApi\API::debug(['code_login', $json_code_login]);
+    if(!\DJApi\API::isOk($json_code_login)) return $json_code_login;
+    $unionid = $json_code_login['datas']['unionid'];
+    $openid = $json_code_login['datas']['openid'];
+
+    // 2. 读取两种绑定
+    $json_uid_openid = CBind::get_uid(['bindtype'=>'wx-openid', 'value'=>$openid]);
+    $json_uid_unionid = CBind::get_uid(['bindtype'=>'wx-unionid', 'value'=>$unionid]);
+    $uid_openid = $json_uid_openid['datas']['uid'];
+    $uid_unionid = $json_uid_unionid['datas']['uid'];
+
+    // 3. 如果两个均未绑定，则新建一个 uid
+    $uid = $uid_openid;
+    if(!$uid)$uid = $uid_unionid;
+    if(!$uid){
+      // 未绑定的，新建用户
+      $uid = CUser::create_uid();
+      CBind::bind(['uid'=>$uid, 'bindtype'=>'wx-openid', 'param1'=>$appid, 'param2'=>$appname, 'value'=>$openid]);
+      CBind::bind(['uid'=>$uid, 'bindtype'=>'wx-unionid', 'param1'=>$appid, 'param2'=>$appname, 'value'=>$unionid]);
+    }
+
+    // 4. 如果某种uid未绑定，则绑定
+    if(!$uid_openid){
+      CBind::bind(['uid'=>$uid, 'bindtype'=>'wx-openid', 'param1'=>$appid, 'param2'=>$appname, 'value'=>$openid]);
+    }
+    if(!$uid_unionid){
+      CBind::bind(['uid'=>$uid, 'bindtype'=>'wx-unionid', 'param1'=>$appid, 'param2'=>$appname, 'value'=>$unionid]);
+    }
+
+    // 5. 用 uid 换取 token
+    $json_token = CUser::create_token($uid);
+    \DJApi\API::debug(['create_token', $json_token]);
+    if(!\DJApi\API::isOk($json_token)) return $json_token;
+
+    $json_token['datas']['uid'] = $uid;
+    return $json_token;
+
+
+
+    // 1. 用 code 换取 unionid
+    require_once "api_wx.php";
     $json_unionid = class_wx::code_login($request);
     \DJApi\API::debug(['code_login', $json_unionid]);
     if(!\DJApi\API::isOk($json_unionid)) return $json_unionid;
