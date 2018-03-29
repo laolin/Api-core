@@ -28,6 +28,31 @@ class class_sa_data extends \MyClass\SteeStatic {
   }
 
   /**
+   * 接口 sa_data/close_fac
+   * 关闭/打开项目
+   * @request type:
+   * @request facid:
+   * @request close: 'close':关闭, 'open':恢复
+   * 返回：
+   * @return API::OK([limit])
+   */
+  public static function close_fac($request, $uid) {
+    $type = $request->query['type'];
+    $facid = $request->query['facid'];
+    $close = $request->query['close'];
+
+    if($type !== 'steeproj') return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '类型不正确');
+    if(!in_array($close, ['close','open'])) return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数不正确');
+
+    $time = $close == 'close' ? '' : \DJApi\API::now();
+
+    $db = DJApi\DB::db();
+    $n = $db->update(\MyClass\SteeStatic::$table[$type], ['close_time'=>$time], ['id'=>$facid]);
+    if($n) return \DJApi\API::OK(1);
+    return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '修改失败');
+  }
+
+  /**
    * 获取用户信息
    * @request userid: 被查看用户的 id
    * 返回：
