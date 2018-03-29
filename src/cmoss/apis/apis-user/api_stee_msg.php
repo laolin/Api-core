@@ -126,10 +126,7 @@ class class_stee_msg{
         ]
       ]
     ])['datas']['R'];
-    $rightName = [
-      'steefac' =>'推送产能给项目',
-      'steeproj' =>'推送项目给产能',
-    ][$from_type];
+    $rightName = $from_type == 'steefac' ? '推送产能给项目' : '推送项目给产能';
     if(!$uid || (!in_array($uid, $uidGroup['from'])) && \MyClass\CRoleright::hasRight($uid, $rightName)){
       return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '不是管理员', ['uid'=>$uid, 'uidGroup'=>$uidGroup, 'query'=>[
         'from_type' => $from_type,
