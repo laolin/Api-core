@@ -12,12 +12,10 @@ class CRoleright{
    */
   public static function hasRight($uid, $name)
   {
-    return true;
-
     $db = DJApi\DB::db();
     return $db->has(SteeStatic::$table['user_right'], ['AND' => [
       'uid' => $uid,
-      'name' => $name,
+      'name' => [$name, '超级管理员'],
       't1[>]' => '2000-01',
       'OR' => [
         't2' => '',
