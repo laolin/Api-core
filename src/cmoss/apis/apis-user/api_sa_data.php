@@ -44,7 +44,7 @@ class class_sa_data extends \MyClass\SteeStatic {
     if($type !== 'steeproj') return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '类型不正确');
     if(!in_array($close, ['close','open'])) return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数不正确');
 
-    $time = $close == 'close' ? '' : \DJApi\API::now();
+    $time = $close == 'open' ? '' : \DJApi\API::now();
 
     $db = DJApi\DB::db();
     $n = $db->update(\MyClass\SteeStatic::$table[$type], ['close_time'=>$time], ['id'=>$facid]);
