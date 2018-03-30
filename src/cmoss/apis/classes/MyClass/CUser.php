@@ -59,20 +59,18 @@ class CUser
    * 数据来源：api请求
    * @return bool
    */
-  public static function sign2uid($query)
+  public static function sign2uid()
   {
-    return self::verify($query)['datas']['uid'];
+    return self::verify()['datas']['uid'];
   }
 
   /** 验证签名
    * 数据来源：api请求
    * @return bool
    */
-  public static function checkSign($query)
+  public static function checkSign()
   {
-    return \DJApi\API::isOk(self::verify($query));
+    return \DJApi\API::isOk(self::verify());
   }
-
-
 
 }

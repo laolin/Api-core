@@ -58,7 +58,8 @@ class class_app {
    * @return uid, 由于用户签名时，必须用到token, 所以，不再返回
    */
   public static function verify_token($request) {
-    return \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", $request->query);
+    $verify_token = \MyClass\CUser::verify($request->query);
+    return $verify_token;
   }
 
 

@@ -223,11 +223,7 @@ class USER {
     $timestamp=API::INP('timestamp');
     $sign=API::INP('api_signature');
 
-    $verify = \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", [
-      'tokenid' => $tokenid,
-      'timestamp' => $timestamp,
-      'sign' => API::INP('sign')
-    ]);
+    $verify = \MyClass\CUser::verify();
     \DJApi\API::debug(['向独立服务器请求验证：', $verify]);
     return $verify['datas']['uid'];
 

@@ -96,7 +96,7 @@ function api_core__runapi($api,$call,$para1,$para2) {
 
   
   //uid for api-log, bucketUser for TokenBucket
-  $bucketUser=$uid = API::INP('uid');
+  $bucketUser=$uid = \MyClass\CUser::sign2uid();
   $bucketSetting=api_g('api_bucket');
   $api_cost=1;
   if($uid && ! USER::userVerify() ) {
