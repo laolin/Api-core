@@ -41,6 +41,17 @@ function autoAPI(){
     DJApi\API::debug(['新API', $hasLaolinApi]);
     // 使用 api-shell
     DJApi\Response::response(DJApi\Request::debugJson($json));
+    /** log 记录 */
+    $db = DJApi\DB::db();
+    $db->insert(\MyClass\SteeStatic::$table['log'], [
+      'uid' => \MyClass\CUser::sign2uid(),
+      'api' => "{$_GET['api']}/{$_GET['call']}",
+      "host" => $_SERVER['REMOTE_ADDR'],
+      "cur_time" => time(),
+      "get" => json_encode($_GET, JSON_UNESCAPED_UNICODE),
+      "post" => json_encode($_POST, JSON_UNESCAPED_UNICODE),
+    ]);
+
   }
 }
 
