@@ -45,9 +45,11 @@ class class_roleright
     $userid = $request->query['userid'];
     $db = \DJApi\DB::db();
     $user = $db->get(self::$table['user'], '*', ['uid' => $userid]);
-    \DJApi\API::debug($db->getShow());
+    \DJApi\API::debug(['DB'=>$db->getShow(), 'user'=>$user]);
     if (!is_array($user)) {
-      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, '用户不存在');
+      $user = ['uid' => $userid];
+      //return \DJApi\API::OK(['user' => ['uid' => $userid, 'rights'=>[]]]);
+      // return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, '用户不存在');
     }
 
     // 读取权限
@@ -76,9 +78,9 @@ class class_roleright
     $db = \DJApi\DB::db();
 
     $user = $db->get(self::$table['user'], '*', ['uid' => $userid]);
-    \DJApi\API::debug($db->getShow());
+    \DJApi\API::debug(['DB'=>$db->getShow(), 'user'=>$user]);
     if (!is_array($user)) {
-      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, '用户不存在');
+      //return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, '用户不存在');
     }
 
     // 读取现有权限，包括过时的
