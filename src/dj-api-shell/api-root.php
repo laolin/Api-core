@@ -77,7 +77,7 @@ class Configs {
   static function readConfigOnce($fileName = 'config.inc.php', $deep = 5, $path = ''){
     // 保证只引用一次，即使在多个目录中存在
     if(self::$readConfigOnceRecord[$fileName]) return;
-    self::$readConfigOnceRecord[$fileName] = self::readConfig(fileName, $deep, $path, true);
+    self::$readConfigOnceRecord[$fileName] = self::readConfig($fileName, $deep, $path, true);
   }
   static function readConfig($fileName = 'config.inc.php', $deep = 5, $path = '', $onlyonce = false){
     if(!$path){
