@@ -84,16 +84,16 @@ class class_wx {
     list($appid, $secret) = WxTokenBase::appid_appsec($name);
     if(!$appid)return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "参数无效2");
     $url = $request->query["url"];
-    \DJApi\API::debug(['url 未解码=', $url]);
+    //\DJApi\API::debug(['url 未解码=', $url]);
     $url = urldecode($url);
-    \DJApi\API::debug(['url 已解码=', $url]);
+    //\DJApi\API::debug(['url 已解码=', $url]);
     $jsapiTicket = WxTokenBase::GetJsApiTicket($appid, $secret);
     $timestamp = time();
     $nonceStr = \DJApi\API::createNonceStr(16);
     // 这里参数的顺序要按照 key 值 ASCII 码升序排序
     $string = "jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url";
     $signature = sha1($string);
-    \DJApi\API::debug(['url=', $url]);
+    //\DJApi\API::debug(['url=', $url]);
     return \DJApi\API::OK(["config"=>[
       "jsapiTicket" => $jsapiTicket,
       "appId"     => $appid,

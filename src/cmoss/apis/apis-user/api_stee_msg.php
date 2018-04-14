@@ -78,6 +78,9 @@ class class_stee_msg{
     $from_id   = $query['from_id'];
     $to_type   = $query['to_type'];
     $to_ids    = $query['to_ids'];
+    if(!is_array($to_ids) || count($to_ids) >= 20 || count($to_ids) < 1){
+      return DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数错误');
+    }
 
     // 消息额度限制
     if($from_type == 'steefac' && !in_array($uid, [
@@ -200,13 +203,7 @@ class class_stee_msg{
       ]);
     }
 
-    return DJApi\API::OK(['r' => '请求成功，服务器正在为您处理', 'test'=>[
-      'DB' => $db->getShow(),
-      'jsonSended' => $jsonSended,
-      'uidGroup' => $uidGroup,
-      'openidGroupJson' => $openidGroupJson,
-      'jsonRecord' => $jsonRecord
-    ]]);
+    return DJApi\API::OK(['r' => '请求成功，服务器正在为您处理']);
   }
 
 }

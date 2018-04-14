@@ -86,7 +86,7 @@ class CWxBase{
     $name = $query['name'];
     if(!$name)return \DJApi\API::error(1001, "参数无效");
     $json = \DJApi\API::post(SERVER_API_ROOT, "user/wx_token/access_token", ['name'=>'请高手']);
-    \DJApi\API::debug(['获取access_token', $json]);
+    //\DJApi\API::debug(['获取access_token', $json]);
     $access_token = $json['datas']['access_token'];
     $openids = $query['openids'];
     $tplName = $query['tplName'];
@@ -112,7 +112,7 @@ class _WxBaseFn{
    */
   static function SendTPL($access_token, $openids, $tplName, $data, $url){
     $tpl = \DJApi\Configs::get(["微信模板消息", $tplName]);
-    if(!$tpl) return \DJApi\API::error(22, "模板参数错误, $tplName", \DJApi\Configs::$values);
+    if(!$tpl) return \DJApi\API::error(22, "模板参数错误, $tplName");
     if(!is_array($openids))$openids = [$openids];
 
 
@@ -138,7 +138,7 @@ class _WxBaseFn{
       \DJApi\API::debug(['发送模板消息', 'json'=>$json, 'res'=>$res, 'data'=>$data]);
       $r[] = $res;
     }
-    return \DJApi\API::OK(['tpl'=>$tpl, '发送返回'=>$r, 'send_url'=>$send_url]);
+    return \DJApi\API::OK(['tpl'=>$tpl, '发送返回'=>$r]);
     return API::OK('不知道发了几个');
   }
 
