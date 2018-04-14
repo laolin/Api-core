@@ -149,9 +149,17 @@ class class_stee_data {
 
     $k1   = $request->query['k1'  ];
     $k2   = $request->query['k2'  ];
-    $v1   = $request->query['v1'  ];
+    $v1 = $ac = $request->query['v1'  ];
     $v2   = $request->query['v2'  ];
     $json = $request->query['json'];
+
+    /** 一些权限需求 */
+    if ($ac == '电话联系') {
+      if (!\MyClass\CRoleright::hasRight($uid, '工作人员')) {
+        return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '不是工作人员', ['uid' => $uid]);
+      }
+    }
+
     $base = [
       'module' => 'cmoss',
       'uid'    => $uid,
