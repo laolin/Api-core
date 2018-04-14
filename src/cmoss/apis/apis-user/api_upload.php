@@ -51,7 +51,7 @@ class class_upload {
     // \DJApi\API::debug(["OSS_config"=>$OSS_config]); 敏感数据，测试后即关闭
     //return \DJApi\API::OK();
 
-    \DJApi\Configs::readConfigOnce('api-lib/ali-oss-upload/autoload.php', 5, '', true);
+    \DJApi\Configs::readConfigOnce('api-lib/ali-oss-upload/autoload.php');
 
     $ossClient = new \OSS\OssClient($OSS_config['accessKeyId'], $OSS_config['accessKeySecret'], $OSS_config['endpoint'], false);
 
