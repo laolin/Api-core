@@ -169,7 +169,7 @@ class Data{
     if(!$field) $field = '*';
     $rows = $db->select(self::$tableName, $field, $where);
     DJApi\API::debug(['记录使用数量查询', $rows, $db->getShow()]);
-    return DJApi\API::OK(['rows' => $rows, "query"=>$query, "where"=>$where, "DB"=>$db->getShow()]);
+    return DJApi\API::OK(['rows' => $rows]);
   }
 
 

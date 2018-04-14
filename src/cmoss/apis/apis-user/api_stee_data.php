@@ -198,6 +198,28 @@ class class_stee_data {
     return $listJson;
   }
 
+  /**
+   * stee_data/getActionList
+   * 查询多个详情的操作列表
+   * @query type: steefac/steeproj ，公司或项目
+   * @query facid: id ，公司若项目的 id
+   * @query scoreName: 积分名称[使用额度查看/再次查看/推广查看/点击电话/点击邮件/点击推送/用户推广]
+   * @query timeFrom: 开始时间
+   * @query timeTo: 结束时间
+   *
+   * @return DJApi\API::OK([
+   *   list: [list]  // 列表
+   * ])
+   */
+  public static function getActionList($request) {
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $listJson = \MyClass\SteeData::getActionList($request->query);
+    return $listJson;
+  }
+
 
   /**
    * stee_data/search
