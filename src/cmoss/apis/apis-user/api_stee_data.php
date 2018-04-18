@@ -329,4 +329,56 @@ class class_stee_data {
   }
 
 
+  /**
+   * stee_data/obj_detail
+   * 产能详情
+   * @query type: steefac/steeproj ，公司或项目
+   * @query facid: 公司或项目的 id
+   *
+   * @return detail: 详情
+   */
+  public static function obj_detail($request)
+  {
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+    $type = $request->query['type'];
+    $facid = $request->query['facid'];
+    $confirm = $request->query['confirm'];
+    $db = DJApi\DB::db();
+
+    /** 先获取权限情况 */
+    $limitJson = \MyClass\SteeData::getReadDetailLimit($uid, $type, $facid);
+    $limit = $limitJson['datas']['limit'];
+
+    if ($limit === 'never') {
+      \DJApi\API::debug('查看不受限制');
+    } else if ($confirm) {
+      \DJApi\API::debug('用户要求查看');
+      \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '使用额度查看');
+    } else if ($limitJson['datas']['admin'] || $limitJson['datas']['superadmin']) {
+      // 不要返回限制了
+    } else {
+      \DJApi\API::debug('查看受限');
+      return \DJApi\API::OK(['limit' => $limit]);
+    }
+
+    // 读取数据库
+    $where = ['AND' => ['id' => $facid]];
+    $detail = $db->get(\MyClass\SteeStatic::$table[$type], \MyClass\SteeStatic::$fields_pre_detail[$type], $where);
+    \DJApi\API::debug(['DB' => $db->getShow()]);
+    if (!is_array($detail)) {
+      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, '无数据');
+    }
+
+    /** 处理电话和邮件 contact_tel contact_email */
+    $detail['contact_tel'] = $detail['contact_tel'] ? 'yes': '';
+    $detail['contact_email'] = $detail['contact_email'] ? 'yes': '';
+
+    // 返回
+    return \DJApi\API::OK(['detail' => $detail]);
+  }
+
 }
