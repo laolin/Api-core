@@ -52,6 +52,51 @@ class SteeData extends SteeStatic{
     return DJApi\API::OK(['limit' => ["max"=>$max, "used"=>$used]]);
   }
 
+  /**
+   * 请求电话号码, 返回限制情况
+   * @request type: steefac/steeproj ，要查看详情的类型，公司或项目
+   * @request facid: id ，公司若项目的 id
+   * 返回：
+   * @return API::OK([limit])
+   * @return limit='never': 不受限制
+   * @return limit.max: 当前剩余额度
+   * @return limit.used: 当前已用额度
+   */
+  public static function getTelphoneLimit($uid, $type, $facid) {
+
+    // 超级管理员
+    if(\MyClass\SteeData::isSuperAdmin($uid)){
+      return DJApi\API::OK(['limit' => 'never', 'role'=>'superadmin']);
+    }
+
+    // 工作人员
+    if (\MyClass\CRoleright::hasRight($uid, '工作人员')) {
+      return DJApi\API::OK(['limit' => 'never', 'role'=>'工作人员']);
+    }
+
+    // 另一分类的管理员？
+    if(!\MyClass\SteeData::isSimpleAdmin($uid, $type=='steefac'?'steeproj':'steefac')){
+      return DJApi\API::error(DJApi\API::E_NEED_RIGHT, $type=='steefac'?'不代表项目':'不代表钢构厂');
+    }
+
+    // 今天查看过
+    if(\MyClass\SteeData::getUsed($uid, $type, '请求电话号码', $facid)){
+      return DJApi\API::OK(['limit' => 'never', 'role'=>'今天查看过']);
+    }
+
+    // 今天额度使用多少
+    $used = \MyClass\SteeData::getUsed($uid, $type, '请求电话号码');
+    $max  = $type=='steefac' ? 20 : 5;
+
+    // 额度用完
+    if($used >= $max){
+      return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '额度用完', ['limit' => ["max"=>$max, "used"=>$used]]);
+    }
+
+    // 返回
+    return DJApi\API::OK(['limit' => ["max"=>$max, "used"=>$used]]);
+  }
+
 
   /** 用户是否可以查看指定公司或项目的详情
    * @param uid
@@ -138,6 +183,29 @@ class SteeData extends SteeStatic{
     return 0 + $jsonReaded['datas']['rows'][0];
   }
 
+  /** 使用情况，通用
+   * @param uid
+   * @param type: steefac/steeproj ，公司或项目
+   * 返回：
+   * @return 数量
+   */
+  public static function getUsed($uid, $type, $ac, $facid = 0, $days = 0)
+  {
+    $AND = [
+      'uid' => $uid,
+      "time[>]" => DJApi\API::today(-$days),
+      'k1' => $type,
+      'v1' => $ac,
+    ];
+    if($facid)$AND['k2'] = $facid;
+    $jsonReaded = \API_UseRecords\Data::select([
+      'module' => 'cmoss',
+      'field' => 'sum(n) as n',
+      'and' => DJApi\API::cn_json($AND),
+    ]);
+    return 0 + $jsonReaded['datas']['rows'][0];
+  }
+
   /** 记录一次使用
    * @param uid
    * @param type: steefac/steeproj ，公司或项目
@@ -152,7 +220,7 @@ class SteeData extends SteeStatic{
       'uid'    => $uid,
       'k1'     => $type,
       'k2'     => $facid,
-      'v1'     => $k2,
+      'v1'     => $v1,
       'n'      => 1
     ]);
   }
@@ -276,11 +344,14 @@ class SteeData extends SteeStatic{
    * 返回：
    * @return bool
    */
-  static function isSimpleAdmin($uid, $type, $facid) {
+  static function isSimpleAdmin($uid, $type, $facid = false) {
     $db = DJApi\DB::db();
     $col_name = $type . '_can_admin';
     $row = $db->get(self::$table['stee_user'], [$col_name], ['uid'=>$uid]);
     if(!$row)return false;
+    if($facid===false && $row[$col_name]){
+      return true;
+    }
     // 我管理的公司/项目
     $facids = explode(',', $row[$col_name]);
     DJApi\API::debug([$db->getShow(), $col_name, $row[$col_name], $row, $facids], "DB");
