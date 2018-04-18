@@ -145,7 +145,7 @@ class class_steeobj{
     $kr['steefac']=[
       "update_at"=>0,
       "level"=>1,
-      "license"=>4,
+      "license"=>0,
       "name"=>4,
       "addr"=>4,
       "latE7"=>5,
