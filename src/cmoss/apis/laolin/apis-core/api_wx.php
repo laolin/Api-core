@@ -151,7 +151,7 @@ class class_wx{
     $userJson = \MyClass\SteeUser::get_users($ids);
     // \DJApi\API::debug(['先获取用户数据', $ids, $userJson]);
     if(!\DJApi\API::isOk($userJson)){
-      return $userJson;
+      // return $userJson;
     }
     $users = $userJson['datas']['list'];
     // 没有用户数据行的，也可以读微信！
@@ -170,7 +170,7 @@ class class_wx{
 
     // 两者合并准备
     $preData = [];
-    foreach($ids as $uid){ $preData[uid] = []; }
+    foreach($ids as $uid){ $preData[$uid] = []; }
 
     //合并用户数据
     foreach($users as $row){

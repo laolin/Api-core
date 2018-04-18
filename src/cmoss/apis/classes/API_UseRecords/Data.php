@@ -168,7 +168,7 @@ class Data{
     if($order) $where['ORDER'] = $order;
     if(!$field) $field = '*';
     $rows = $db->select(self::$tableName, $field, $where);
-    DJApi\API::debug(['记录使用数量查询', $rows, $db->getShow()]);
+    DJApi\API::debug(['记录使用数量查询', 'rows'=>$rows, 'DB'=>$db->getShow()]);
     return DJApi\API::OK(['rows' => $rows]);
   }
 
