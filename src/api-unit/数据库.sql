@@ -74,6 +74,24 @@ insert into `qgs-user-test`.z_wx_user (
 
 
 
+-- 用户活跃度分段索引
+-- drop table if exists `api_tbl_log_time`;
+create table if not exists `api_tbl_log_time` 
+(
+  `id`        int(11),
+  `time`      timestamp,
+  `cur_time`  int(11),
+  primary key (`id`),
+  unique key `id` (`id`)
+)default charset=utf8;
+
+-- MySql 后台每天运行：
+-- insert into api_tbl_log_time (id,time, cur_time)
+--   SELECT `id` ,`time` ,`cur_time`   FROM `api_tbl_log`,
+--   ( SELECT max(`cur_time` + 3600*24) as mm FROM `api_tbl_log_time`) tmp
+--   WHERE `cur_time`  >tmp.mm
+--   GROUP BY left(time,10);
+
 
 
 

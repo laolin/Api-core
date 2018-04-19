@@ -91,6 +91,7 @@ class class_sa_data extends \MyClass\SteeStatic {
     $from = intval($query['from']);
     $to = intval($query['to']);
     $AND = [];
+
     /* 按开始和结束时间查询 */
     if($from){
       $AND["cur_time[>]"] = $from;
@@ -119,6 +120,18 @@ class class_sa_data extends \MyClass\SteeStatic {
         }
       }
     }
+    /** 根据索引加速 */
+    if($AND["cur_time[>]"]){
+      $db = \DJApi\DB::db();
+      $min_id = $db->get(self::$table['log'] . '_time', 'id', [
+        'AND'=>['cur_time[<]'=>$AND["cur_time[>]"]],
+        'ORDER'=>['cur_time'=>'DESC']
+        ]);
+      if($min_id){
+        $AND["id[>]"] = $min_id;
+      }
+      \DJApi\API::debug(['DB'=>$db->getShow(), "min_id"=>$min_id]);
+    }
     return $AND;
   }
   /**
@@ -128,14 +141,16 @@ class class_sa_data extends \MyClass\SteeStatic {
     $AND = self::getAND($request->query);
 
     $db = \DJApi\DB::db();
-    $rows = $db->select(self::$table['log'], ['count(*) as n', 'uid'],
+    $tt[] = microtime();
+    $rows = $db->select(self::$table['log'], ['count(id) as n', 'uid'],
       [
         "AND"   => $AND,
         "GROUP" => 'uid',
         "ORDER" => ["n" =>"DESC"]
       ]
     );
-    \DJApi\API::debug($db->getShow(), "DB");
+    $tt[] = microtime();
+    \DJApi\API::debug(['DB'=>$db->getShow(), "T"=>$tt]);
     return \DJApi\API::OK($rows);
   }
   /**
