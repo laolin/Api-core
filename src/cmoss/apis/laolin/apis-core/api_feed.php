@@ -50,10 +50,12 @@ class class_feed {
    *  所以当 uid 用户已有草稿时，此API是返回原有的草稿
    */
   public static function draft_init( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    $uid=API::INP('uid');    
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+
     $app=API::INP('app');    
     $cat=API::INP('cat');
     if(!$app || !$cat ) {
@@ -87,10 +89,12 @@ class class_feed {
     return self::_update('*',true);
   }
   static function _update($type, $needadmin ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    $uid=API::INP('uid');
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+
     $fid=API::INP('fid');
     if($needadmin && ! self::adminVerify()) {
       return API::msg(202001,'error adminVerify');
@@ -123,11 +127,12 @@ class class_feed {
    *    1 or 0 表示有无更新
    */
   public static function draft_publish( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
 
-    $uid=API::INP('uid');    
     $fid=API::INP('fid');
     //要确保fid是对应一个存在的数据
     $r=FEED::feed_get($uid,$fid,'draft');
@@ -155,11 +160,12 @@ class class_feed {
    *    各字段
    */
   public static function get( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    
-    $uid=API::INP('uid');    
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+
     $fid=API::INP('fid');
     $r=FEED::feed_get($uid,$fid,'publish');
     return $r;
@@ -175,11 +181,12 @@ class class_feed {
    *    各字段
    */
   public static function li( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    
-    $uid=API::INP('uid');    
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+  
     $app=API::INP('app');    
     $cat=API::INP('cat');
     if(!$app || !$cat ) {
@@ -215,16 +222,17 @@ class class_feed {
     return self::update_special('access',$access);
   }
   static function update_special( $key,$val ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+
 
     $keyList=['del','access'];
     if (!in_array($key, $keyList)) {
       return API::msg(202001,'error key '.$key);
-    }
-
-    $uid=API::INP('uid');    
+    }  
    
     $fid=API::INP('fid');
     //要确保fid是对应一个存在的数据

@@ -31,24 +31,27 @@ class class_comment {
    *  新建评论、点赞
    *  $para1: `like` | null 
    */
-  public static function add( $para1 ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    $uid=API::INP('uid');
+  public static function add() {
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+    $type=API::INP('type');
     $fid=API::INP('fid');
     
-    $r=COMMENT::create($para1,$uid,$fid);
+    $r=COMMENT::create($type,$uid,$fid);
     return $r;
   }
   /**
    *  获取评论、点赞 
    */
   public static function li(  ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    $uid=API::INP('uid');
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
     $fid=API::INP('fid');
     
     $r=COMMENT::li( );
@@ -58,9 +61,10 @@ class class_comment {
    *  删除评论、点赞 
    */
   public static function del(  ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
     
     $r=COMMENT::del( );
     return api::data($r);

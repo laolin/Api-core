@@ -41,6 +41,8 @@ class COMMENT {
     $db=api_g('db');
     $tblname=self::table_name();
     
+\DJApi\API::debug(['ctype'=>$ctype,'uid'=>$uid,'fid'=>$fid]);
+
     if($ctype=='') {
       $ctype='comment';
     } else if($ctype!='comment' && $ctype!='like') {
@@ -157,7 +159,12 @@ class COMMENT {
 
   // ---D 删除
   static function del( ) {
-    $uid=API::INP('uid');
+    $verify = \MyClass\CUser::verify($request->query);
+    if (!\DJApi\API::isOk($verify)) {
+      return $verify;
+    }
+    $uid = $verify['datas']['uid'];
+
     $fid=API::INP('fid');
     $cid=API::INP('cid');
     $ctype=API::INP('ctype');
