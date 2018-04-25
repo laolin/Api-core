@@ -296,12 +296,14 @@ class class_steeobj{
     }
     $data['id']=$r;
     
-    //不是系统管理员，创建后，自动成为新厂的管理员
-    $user=stee_user::_get_user($uid );
-    if(!($user['is_admin'] & 0x10000)) {
-      $appadmin=stee_user::apply_admin($type,$uid,$r);
-      $data['appadmin'] = $appadmin;
-    }
+    // 总是：自动成为新厂的管理员
+    $appadmin=stee_user::apply_admin($type,$uid,$r);
+    // 不是系统管理员，创建后，自动成为新厂的管理员
+    // $user=stee_user::_get_user($uid );
+    // if(!($user['is_admin'] & 0x10000)) {
+    //   $appadmin=stee_user::apply_admin($type,$uid,$r);
+    //   $data['appadmin'] = $appadmin;
+    // }
 
     return API::data($data);
   }  

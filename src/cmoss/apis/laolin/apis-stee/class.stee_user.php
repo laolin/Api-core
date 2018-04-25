@@ -71,7 +71,7 @@ class stee_user {
       $r['is_admin'] |= 1;
       if($r[$col_name]){
         $ff=explode(',',$r[$col_name]);
-        if(count($ff)>3){
+        if(count($ff)>30){
           return API::msg(202001,"count exceed");
         }
         $r[$col_name].=','.$obj_id;
