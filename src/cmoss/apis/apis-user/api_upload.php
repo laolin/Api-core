@@ -55,6 +55,21 @@ class class_upload {
 
     $ossClient = new \OSS\OssClient($OSS_config['accessKeyId'], $OSS_config['accessKeySecret'], $OSS_config['endpoint'], false);
 
+    $sha_file = sha1_file($from);
+    $fn = "sha-$sha_file.$ext";
+    $to = $OSS_config['path'] . '/' . $fn;
+    $url = $OSS_config['baseurl'] . "/" .$to;
+    $path = $OSS_config['baseurl'] . "/" . $OSS_config['path'] . '/';
+    //return \DJApi\API::OK([$OSS_config['bucket'], $to, $from]);
+    try{
+      $ossClient->uploadFile($OSS_config['bucket'], $to, $from);
+      // 此处可以增加代码, 以在本地数据库记录上传情况
+    } catch(OssException $e) {
+      return \DJApi\API::error(9001, $e->getMessage());
+    }
+    return \DJApi\API::OK(["path"=>$path, "fn"=>$fn, "url"=>$url, "append"=>"@100w_100h_4e"]);
+
+
     $ms = microtime(true) * 10000;
     $fn = "u{$uid}-$ms-$name";
     $to = $OSS_config['path'] . '/' . $fn;
