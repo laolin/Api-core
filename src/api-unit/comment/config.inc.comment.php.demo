@@ -1,0 +1,19 @@
+<?php
+DJApi\Configs::set("API-ANME", '评论 1.0.0');
+
+define('SERVER_API_ROOT', 'https://api.jdyhy.com/cmoss-test-1.0/src/api-unit/');
+
+DJApi\Configs::set("main_db", [
+  "medoo"=>[
+    "port"          => 3306,
+    "database_name" => 'database name',
+    "server"        => 'host name',
+    "username"      => 'xxxx',
+    "password"      => '****',
+    "database_type" => 'mysql',
+    "charset"       => 'utf8'
+  ],
+  "tableName" => [
+    'comment'    => 'unit_comment',
+  ]
+]);
