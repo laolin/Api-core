@@ -44,12 +44,57 @@ class class_sa_data extends \MyClass\SteeStatic {
     if($type !== 'steeproj') return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '类型不正确');
     if(!in_array($close, ['close','open'])) return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '参数不正确');
 
-    $time = $close == 'open' ? '' : \DJApi\API::now();
-
     $db = DJApi\DB::db();
-    $n = $db->update(\MyClass\SteeStatic::$table[$type], ['close_time'=>$time], ['id'=>$facid]);
-    if($n) return \DJApi\API::OK(1);
-    return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '修改失败');
+    $time = \DJApi\API::now();
+
+    /** 读原数据 */
+    $old_row = $db->get(\MyClass\SteeStatic::$table[$type], ['close_time', 'attr'], ['id' => $facid]);
+    if(!$old_row['attr'])$old_row['attr'] = "[]";
+    $attr = json_decode($old_row['attr'], true);
+
+    /** 如果是重新开放项目/产能 */
+    if ($close == 'open') {
+      if (!$old_row['close_time']) {
+        return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '修改失败(原未关闭)', $old_row);
+      }
+      /** 直接保存操作记录，最后一次有效 */
+      if(!is_array($attr['close_data_history'])) $attr['close_data_history'] = [];
+      $attr['close_data_history'][] = [
+        't'=>$time,
+        'uid'=>$uid,
+        'ac'=>'open',
+      ];
+      /** 写数据库 */
+      $n = $db->update(\MyClass\SteeStatic::$table[$type], ['close_time' => '', 'attr'=>\DjApi\API::cn_json($attr)], ['id' => $facid]);
+      if ($n) {
+        return \DJApi\API::OK(1);
+      }
+      return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '修改失败');
+    }
+
+    /** 如果是关闭项目/产能 */
+    if ($close == 'close') {
+      if ($old_row['close_time']) {
+        return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '修改失败(原已关闭)');
+      }
+      $data = $request->query['data'];
+      $attr = json_decode($old_row['attr'], true);
+      /** 直接保存操作记录，最后一次有效 */
+      if(!is_array($attr['close_data_history'])) $attr['close_data_history'] = [];
+      $attr['close_data_history'][] = [
+        't'=>$time,
+        'uid'=>$uid,
+        'ac'=>'close',
+        'data'=>$data
+      ];
+      /** 写数据库 */
+      $n = $db->update(\MyClass\SteeStatic::$table[$type], ['close_time'=>$time, 'attr'=>\DjApi\API::cn_json($attr)], ['id'=>$facid]);
+      if($n) return \DJApi\API::OK(1);
+      return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '修改失败');
+    }
+
+    /** 不正常的操作 */
+    return \DJApi\API::error(DJApi\API::E_PARAM_ERROR, '非法操作');
   }
 
   /**
