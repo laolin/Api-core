@@ -19,17 +19,25 @@ class SteeData extends SteeStatic{
    */
   public static function getReadDetailLimit($uid, $type, $facid) {
 
+    /** 识别身份 */
+    $isSimpleAdmin = \MyClass\SteeData::isSimpleAdmin($uid, $type, $facid);
+    $isSuperAdmin = \MyClass\SteeData::isSuperAdmin($uid);
+    $role = [
+      'admin' => $isSimpleAdmin? 1: 0,
+      'sa' => $isSuperAdmin? 1: 0,
+    ];
+
     // 不受限制
-    if(\MyClass\SteeData::isSimpleAdmin($uid, $type, $facid)){
+    if($isSimpleAdmin){
       DJApi\API::debug(['是相应的管理员', $uid, $type, $facid]);
-      return DJApi\API::OK(['limit' => 'never', 'admin'=>1]);
+      return DJApi\API::OK(['limit' => 'never', 'role'=>$role]);
     }
 
     // 超级管理员，虽有使用记录，但仍返回已用 0，以便无限使用，而可以同一般人员一样记录操作
     // 当然也可以当作灌水功能，提高某项目/厂的受欢迎度
-    if(\MyClass\SteeData::isSuperAdmin($uid)){
+    if($isSuperAdmin){
       DJApi\API::debug(['超级管理员', $uid, $type, $facid]);
-      return DJApi\API::OK(['limit' => ["max"=>10000, "used"=>0], 'superadmin'=>1]);
+      return DJApi\API::OK(['limit' => ["max"=>10000, "used"=>0], 'role'=>$role]);
     }
 
     // 今天额度使用多少

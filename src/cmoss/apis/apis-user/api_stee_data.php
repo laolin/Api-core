@@ -238,6 +238,46 @@ class class_stee_data
   }
 
   /**
+   * stee_data/dropdown
+   * 产能下拉列表
+   * @query type: steefac/steeproj ，公司或项目
+   * @return list: [id, name]
+   */
+  public static function dropdown($request)
+  {
+    $type = $request->query['type'];
+    $db = DJApi\DB::db();
+    $where = [
+      "AND" => [
+        'or' => ['mark#1' => null, 'mark#2' => ''],
+      ],
+      "ORDER" => ["update_at" => "DESC", "id" => "DESC"],
+    ];
+    // 读取数据库
+    $dbRows = $db->select(\MyClass\SteeStatic::$table[$type], ['id', 'name'], $where);
+    // 返回
+    return \DJApi\API::OK(['list' => array_values($dbRows)]);
+  }
+  /**
+   * stee_data/dropdown
+   * 产能下拉列表, 逆向求名称
+   * @query type: steefac/steeproj ，公司或项目
+   * @return list: [id, name]
+   */
+  public static function obj_name($request)
+  {
+    $type = $request->query['type'];
+    $facid = $request->query['facid'];
+    $db = DJApi\DB::db();
+
+    // 读取数据库
+    $detail = $db->get(\MyClass\SteeStatic::$table[$type], ['name'], ['id' => $facid]);
+    \DJApi\API::debug(['DB' => $db->getShow()]);
+    // 返回
+    return \DJApi\API::OK(['name' => $detail['name']]);
+  }
+
+  /**
    * stee_data/search
    * 产能搜索
    * @query type: steefac/steeproj ，公司或项目
@@ -411,13 +451,14 @@ class class_stee_data
     /** 先获取权限情况 */
     $limitJson = \MyClass\SteeData::getReadDetailLimit($uid, $type, $facid);
     $limit = $limitJson['datas']['limit'];
+    $role = $limitJson['datas']['role'];
 
     if ($limit === 'never') {
       \DJApi\API::debug('查看不受限制');
     } else if ($confirm) {
       \DJApi\API::debug('用户要求查看');
       \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '使用额度查看');
-    } else if ($limitJson['datas']['admin'] || $limitJson['datas']['superadmin']) {
+    } else if ($role['admin'] || $role['sa']) {
       // 不要返回限制了
     } else {
       \DJApi\API::debug('查看受限');
@@ -435,9 +476,30 @@ class class_stee_data
     /** 处理电话和邮件 contact_tel contact_email */
     $detail['contact_tel'] = $detail['contact_tel'] ? 'yes': '';
     $detail['contact_email'] = $detail['contact_email'] ? 'yes': '';
+    $detail['attr'] = json_decode($detail['attr'], true);
+
+    /** 如果已关闭 */
+    if($detail['close_time']){
+      if($role['sa']){
+
+      }
+      else if($role['admin']){
+
+      }
+      else{
+        $close_data_history = $detail['attr']['close_data_history'];
+        if(!is_array($close_data_history))$close_data_history = [];
+        $close_data = $close_data_history[count($close_data_history) - 1];
+        $detail = [
+          'close_time'=>1,
+          'name'=>$detail['name'],
+          'attr'=>['close_data_history'=>[$close_data]],
+        ];
+      }
+    }
 
     // 返回
-    return \DJApi\API::OK(['detail' => $detail]);
+    return \DJApi\API::OK(['detail' => $detail, 'role' => $role]);
   }
 
 }
