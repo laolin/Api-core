@@ -1,3 +1,33 @@
+
+-- 将正式库复制到测试库
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_comment     ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_feed          ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_steelfactory  ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_steelproject  ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_stee_user     ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_token        ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_tokenbucket   ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_uploads        ;
+TRUNCATE TABLE `cmoss-fac-test`.api_tbl_use_record    ;
+
+insert into `cmoss-fac-test`.api_tbl_comment        select * from `cmoss-fac`.api_tbl_comment      ;
+insert into `cmoss-fac-test`.api_tbl_feed           select * from `cmoss-fac`.api_tbl_feed         ;
+insert into `cmoss-fac-test`.api_tbl_steelfactory   select * from `cmoss-fac`.api_tbl_steelfactory ;
+insert into `cmoss-fac-test`.api_tbl_steelproject   select * from `cmoss-fac`.api_tbl_steelproject ;
+insert into `cmoss-fac-test`.api_tbl_stee_user      select * from `cmoss-fac`.api_tbl_stee_user    ;
+insert into `cmoss-fac-test`.api_tbl_token          select * from `cmoss-fac`.api_tbl_token        ;
+insert into `cmoss-fac-test`.api_tbl_tokenbucket    select * from `cmoss-fac`.api_tbl_tokenbucket  ;
+insert into `cmoss-fac-test`.api_tbl_uploads        select * from `cmoss-fac`.api_tbl_uploads      ;
+insert into `cmoss-fac-test`.api_tbl_use_record     select * from `cmoss-fac`.api_tbl_use_record   ;
+
+
+
+
+
+
+
+
+
 -- 从旧数据库中同步
 
 -- step1 从原正式库中备份数据
