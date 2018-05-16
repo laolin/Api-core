@@ -66,6 +66,8 @@ class SteeStatic
 
       'contact_tel',
       'contact_email',
+
+      "attr",
     ],
     'steeproj' => [
       "id",
@@ -96,6 +98,8 @@ class SteeStatic
 
       'contact_tel',
       'contact_email',
+
+      "attr",
     ],
   ];
 

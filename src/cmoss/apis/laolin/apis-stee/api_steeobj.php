@@ -336,7 +336,7 @@ class class_steeobj{
       \DJApi\API::debug('用户要求查看');
       \MyClass\SteeData::recordReadDetail($uid, $type, $facid, '使用额度查看');
     }
-    else if($limitJson['datas']['admin'] || $limitJson['datas']['superadmin']){
+    else if($limitJson['datas']['role']['admin'] || $limitJson['datas']['role']['sa']){
       // 不要返回限制了
     }
     else {
