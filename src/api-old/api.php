@@ -26,6 +26,8 @@
   class_timer::run_timer($db, 5);//每个api调用都却测试定时器，间隔时间要大于专用定时器的间隔的2倍，以保证API调用的速度
   $require_id = $db->insert("log_api", ["rq"=>$now,"api"=>$api,"call"=>$CALL,"userid"=>$uid, "host"=>$_SERVER['REMOTE_ADDR'], "query"=>cn_json($query)]);
 
+  header("Access-Control-Allow-Origin:*");
+
   switch($api){
     case "pay":
     case "wxpay":
