@@ -1,0 +1,7 @@
+RewriteEngine on
+
+# v2.1
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(index.php/)?([a-zA-Z]\w*)(/([a-zA-Z]\w*))?(/([^/]*))?(/(.*))?$ index.php?api=$2&call=$4&__para1=$6&__para2=$8&%{QUERY_STRING}	[L]
