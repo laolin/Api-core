@@ -11,6 +11,26 @@ require_once "app/g.php";
 require_once "app/json.php";
 require_once "app/wx.php";
 
+\DJApi\Configs::set('main-api-path', ['./']);
+\DJApi\Configs::readConfigOnce('configs/config.inc.qgs.php');
+
+function callback($request, $C, $CALL) {
+  $get = $request->query;
+  $post = $request->query;
+  $db = new mymedoo();
+  return json_decode($C::$CALL($get, $post, $db), true);
+}
+$api = trim($_GET['api']);
+$call = trim($_GET['call']);
+$request = new \DJApi\Request($api, $call);
+$namespace = '';
+$json = $request->getJson($namespace, callback);
+\DJApi\Response::response(\DJApi\Request::debugJson($json));
+
+$_API_t_ = time();
+function API_now($ss = 0) {return date("Y-m-d H:i:s", $GLOBALS['_API_t_'] + $ss);}
+return;
+
 $api = trim($_GET['api']);unset($_GET['api']);
 $CALL = trim($_GET['call']);unset($_GET['call']);
 if (strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
@@ -27,7 +47,7 @@ $uid = isset($query['uid']) ? $query['uid'] : 0;
 
 $now = G::s_now();
 $_API_t_ = time();
-function API_now($ss = 0) {return date("Y-m-d H:i:s", $GLOBALS['_API_t_'] + $ss);}
+//function API_now($ss = 0) {return date("Y-m-d H:i:s", $GLOBALS['_API_t_'] + $ss);}
 $db = new mymedoo();
 require_once "api_timer.php";
 class_timer::run_timer($db, 5); //每个api调用都却测试定时器，间隔时间要大于专用定时器的间隔的2倍，以保证API调用的速度
