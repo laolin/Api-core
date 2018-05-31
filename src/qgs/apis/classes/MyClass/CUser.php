@@ -64,7 +64,22 @@ class CUser {
     $userRow = $db->get(CDbBase::table('user', 'qgs_user'), ['id', 'password'], ['uid' => $uid]);
     \DJApi\API::debug(['读用户行', 'DB' => $db->getShow(), 'userRow' => $userRow]);
     if (!is_array($userRow)) {
-      return \DJApi\API::error(\DJApi\API::E_NEED_LOGIN, '登录失败');
+      // 是新用户，要生成一行
+      $password = md5("@qgs");
+      // 获取绑定的openid
+      $jsonBindOpenid = \DJApi\API::post(SERVER_API_ROOT, "user/bind/get_bind", [
+        'uid'=>$uid,
+        'bindtype'=>'wx-openid',
+        'param1'=>DJApi\Configs::get("WX_APPID_APPSEC_DEFAULT")['WX_APPID'],
+      ]);
+      \DJApi\API::debug(['请求绑定数据' => $jsonBindOpenid]);
+      $openid = $jsonBindOpenid['datas']['binds'][0]['value'];
+      $userRow = [
+        'uid'=>$uid,
+        'password'=>$password,
+        'openid'=>$openid,
+      ];
+      $userRow['id'] = $db->insert(CDbBase::table('user', 'qgs_user'), $userRow);
     }
     $id = $userRow['id'];
 
