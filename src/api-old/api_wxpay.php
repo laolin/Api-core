@@ -1,6 +1,6 @@
 <?php
 require_once("wxpay/Helper.php");
-require_once("wxpay/lib/wxpay.api.php");
+require_once("wxpay/lib/WxPay.Api.php");
 require_once("api_qgs.php");
 
 class class_wxpay{
