@@ -24,6 +24,7 @@ $api = trim($_GET['api']);
 $call = trim($_GET['call']);
 $request = new \DJApi\Request($api, $call);
 $namespace = '';
+header("Access-Control-Allow-Origin:*");
 $json = $request->getJson($namespace, callback);
 \DJApi\Response::response(\DJApi\Request::debugJson($json));
 
