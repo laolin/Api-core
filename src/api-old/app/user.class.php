@@ -83,7 +83,11 @@ class QgsModules {
     $db = new mymedoo(self::database_name);
     return $db->select(self::table_user, ["[>]" . self::table_wxuser => "openid"],
       [self::table_user . ".id", self::table_user . ".name", self::table_wxuser . ".headimgurl", self::table_wxuser . ".nickname"],
-      [self::table_user . ".id" => $userids]);
+      [
+        'AND' => [self::table_user . ".id" => $userids],
+        'GROUP' => 'openid',
+      ]
+    );
   }
   public static function GetWxAndUsersByFields($userFields, $wxFielde, $AND) {
     $fields = self::FieldsUserAndWx($userFields, $wxFielde);
@@ -93,7 +97,17 @@ class QgsModules {
   public static function SelectWxAndUsersByFields($userFields, $wxFielde, $AND) {
     $fields = self::FieldsUserAndWx($userFields, $wxFielde);
     $db = new mymedoo(self::database_name);
+    if (!$AND['AND']) {
+      $AND = [
+        'AND' => $AND,
+        'GROUP' => 'openid',
+      ];
+    } else {
+      $AND['GROUP'] = 'openid';
+    }
     $r = $db->select(self::table_user, ["[>]" . self::table_wxuser => "openid"], $fields, $AND);
+
+    \DJApi\API::debug(['DB' => $db->getShow()]);
     //error_log(cn_json($db->getShow()));
     return $r;
     return $db->select(self::table_user, ["[>]" . self::table_wxuser => "openid"], $fields, $AND);
